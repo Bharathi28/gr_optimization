@@ -105,7 +105,7 @@ public class PricingUtilities {
 		for(Map<String,Object> loc : locator) {
 			String elementvalue = loc.get("ELEMENTVALUE").toString();
 											
-			System.out.println("pricing: " + elementvalue);
+//			System.out.println("pricing: " + elementvalue);
 			if(driver.findElements(By.xpath(elementvalue)).size() != 0) {
 				text = driver.findElement(By.xpath(elementvalue)).getText();
  				break;

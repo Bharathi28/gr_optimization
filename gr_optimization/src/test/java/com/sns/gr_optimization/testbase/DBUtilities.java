@@ -12,9 +12,6 @@ public class DBUtilities {
 	static BuyflowUtilities bf_obj = new BuyflowUtilities();
 
 	public static String get_realm(String brand) throws ClassNotFoundException, SQLException {
-//		if(brand.contains("BodyFirm")) {
-//			brand = "BodyFirm";
-//		}
 		String realmQuery = "select * from brand where brandname ='" + brand + "'";
 		List<Map<String, Object>> realmResult = DBLibrary.dbAction("fetch", realmQuery);
 		String realm = realmResult.get(0).get("REALM").toString();
@@ -35,28 +32,19 @@ public class DBUtilities {
 		return category;
 	}
 	
+	public static String checkgiftlineitem(String brand, String campaign) throws ClassNotFoundException, SQLException {
+		String query = "select * from campaign_urls where brand ='" + brand + "' and campaign='" + campaign + "'";
+		List<Map<String, Object>> result = DBLibrary.dbAction("fetch", query);
+		String lineitem = result.get(0).get("GIFTLINEITEM").toString();
+		return lineitem;
+	}
+	
 	public String getGiftname(String brand, String campaign, String ppid) throws ClassNotFoundException, SQLException {
 		String query = "select * from locators where brand='" + brand + "' and campaign='" + campaign + "' and step='Gift' and offer like '%" + ppid + "%'";
 		List<Map<String, Object>> giftloc = DBLibrary.dbAction("fetch", query);
-		
-		String[] giftarr = giftloc.get(0).get("OFFER").toString().split("-");
+//		System.out.println(query);
+		String[] giftarr = giftloc.get(0).get("OFFER").toString().split("_");
 		String giftname = giftarr[0];
 		return giftname;		
 	}
-//	
-//	public String getUrl(String brand, String campaign, String env) throws ClassNotFoundException, SQLException {
-//		String query = "select * from brand where brandname='" + brand + "' and campaign='" + campaign + "'";
-////		System.out.println(query);
-//		List<Map<String, Object>> branddata = DBLibrary.dbAction("fetch", query);		
-//		String url = "";
-//		if(env.toLowerCase().contains("dev")) {
-//			url = branddata.get(0).get("STGURL").toString();
-//			url = url.replace(".stg.", "."+ env.toLowerCase() +".");
-//		}
-//		else {
-//			url = branddata.get(0).get(env.toUpperCase() + "URL").toString();
-//		}		
-//		return url;
-//	}
-
 }

@@ -29,7 +29,7 @@ public class DBLibrary {
 			return connection;
 			
 //			String driver = "org.apache.derby.jdbc.EmbeddedDriver";
-//		    String connectionURL = "jdbc:derby:grdatabase;";
+//		    String connectionURL = "jdbc:derby:groptimizeddb;";
 //		    Class.forName(driver);
 //            connection = DriverManager.getConnection(connectionURL);
 //

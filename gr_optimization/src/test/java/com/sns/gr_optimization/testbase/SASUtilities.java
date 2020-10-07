@@ -13,8 +13,11 @@ import org.openqa.selenium.WebElement;
 public class SASUtilities {
 	
 	CommonUtilities comm_obj = new CommonUtilities();
+	BuyflowUtilities bf_obj = new BuyflowUtilities();
 	
 	public void select_offer(WebDriver driver, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
+//		JavascriptExecutor jse = (JavascriptExecutor) driver;
+//		jse.executeScript("window.scrollBy(0,0)", 0);
 		
 		String brand =  offerdata.get("Brand");
 		String campaign =  offerdata.get("Campaign");
@@ -33,7 +36,10 @@ public class SASUtilities {
 	    		break;
 	    	case "fragrance":
 	    		select_fragrance(driver, brand, campaign, offerdata);
-	    		break;  
+	    		break; 
+	    	case "kitshade":
+	    		select_kitshade(driver, brand, campaign, offerdata);
+	    		break; 
 			}
 		}		
 	}
@@ -41,45 +47,91 @@ public class SASUtilities {
 	public void select_kit(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
 		String kitname = offerdata.get("Kit Name");
 		
-		String query = "select * from locators where brand='" + brand + "' and campaign='" + campaign + "' and step='Kit' and offer='" + kitname + "'";
-		List<Map<String, Object>> kitloc = DBLibrary.dbAction("fetch", query);
+		List<Map<String, Object>> locator = null;
 		
-		WebElement kit_elmt = comm_obj.find_webelement(driver, kitloc.get(0).get("ELEMENTLOCATOR").toString(), kitloc.get(0).get("ELEMENTVALUE").toString());
-		Thread.sleep(2000);
+		locator = bf_obj.get_element_locator(brand, campaign, "Kit", kitname);		
+		if(locator.size() == 0) {
+			locator = bf_obj.get_element_locator(brand, null, "Kit", kitname);
+		}
+		
+		String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
+		String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();
+		
+		WebElement kit_elmt = comm_obj.find_webelement(driver, elementlocator, elementvalue);
+		comm_obj.waitUntilElementAppears(driver, elementvalue);
+		Thread.sleep(1000);
 		kit_elmt.click();
 		Thread.sleep(1000);
 	}
 	
+	public void moveto_gift(WebDriver driver, String brand, String campaign) throws InterruptedException {
+		JavascriptExecutor jse = (JavascriptExecutor) driver;
+		
+		if(brand.equalsIgnoreCase("CrepeErase")){
+			if(campaign.equalsIgnoreCase("Core")) {
+				jse.executeScript("window.scrollBy(0,700)", 0);
+			}
+			else if(campaign.equalsIgnoreCase("cscb1")) {
+				jse.executeScript("window.scrollBy(0,700)", 0);
+			}
+		}
+		else if(brand.equalsIgnoreCase("MeaningfulBeauty")){
+			if(campaign.equalsIgnoreCase("deluxe20off")) {
+				jse.executeScript("window.scrollBy(0,800)", 0);
+			}
+			else if(campaign.equalsIgnoreCase("Core")) {
+				jse.executeScript("window.scrollBy(0,700)", 0);
+			}
+			else if(campaign.equalsIgnoreCase("friend50poff")) {
+				jse.executeScript("window.scrollBy(0,700)", 0);
+			}
+			else if(campaign.equalsIgnoreCase("trymbnow")) {
+				jse.executeScript("window.scrollBy(0,700)", 0);
+			}
+			else if(campaign.equalsIgnoreCase("special-offer-panelc")) {
+				jse.executeScript("window.scrollBy(0,700)", 0);
+			}
+		}
+		Thread.sleep(4000);
+	}
+	
 	public void select_gift(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
+		moveto_gift(driver, brand, campaign);
+		
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		
 		String giftppid = offerdata.get("Gift PPID");
 		
 		String query = "select * from locators where brand='" + brand + "' and campaign='" + campaign + "' and step='Gift' and offer like '%" + giftppid + "%'";
-		List<Map<String, Object>> giftloc = DBLibrary.dbAction("fetch", query);
-		
-		if((brand.equalsIgnoreCase("CrepeErase")) && (campaign.equalsIgnoreCase("Core"))){
-			jse.executeScript("window.scrollBy(0,700)", 0);
-		}
-		else if((brand.equalsIgnoreCase("MeaningfulBeauty")) && (campaign.equalsIgnoreCase("deluxe20off"))){
-			jse.executeScript("window.scrollBy(0,700)", 0);
-		}
-		
+		List<Map<String, Object>> giftloc = DBLibrary.dbAction("fetch", query);		
+//		System.out.println(query);
 		WebElement gift_elmt = comm_obj.find_webelement(driver, giftloc.get(0).get("ELEMENTLOCATOR").toString(), giftloc.get(0).get("ELEMENTVALUE").toString());
-		Thread.sleep(2000);
+		comm_obj.waitUntilElementAppears(driver, giftloc.get(0).get("ELEMENTVALUE").toString());
 		gift_elmt.click();
 		Thread.sleep(1000);
 	}
 	
-	public void moveto_prepu(WebDriver driver, String brand, String campaign) {
+	public void moveto_prepu(WebDriver driver, String brand, String campaign) throws InterruptedException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		jse.executeScript("window.scrollBy(0,200)", 0);
 		
-		if((brand.equalsIgnoreCase("CrepeErase")) && (campaign.equalsIgnoreCase("Core"))) {
-			driver.findElement(By.xpath("//div[@class = 'sas-sticky-footer']//a[contains(text(),'Proceed to Checkout')]")).click();
+		if(brand.equalsIgnoreCase("CrepeErase")) {
+			if(campaign.equalsIgnoreCase("Core")) {
+				driver.findElement(By.xpath("//div[@class = 'sas-sticky-footer']//a[contains(text(),'Proceed to Checkout')]")).click();
+			}
+			else if(campaign.equalsIgnoreCase("advanced-one")) {
+				driver.findElement(By.xpath("//button[@class='button checkout special-offer']")).click();
+			}
 		}
-		else if((brand.equalsIgnoreCase("MeaningfulBeauty")) && (campaign.equalsIgnoreCase("Core"))) {
-			driver.findElement(By.xpath("//button[@class='button checkout-special-offer']")).click();
+		else if(brand.equalsIgnoreCase("MeaningfulBeauty")) {
+			if((campaign.equalsIgnoreCase("Core")) || (campaign.equalsIgnoreCase("mb7deluxe20offb")) || (campaign.equalsIgnoreCase("mb7deluxe20offb15"))){
+				driver.findElement(By.xpath("//button[@class='button checkout-special-offer']")).click();
+			}
+		}
+		else if((brand.equalsIgnoreCase("WestmoreBeauty")) && (campaign.equalsIgnoreCase("pnlfcp"))) {
+			driver.findElement(By.xpath("//a[@class='cta']")).click();
+			Thread.sleep(2000);
+			jse.executeScript("window.scrollBy(0,200)", 0);
 		}
 	}
 
@@ -89,26 +141,67 @@ public class SASUtilities {
 		
 		String prepu = offerdata.get("Offer Pre-Purchase");
 		
-		String query = "select * from locators where brand='" + brand + "' and campaign='" + campaign + "' and step='PrePU' and offer='" + prepu + "'";
-		List<Map<String, Object>> prepuloc = DBLibrary.dbAction("fetch", query);
+		List<Map<String, Object>> locator = null;
 		
-		WebElement prepu_elmt = comm_obj.find_webelement(driver, prepuloc.get(0).get("ELEMENTLOCATOR").toString(), prepuloc.get(0).get("ELEMENTVALUE").toString());
-		Thread.sleep(2000);
+		locator = bf_obj.get_element_locator(brand, campaign, "PrePU", prepu);		
+		if(locator.size() == 0) {
+			locator = bf_obj.get_element_locator(brand, null, "PrePU", prepu);
+		}
+		
+		String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
+		String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();
+			
+		WebElement prepu_elmt = comm_obj.find_webelement(driver, elementlocator, elementvalue);
+		comm_obj.waitUntilElementAppears(driver, elementvalue);
 		prepu_elmt.click();
 		Thread.sleep(1000);
 	}
 	
 	public void select_fragrance(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
-		
+		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		String fragrance = offerdata.get("Fragrance");
 		
-		String query = "select * from locators where brand='" + brand + "' and campaign='" + campaign + "' and step='Fragrance' and offer='" + fragrance + "'";
-		List<Map<String, Object>> fragloc = DBLibrary.dbAction("fetch", query);
+		List<Map<String, Object>> locator = null;
 		
-		WebElement frag_elmt = comm_obj.find_webelement(driver, fragloc.get(0).get("ELEMENTLOCATOR").toString(), fragloc.get(0).get("ELEMENTVALUE").toString());
-		Thread.sleep(2000);
+		locator = bf_obj.get_element_locator(brand, campaign, "Fragrance", fragrance);		
+		if(locator.size() == 0) {
+			locator = bf_obj.get_element_locator(brand, null, "Fragrance", fragrance);
+		}
+		
+		String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
+		String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();
+		
+		if((brand.equalsIgnoreCase("CrepeErase")) && (campaign.equalsIgnoreCase("order30fshadvanced"))) {
+			jse.executeScript("window.scrollBy(0,-300)", 0);
+			Thread.sleep(2000);
+		}		
+		
+		WebElement frag_elmt = comm_obj.find_webelement(driver, elementlocator, elementvalue);
+		comm_obj.waitUntilElementAppears(driver, elementvalue);
 		frag_elmt.click();
 		Thread.sleep(1000);
 	}
-
+	
+	public void select_kitshade(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
+		JavascriptExecutor jse = (JavascriptExecutor) driver;
+		jse.executeScript("window.scrollBy(0,300)", 0);
+		
+		String kitname = offerdata.get("Kit Name");
+		String kitshade = offerdata.get("KitShade");
+		
+		List<Map<String, Object>> locator = null;
+		
+		locator = bf_obj.get_element_locator(brand, campaign, "KitShade", kitshade + " " + kitname);		
+		if(locator.size() == 0) {
+			locator = bf_obj.get_element_locator(brand, null, "KitShade", kitshade + " " + kitname);
+		}
+		
+		String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
+		String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();
+		
+		WebElement shade_elmt = comm_obj.find_webelement(driver, elementlocator, elementvalue);
+		comm_obj.waitUntilElementAppears(driver, elementvalue);
+		shade_elmt.click();
+		Thread.sleep(1000);
+	}
 }

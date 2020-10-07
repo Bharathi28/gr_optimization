@@ -271,6 +271,9 @@ public class CommonUtilities {
 		else {
 			datavalue = (String) jse.executeScript("return app.variableMap." + variablename);
 		}		
+		if(datavalue == null) {
+			datavalue = "null";
+		}
 		return datavalue;
 	}
 	

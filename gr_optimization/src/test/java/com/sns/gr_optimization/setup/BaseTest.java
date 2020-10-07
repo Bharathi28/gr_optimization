@@ -12,8 +12,8 @@ public class BaseTest {
 WebDriver driver;
 	
 	public WebDriver setUp(@Optional("chrome") String browser, @Optional("grid") String environment) throws MalformedURLException {
-		System.out.println(browser);
-		System.out.println(environment);
+//		System.out.println(browser);
+//		System.out.println(environment);
 		// Create Driver
 		BrowserDriverFactory factory = new BrowserDriverFactory(browser);
 		if (environment.equalsIgnoreCase("grid")) {

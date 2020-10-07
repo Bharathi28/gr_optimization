@@ -54,7 +54,7 @@ public class BuyflowUtilities {
 			query = query + include_offer;
 		}
 //		query = query + ";";
-			System.out.println(query);
+//			System.out.println(query);
 		List<Map<String, Object>> locator = DBLibrary.dbAction("fetch",query);
 		return locator;		
 	}
@@ -130,7 +130,7 @@ public class BuyflowUtilities {
 //	}
 //	
 	public void move_to_checkout(WebDriver driver, String brand, String campaign, String category) throws InterruptedException, ClassNotFoundException, SQLException {
-		System.out.println("Moving to Checkout Page...");	
+//		System.out.println("Moving to Checkout Page...");	
 //		System.out.println(brand + campaign + category);	
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 				
@@ -147,7 +147,12 @@ public class BuyflowUtilities {
 				category = "Product";
 			}
 			
-			List<Map<String, Object>> locator = get_element_locator(brand, campaign, "ProceedToCheckout", category);
+			List<Map<String, Object>> locator = null;
+			
+			locator = get_element_locator(brand, campaign, "ProceedToCheckout", category);		
+			if(locator.size() == 0) {
+				locator = get_element_locator(brand, null, "ProceedToCheckout", category);
+			}
 			
 			String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
 			String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();			
@@ -162,8 +167,14 @@ public class BuyflowUtilities {
 	public void upsell_confirmation(WebDriver driver, String brand, String campaign, String upsell) throws InterruptedException, ClassNotFoundException, SQLException {
 		Thread.sleep(4000);
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
-				
-		List<Map<String, Object>> locator = get_element_locator(brand, campaign, "PostPU", upsell);
+		
+		List<Map<String, Object>> locator = null;
+		
+		locator = get_element_locator(brand, campaign, "PostPU", upsell);
+		
+		if(locator.size() == 0) {
+			locator = get_element_locator(brand, null, "PostPU", upsell);
+		}		
 			
 		String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
 		String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();
@@ -185,7 +196,7 @@ public class BuyflowUtilities {
 //}
 	
 	// To get all Gift PPIDs of a campaign
-	public List<String> getAllGiftPPIDs(String brand, String gifts) throws ClassNotFoundException, SQLException {
+	public List<String> getPPIDfromString(String brand, String gifts) throws ClassNotFoundException, SQLException {
 		String productlinecode = db_obj.get_sourceproductlinecode(brand);
 		
 		String[] gift_str_arr = gifts.split(" ");
@@ -202,23 +213,26 @@ public class BuyflowUtilities {
 	public String checkGifts(WebDriver driver, String brand, String campaign, String gifts) throws ClassNotFoundException, SQLException, InterruptedException {		
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		
-		List<String> gift_arr = getAllGiftPPIDs(brand, gifts);
+		List<String> gift_arr = getPPIDfromString(brand, gifts);
 		
-		jse.executeScript("window.scrollBy(0,500)", 0);
+		jse.executeScript("window.scrollBy(0,1000)", 0);
+		Thread.sleep(2000);
 		String giftResult = "";
 		for(String gift : gift_arr) {
 			String query = "select * from locators where brand='" + brand + "' and campaign='" + campaign + "' and step='Gift' and offer like '%" + gift + "%'";
-			System.out.println(query);
 			List<Map<String, Object>> giftloc = DBLibrary.dbAction("fetch", query);
 			
 			Thread.sleep(4000);
-			if(driver.findElement(By.xpath(giftloc.get(0).get("ELEMENTVALUE").toString())).isDisplayed()) {
+			if(driver.findElements(By.xpath(giftloc.get(0).get("ELEMENTVALUE").toString())).size() != 0) {
+				if(driver.findElement(By.xpath(giftloc.get(0).get("ELEMENTVALUE").toString())).isDisplayed()) {
+				}
 			}
 			else {
 				giftResult = giftResult + giftloc.get(0).get("OFFER").toString() + " is not present on SAS";
 			}
 		}
 		jse.executeScript("window.scrollBy(0,0)", 0);
+		Thread.sleep(2000);
 		return giftResult;
 	}
 	
@@ -309,7 +323,7 @@ public class BuyflowUtilities {
 			}
 		}
 		else {
-			Thread.sleep(3000);
+			Thread.sleep(5000);
 			String products = (String) jse.executeScript("return app.variableMap.products");
 			String[] arr = products.split(";");
 			int arrSize = arr.length;
@@ -403,12 +417,16 @@ public class BuyflowUtilities {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		String realm = DBUtilities.get_realm(brand);
 		String email = "";
-		
+		Thread.sleep(2000);
 		if(cc.equalsIgnoreCase("paypal")) {
 			if(realm.equalsIgnoreCase("R4")) {
-				driver.findElement(By.xpath("//div[@id='paypalSection']//div//div")).click();
+//				comm_obj.waitUntilElementAppears(driver, "(//div[@id='paypalSection']//div//div)[1]");
+//				WebElement paypalbutton = 
+						driver.findElement(By.xpath("(//div[@id='paypalSection']//div//div)[1]")).click();;
+//				jse.executeScript("arguments[0].click();", paypalbutton); 
 			}
 			else {
+				comm_obj.waitUntilElementAppears(driver, "//button[@class='PayPalExpressButton']");
 				driver.findElement(By.xpath("//button[@class='PayPalExpressButton']")).click();
 			}
 			
@@ -520,6 +538,7 @@ public class BuyflowUtilities {
 	
 	public String paypalPayment(WebDriver driver, WebDriverWait wait, JavascriptExecutor jse, String winHandleBefore, String realm) throws ClassNotFoundException, SQLException, InterruptedException {
 		comm_obj.waitUntilElementAppears(driver, "//div[@id='loginSection']//div//div[2]//a");
+		Thread.sleep(4000);
 		driver.findElement(By.xpath("//div[@id='loginSection']//div//div[2]//a")).click();
 			
 		comm_obj.waitUntilElementAppears(driver, "//div[@id='login_emaildiv']//div//input");
@@ -535,7 +554,8 @@ public class BuyflowUtilities {
 		driver.findElement(By.xpath("//button[@class='button actionContinue scTrack:unifiedlogin-login-submit']")).click();			
 		
 		comm_obj.waitUntilElementAppears(driver, "//h2[@data-testid='paywith-title']");
-		jse.executeScript("window.scrollBy(0,500)", 0);
+		jse.executeScript("window.scrollBy(0,700)", 0);
+		Thread.sleep(2000);
 		comm_obj.waitUntilElementAppears(driver, "//button[@id='payment-submit-btn']");
 
 		driver.findElement(By.xpath("//button[@id='payment-submit-btn']")).click();	

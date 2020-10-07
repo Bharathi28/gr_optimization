@@ -23,7 +23,7 @@ public class BrowserDriverFactory {
 
 	@SuppressWarnings("deprecation")
 	public WebDriver createDriver() {
-		System.out.println("Starting " + browser + " locally");	
+//		System.out.println("Starting " + browser + " locally");	
 
 		// Creating driver
 		switch (browser) {
@@ -54,7 +54,7 @@ public class BrowserDriverFactory {
 
 	public WebDriver createDriverGrid() throws MalformedURLException {
 		String hubUrl = "http://192.168.0.22:4444/wd/hub";		
-		System.out.println("Starting " + browser + " on grid");
+//		System.out.println("Starting " + browser + " on grid");
 		ChromeOptions chromeOptions = null;
 		FirefoxOptions firefoxOptions = null;
 		
