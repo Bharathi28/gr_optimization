@@ -437,21 +437,28 @@ public class BuyflowUtilities {
 			   Thread.sleep(2000);
 			}						
 			
-			if(driver.findElements(By.xpath("//section[@id='genericError']//div//div[2]")).size() != 0) {
-				driver.close();
-//				driver.switchTo().window(winHandleBefore);
-				Thread.sleep(2000);
-				email = ccPayment(driver, jse, realm, brand, campaign, "Visa", shipbill, supply);
-			}
-			else if(driver.findElements(By.xpath("//div[@class='message']")).size() != 0) {
-//					getText().equalsIgnoreCase("Things don't appear to be working at the moment. Please try again later.")) {
-				driver.close();
-				Thread.sleep(2000);
-				email = ccPayment(driver, jse, realm, brand, campaign, "Visa", shipbill, supply);
+			if(driver.findElements(By.xpath("//div[@id='loginSection']//div//div[2]//a")).size() != 0) {
+				email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
 			}
 			else {
-				email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
-			}			
+				while(driver.findElements(By.xpath("//div[@id='loginSection']//div//div[2]//a")).size() == 0) {
+					if(driver.findElements(By.xpath("//section[@id='genericError']//div//div[2]")).size() != 0) {
+						driver.close();
+//						driver.switchTo().window(winHandleBefore);
+						Thread.sleep(2000);
+						email = ccPayment(driver, jse, realm, brand, campaign, "Visa", shipbill, supply);
+					}
+					else if(driver.findElements(By.xpath("//div[@class='message']")).size() != 0) {
+//						getText().equalsIgnoreCase("Things don't appear to be working at the moment. Please try again later.")) {
+						driver.close();
+						Thread.sleep(2000);
+						email = ccPayment(driver, jse, realm, brand, campaign, "Visa", shipbill, supply);
+					}
+					else if(driver.findElements(By.xpath("//div[@id='loginSection']//div//div[2]//a")).size() != 0) {
+						email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
+					}
+				}	
+			}							
 		}
 		else {
 			email = ccPayment(driver, jse, realm, brand, campaign, cc, shipbill, supply);
@@ -594,5 +601,56 @@ public class BuyflowUtilities {
 		String[] arr= {"William","Wilson","Abraham","Bush","Jones","Darlow","Shapiro","Weaver","Geller"};
 		int rnd = new Random().nextInt(arr.length);
 	    return arr[rnd];
+	}
+	
+	public String getSalesTax(WebDriver driver, String subtotal, String shipping) throws ClassNotFoundException, SQLException {
+		
+		String query = "select * from form_locators where realm='R4' and form='Checkout' and field='State'";
+		List<Map<String, Object>> locator = DBLibrary.dbAction("fetch", query);
+		
+		String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
+		String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();
+		
+		Select select = new Select(comm_obj.find_webelement(driver, elementlocator, elementvalue));
+		WebElement selectedoption = select.getFirstSelectedOption();
+		String state = selectedoption.getText();
+		System.out.println(state);
+		
+		// Remove $
+		if(subtotal.contains("$")) {
+			subtotal = subtotal.replace("$", "");
+		}
+		if(shipping.contains("$")) {
+			shipping = shipping.replace("$", "");
+		}	
+		
+		if(shipping.equalsIgnoreCase("FREE")) {
+			shipping = "0.00";
+		}
+		
+		Double subtotal_value = Double.valueOf(subtotal);
+		Double shipping_value = Double.valueOf(shipping);
+				
+		String salestaxpercent = db_obj.getSalesTaxPercentage(state);
+		salestaxpercent = salestaxpercent.replace("%", "");
+		Double percent_value = Double.valueOf(salestaxpercent);
+				
+		Double salestax_value = ((subtotal_value + shipping_value)*percent_value)/100;
+		double salextax_roundOff = Math.floor(salestax_value * 100.0) / 100.0;
+				
+		String salestax = String.valueOf(salextax_roundOff);		
+		return salestax;
+	}
+	
+	public String getTotal(String subtotal, String shipping, String salestax) {
+		Double subtotal_value = Double.valueOf(subtotal);
+		Double shipping_value = Double.valueOf(shipping);
+		Double salestax_value = Double.valueOf(salestax);
+		
+		Double total_value = subtotal_value + shipping_value + salestax_value;
+		double total_roundOff = Math.floor(total_value * 100.0) / 100.0;
+				
+		String total = String.valueOf(total_roundOff);		
+		return total;
 	}
 }

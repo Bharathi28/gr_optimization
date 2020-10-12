@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
+import javax.imageio.ImageIO;
+
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -23,6 +25,7 @@ import org.openqa.selenium.WebElement;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import com.sns.gr_optimization.setup.BaseTest;
@@ -35,6 +38,9 @@ import com.sns.gr_optimization.testbase.MailUtilities;
 import com.sns.gr_optimization.testbase.MerchandisingUtilities;
 import com.sns.gr_optimization.testbase.PricingUtilities;
 import com.sns.gr_optimization.testbase.SASUtilities;
+
+import ru.yandex.qatools.ashot.AShot;
+import ru.yandex.qatools.ashot.Screenshot;
 
 public class BuyflowValidation {
 
@@ -65,8 +71,9 @@ public class BuyflowValidation {
 		return arrayObject;
 	}
 	
+	@Parameters({ "environment" })
 	@Test(dataProvider="buyflowInput")
-	public void buyflow(String env, String brand, String campaign, String category, String kitppid, String giftppid, String url, String shipbill, String cc, String browser) throws IOException, ClassNotFoundException, SQLException, InterruptedException {	
+	public void buyflow(String brand, String campaign, String category, String kitppid, String giftppid, String url, String shipbill, String cc, String browser) throws IOException, ClassNotFoundException, SQLException, InterruptedException {	
 		
 		// Get Source Code Information
 		String campaigncategory = db_obj.checkcampaigncategory(brand, campaign);
@@ -121,11 +128,11 @@ public class BuyflowValidation {
 				String prepu = "";
 				if(pagepattern.contains("prepu")) {
 					prepu = "Yes";
-					System.out.println("Pre Purchase Upsell exists for " + brand + " - " + campaign);
+//					System.out.println("Pre Purchase Upsell exists for " + brand + " - " + campaign);
 				}
 				else {
 					prepu = "No";
-					System.out.println("No Pre Purchase Upsell for " + brand + " - " + campaign);
+//					System.out.println("No Pre Purchase Upsell for " + brand + " - " + campaign);
 				}
 				
 				// Check Post-purchase Upsell
@@ -134,10 +141,10 @@ public class BuyflowValidation {
 					postpu = "No";
 				}
 				if(postpu.equalsIgnoreCase("Yes")) {
-					System.out.println("Post Purchase Upsell exists for " + brand + " - " + campaign);
+//					System.out.println("Post Purchase Upsell exists for " + brand + " - " + campaign);
 				}
 				else {
-					System.out.println("No Post Purchase Upsell for " + brand + " - " + campaign);
+//					System.out.println("No Post Purchase Upsell for " + brand + " - " + campaign);
 				}
 				
 				// List pages in this campaign
@@ -390,19 +397,19 @@ public class BuyflowValidation {
 				String realm = DBUtilities.get_realm(brand);
 				
 				if((cc.equalsIgnoreCase("Paypal")) && (realm.equalsIgnoreCase("R2"))) {
-					checkout_subtotal = pr_obj.fetch_pricing (driver, env, brand, campaigncategory, "Paypal Review Subtotal");
-					checkout_shipping = pr_obj.fetch_pricing (driver, env, brand, campaigncategory, "Paypal Review Shipping");
-					checkout_salestax = pr_obj.fetch_pricing (driver, env, brand, campaigncategory, "Paypal Review Salestax");
-					checkout_total = pr_obj.fetch_pricing (driver, env, brand, campaigncategory, "Paypal Review Total");
+					checkout_subtotal = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Paypal Review Subtotal");
+					checkout_shipping = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Paypal Review Shipping");
+					checkout_salestax = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Paypal Review Salestax");
+					checkout_total = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Paypal Review Total");
 				}
 				else {
-					checkout_subtotal = pr_obj.fetch_pricing (driver, env, brand, campaigncategory, "Checkout Subtotal");
-					checkout_shipping = pr_obj.fetch_pricing (driver, env, brand, campaigncategory, "Checkout Shipping");
-					checkout_salestax = pr_obj.fetch_pricing (driver, env, brand, campaigncategory, "Checkout Salestax");
-					checkout_total = pr_obj.fetch_pricing (driver, env, brand, campaigncategory, "Checkout Total");
+					checkout_subtotal = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Subtotal");
+					checkout_shipping = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Shipping");
+					checkout_salestax = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Salestax");
+					checkout_total = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Total");
 				}			
-//				System.out.println("Checkout Pricing expected : " + expectedofferdata.get("Final Pricing") + "," + expectedofferdata.get("Final Shipping"));
-//				System.out.println("Checkout Pricing fetched : " + checkout_subtotal + "," + checkout_shipping + "," + checkout_salestax + "," + checkout_total);
+				System.out.println("Checkout Pricing expected : " + expectedofferdata.get("Final Pricing") + "," + expectedofferdata.get("Final Shipping"));
+				System.out.println("Checkout Pricing fetched : " + checkout_subtotal + "," + checkout_shipping + "," + checkout_salestax + "," + checkout_total);
 							
 				if(expectedofferdata.get("Final Pricing").contains(checkout_subtotal)) {
 					EntryPriceResult = "PASS";
@@ -436,6 +443,35 @@ public class BuyflowValidation {
 					EntryPriceResult = "FAIL";
 					remarks = remarks + "Checkout Shipping does not match with the expected shipping price, Expected - " + expectedofferdata.get("Final Shipping") + " , Actual - " + checkout_shipping;
 				}
+				
+				// Checkout SalesTax Validation
+				String salestax = bf_obj.getSalesTax(driver, expectedofferdata.get("Final Pricing"), expectedofferdata.get("Final Shipping"));
+				
+				if(salestax.contains(checkout_salestax)) {
+					EntryPriceResult = "PASS";
+				}
+				else {
+					EntryPriceResult = "FAIL";
+					remarks = remarks + "Checkout Salestax does not match with the expected salestax, Expected - " + salestax + " , Actual - " + checkout_salestax;
+				}
+				
+				System.out.println("Expected SalesTax : " + salestax);
+				System.out.println("Actual SalesTax : " + checkout_salestax);
+				
+				// Checkout Total Validation
+				String total = bf_obj.getTotal(expectedofferdata.get("Final Pricing"), expectedofferdata.get("Final Shipping"), salestax);
+				
+				if(total.contains(checkout_total)) {
+					EntryPriceResult = "PASS";
+				}
+				else {
+					EntryPriceResult = "FAIL";
+					remarks = remarks + "Checkout Total does not match with the expected total, Expected - " + total + " , Actual - " + checkout_total;
+				}
+				
+				System.out.println("Expected Total : " + total);
+				System.out.println("Actual Total : " + checkout_total);
+				
 				
 				JavascriptExecutor jse = (JavascriptExecutor) driver;
 				if(!(cc.equalsIgnoreCase("Paypal"))) {
@@ -536,15 +572,17 @@ public class BuyflowValidation {
 					}
 				}
 				
+				Screenshot confpage = new AShot().takeScreenshot(driver);
+				ImageIO.write(confpage.getImage(),"PNG",new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Screenshots\\" + brand + "\\" + campaign + "_" + kitppid +".png"));
 				
 				String conf_num = bf_obj.fetch_conf_num(driver, brand);
 				System.out.println("Confirmation Number : " + conf_num);				
 								
 				// Confirmation Price Validation
-				String conf_subtotal = pr_obj.fetch_pricing (driver, env, brand, campaigncategory, "Confirmation Subtotal");
-				String conf_shipping = pr_obj.fetch_pricing (driver, env, brand, campaigncategory, "Confirmation Shipping");
-				String conf_salestax = pr_obj.fetch_pricing (driver, env, brand, campaigncategory, "Confirmation Salestax");
-				String conf_total = pr_obj.fetch_pricing (driver, env, brand, campaigncategory, "Confirmation Total");
+				String conf_subtotal = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Confirmation Subtotal");
+				String conf_shipping = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Confirmation Shipping");
+				String conf_salestax = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Confirmation Salestax");
+				String conf_total = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Confirmation Total");
 				
 				String conf_pricing = conf_subtotal + " ; " + conf_shipping + " ; " + conf_salestax + " ; " + conf_total;	
 //				System.out.println("Confirmation Pricing fetched : " + conf_pricing);
@@ -590,7 +628,7 @@ public class BuyflowValidation {
 					remarks = remarks + "Shipping price on confirmation page is wrong, Expected - " + expectedofferdata.get("Final Shipping") + " , Actual - " + checkout_shipping;
 				}
 						
-				if(checkout_salestax.equalsIgnoreCase(conf_salestax)) {
+				if(salestax.equalsIgnoreCase(conf_salestax)) {
 					// If Result is already fail, then the overall EntryPrice result is fail
 					if(EntryPriceResult.equalsIgnoreCase("FAIL")) {
 						EntryPriceResult = "FAIL";
@@ -601,10 +639,10 @@ public class BuyflowValidation {
 				}
 				else {
 					EntryPriceResult = "FAIL";
-					remarks = remarks + "SalesTax on Confirmation page does not match with that of checkout page, Expected - " + checkout_salestax + " , Actual - " + conf_salestax + ",";
+					remarks = remarks + "SalesTax on Confirmation page does not match with that of checkout page, Expected - " + salestax + " , Actual - " + conf_salestax + ",";
 				}
 				
-				if(checkout_total.equalsIgnoreCase(conf_total)) {
+				if(total.equalsIgnoreCase(conf_total)) {
 					// If Result is already fail, then the overall EntryPrice result is fail
 					if(EntryPriceResult.equalsIgnoreCase("FAIL")) {
 						EntryPriceResult = "FAIL";
@@ -615,7 +653,7 @@ public class BuyflowValidation {
 				}
 				else {
 					EntryPriceResult = "FAIL";
-					remarks = remarks + "Total Price on Confirmation page is wrong, Expected - " + checkout_total + " , Actual - " + conf_total + ",";
+					remarks = remarks + "Total Price on Confirmation page is wrong, Expected - " + total + " , Actual - " + conf_total + ",";
 				}
 				
 				// Renewal Plan Validation
@@ -702,7 +740,6 @@ public class BuyflowValidation {
 //				System.out.println("Actual Venue Id : " + actualvenueid);
 				
 				List<String> output_row = new ArrayList<String>();
-				output_row.add(env);
 				output_row.add(brand);
 				output_row.add(campaign);
 				output_row.add(category);

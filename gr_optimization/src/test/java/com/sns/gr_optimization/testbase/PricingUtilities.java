@@ -81,7 +81,7 @@ public class PricingUtilities {
 		return entrykitprice;
 	}
 	
-	public String fetch_pricing (WebDriver driver, String env, String brand, String campaign, String pricing) throws ClassNotFoundException, SQLException {
+	public String fetch_pricing (WebDriver driver, String brand, String campaign, String pricing) throws ClassNotFoundException, SQLException {
 		String realm = DBUtilities.get_realm(brand);	
 		List<Map<String, Object>> locator = null;
 		

@@ -161,7 +161,6 @@ public class CommonUtilities {
 		List<String> header_list = new ArrayList<String>();
 		
 		if(header.toLowerCase().contains("buyflow")) {			
-			header_list.add("Environment");
 			header_list.add("Brand");
 			header_list.add("Campaign");
 			header_list.add("Category");

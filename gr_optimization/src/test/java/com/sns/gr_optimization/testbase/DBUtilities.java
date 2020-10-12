@@ -18,6 +18,29 @@ public class DBUtilities {
 		return realm;
 	}
 	
+	public String getUrl(String brand, String campaign, String env) throws ClassNotFoundException, SQLException {
+		String query = "select * from campaign_urls where brand='" + brand + "' and campaign='" + campaign + "'";
+//		System.out.println(query);
+		List<Map<String, Object>> campaigndata = DBLibrary.dbAction("fetch", query);		
+		String url = campaigndata.get(0).get("PRODURL").toString();
+		if(url.equalsIgnoreCase("qa")) {
+			url = url.replace("www.", "storefront:eComweb123@");
+			url = url.replace("com", "grdev.com");
+		}
+		else if(url.equalsIgnoreCase("stg")) {
+			url = url.replace("www.", "storefront:eComweb123@www.");
+			url = url.replace("com", "stg.dw4.grdev.com");
+		}
+		else if(url.equalsIgnoreCase("prod")) {
+		}
+		else {
+			url = url.replace("www.", "storefront:eComweb123@www.");
+			url = url.replace("com", "stg.dw4.grdev.com");
+			url = url.replace(".stg.", "."+ env.toLowerCase() +".");
+		}
+		return url;
+	}
+	
 	public static String get_sourceproductlinecode(String brand) throws ClassNotFoundException, SQLException {
 		String abbrQuery = "select * from brand where brandname ='" + brand + "'";
 		List<Map<String, Object>> abbrResult = DBLibrary.dbAction("fetch", abbrQuery);
@@ -46,5 +69,12 @@ public class DBUtilities {
 		String[] giftarr = giftloc.get(0).get("OFFER").toString().split("_");
 		String giftname = giftarr[0];
 		return giftname;		
+	}
+	
+	public String getSalesTaxPercentage(String state) throws ClassNotFoundException, SQLException {
+		String query = "select * from sales_tax where state ='" + state + "'";
+		List<Map<String, Object>> result = DBLibrary.dbAction("fetch", query);
+		String percentage = result.get(0).get("PERCENTAGE").toString();
+		return percentage;
 	}
 }

@@ -371,35 +371,49 @@ public class MerchandisingUtilities {
 	public HashMap<String, String> getSourceCodeInfo(String[][] merchData, String sourcecodegroup) {
 		LinkedHashMap<String, String> sourcecodedata = new LinkedHashMap<String, String>();
 		int columnCount = merchData[0].length;
-//		System.out.println(columnCount);
+		System.out.println(columnCount);
 		
-		int sourcecodegroupcolumn = 0;
-		for(int i=0; i<columnCount; i++) {
-			String colName = merchData[0][i];
+//		int sourcecodegroupcolumn = 0;
+//		for(int i=0; i<columnCount; i++) {
+//			String colName = merchData[0][i];
 //			System.out.println(merchData[0][i]);
-			if(colName.equalsIgnoreCase("Source Code Group")) {
-				sourcecodegroupcolumn = i;
-				break;
-			}
-		}
+//			if(colName.equalsIgnoreCase("Source Code Group")) {
+//				sourcecodegroupcolumn = i;
+//				break;
+//			}
+//		}
 		
 		for(int i=0; i<merchData.length; i++) {	
 			if(merchData[i][0] != null) {
-				String sourcecodeinrow = merchData[i][sourcecodegroupcolumn];
-//				String sourcecodeinrow = merchData[i][3];
-				sourcecodeinrow = sourcecodeinrow.replaceAll("[^a-zA-Z0-9$]+", "");
-				sourcecodegroup = sourcecodegroup.replaceAll("[^a-zA-Z0-9$]+", "");
-				if(sourcecodeinrow.toLowerCase().contains(sourcecodegroup.toLowerCase())) {
+				if((merchData[i][3].toLowerCase().contains(sourcecodegroup.toLowerCase())) || (merchData[i][4].toLowerCase().contains(sourcecodegroup.toLowerCase()))){
 					for(int j=0; j<columnCount; j++) {
 						sourcecodedata.put(merchData[0][j], merchData[i][j]);
 					}
-				}
+				}				
 			}
 			else {
 				break;
 			}
 		}
-//		System.out.println(sourcecodedata);
+		
+		
+//		for(int i=0; i<merchData.length; i++) {	
+//			if(merchData[i][0] != null) {
+//				String sourcecodeinrow = merchData[i][sourcecodegroupcolumn];
+////				String sourcecodeinrow = merchData[i][3];
+//				sourcecodeinrow = sourcecodeinrow.replaceAll("[^a-zA-Z0-9$]+", "");
+//				sourcecodegroup = sourcecodegroup.replaceAll("[^a-zA-Z0-9$]+", "");
+//				if(sourcecodeinrow.toLowerCase().contains(sourcecodegroup.toLowerCase())) {
+//					for(int j=0; j<columnCount; j++) {
+//						sourcecodedata.put(merchData[0][j], merchData[i][j]);
+//					}
+//				}
+//			}
+//			else {
+//				break;
+//			}
+//		}
+		System.out.println(sourcecodedata);
 		return sourcecodedata;
 	}
 	
