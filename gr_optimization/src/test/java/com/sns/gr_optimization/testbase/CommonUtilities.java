@@ -24,7 +24,7 @@ import org.openqa.selenium.WebElement;
 
 public class CommonUtilities {
 	
-	public String[][] getExcelData(String fileName, String sheetName) {
+	public String[][] getExcelData(String fileName, String sheetName, int startrow) {
 		String[][] arrayExcelData = null;
 		try {			
 			File input_file = new File(fileName);
@@ -37,14 +37,10 @@ public class CommonUtilities {
 			int end = 0;		
 			
 			//////////////////////////////////////
-			int k = 1;			
+			int k = startrow;			
 			String rowdata = dataSheet.getRow(k).getCell(0).getStringCellValue();
 			while(!(rowdata.equalsIgnoreCase("End"))) {
 				k++;
-//				System.out.println(dataSheet.getRow(k).getCell(0).getCellType());
-//				System.out.println(dataSheet.getRow(k).getCell(0).getCellTypeEnum());
-//				System.out.println(k);
-				
 				if(dataSheet.getRow(k) == null) {
 					continue;
 				}
@@ -53,17 +49,24 @@ public class CommonUtilities {
 						continue;
 					}
 				}
-//				System.out.println(dataSheet.getRow(k).getCell(0).getStringCellValue());
-//				row.getCell(c, org.apache.poi.ss.usermodel.Row.CREATE_NULL_AS_BLANK );
 				rowdata =  dataSheet.getRow(k).getCell(0).getStringCellValue();
 			}
 			int totalNoOfRows = k;
 			
+			if(startrow == 0) {
+				totalNoOfRows = totalNoOfRows+1;
+			}
+			else if(startrow == 1){
+				totalNoOfRows = totalNoOfRows-1;
+			}
+			
 			//////////////////////////////////////
 						
-			arrayExcelData = new String[totalNoOfRows-1][totalNoOfCols];
+			arrayExcelData = new String[totalNoOfRows][totalNoOfCols];
 			
-			for (int i= 1 ; i < totalNoOfRows; i++) {
+			int startarray = 0;
+			
+			for (int i= startrow ; i <= totalNoOfRows; i++) {
 				for (int j=0; j < totalNoOfCols; j++) {
 					if(dataSheet.getRow(i) == null) {
 						continue;
@@ -74,19 +77,21 @@ public class CommonUtilities {
 						}
 					}
 					String cellType = dataSheet.getRow(i).getCell(j).getCellTypeEnum().toString();
+					
 					if(cellType.equalsIgnoreCase("STRING")) {
-						arrayExcelData[i-1][j] = dataSheet.getRow(i).getCell(j).getStringCellValue();
-						if(arrayExcelData[i-1][j].equalsIgnoreCase("End")) {
+						arrayExcelData[startarray][j] = dataSheet.getRow(i).getCell(j).toString();
+						if(arrayExcelData[startarray][j].equalsIgnoreCase("End")) {
 							end = 1;
 							break;
 						}
 					}
 					else if(cellType.equalsIgnoreCase("NUMERIC")) {
 						Double value = dataSheet.getRow(i).getCell(j).getNumericCellValue();
-						arrayExcelData[i-1][j] = Double.toString(value);
+						arrayExcelData[startarray][j] = Double.toString(value);
 					}
-//					System.out.println(arrayExcelData[i-1][j]);
+//					System.out.println(arrayExcelData[startarray][j]);
 				}
+				startarray++;
 				if(end == 1) {
 					break;
 				}
@@ -116,8 +121,8 @@ public class CommonUtilities {
 		XSSFSheet resultSheet = null;
 		
 		for(List<String> row : output) {
-			String brand = row.get(1);
-			String campaign = row.get(2);
+			String brand = row.get(0);
+			String campaign = row.get(1);
 			
 			// Check if the workbook is empty or not
 		    if (workbook.getNumberOfSheets() != 0) {

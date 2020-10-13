@@ -420,13 +420,9 @@ public class BuyflowUtilities {
 		Thread.sleep(2000);
 		if(cc.equalsIgnoreCase("paypal")) {
 			if(realm.equalsIgnoreCase("R4")) {
-//				comm_obj.waitUntilElementAppears(driver, "(//div[@id='paypalSection']//div//div)[1]");
-//				WebElement paypalbutton = 
-						driver.findElement(By.xpath("(//div[@id='paypalSection']//div//div)[1]")).click();;
-//				jse.executeScript("arguments[0].click();", paypalbutton); 
+				driver.findElement(By.xpath("//div[@id='paypalSection']//div//div")).click();
 			}
 			else {
-				comm_obj.waitUntilElementAppears(driver, "//button[@class='PayPalExpressButton']");
 				driver.findElement(By.xpath("//button[@class='PayPalExpressButton']")).click();
 			}
 			
@@ -456,6 +452,9 @@ public class BuyflowUtilities {
 					}
 					else if(driver.findElements(By.xpath("//div[@id='loginSection']//div//div[2]//a")).size() != 0) {
 						email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
+					}
+					if(!(email.equalsIgnoreCase(""))) {
+						break;
 					}
 				}	
 			}							
@@ -544,7 +543,7 @@ public class BuyflowUtilities {
 	}
 	
 	public String paypalPayment(WebDriver driver, WebDriverWait wait, JavascriptExecutor jse, String winHandleBefore, String realm) throws ClassNotFoundException, SQLException, InterruptedException {
-		comm_obj.waitUntilElementAppears(driver, "//div[@id='loginSection']//div//div[2]//a");
+//		comm_obj.waitUntilElementAppears(driver, "//div[@id='loginSection']//div//div[2]//a");
 		Thread.sleep(4000);
 		driver.findElement(By.xpath("//div[@id='loginSection']//div//div[2]//a")).click();
 			

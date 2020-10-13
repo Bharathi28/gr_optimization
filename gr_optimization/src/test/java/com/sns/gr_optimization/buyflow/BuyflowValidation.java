@@ -57,9 +57,12 @@ public class BuyflowValidation {
 	
 	List<List<String>> output = new ArrayList<List<String>>();
 	String sendReportTo = "";
+	String env = "";
 	
+	@Parameters({ "environment" })
 	@BeforeSuite
-	public void getEmailId() {
+	public void getEmailId(String environment) {
+		env = environment;
 		System.out.println("Enter Email id : ");
 		sendReportTo = in.next();
 	}
@@ -67,13 +70,12 @@ public class BuyflowValidation {
 	@DataProvider(name="buyflowInput", parallel=true)
 	public Object[][] testData() {
 		Object[][] arrayObject = null;
-		arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata");
+		arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
 		return arrayObject;
-	}
+	}	
 	
-	@Parameters({ "environment" })
 	@Test(dataProvider="buyflowInput")
-	public void buyflow(String brand, String campaign, String category, String kitppid, String giftppid, String url, String shipbill, String cc, String browser) throws IOException, ClassNotFoundException, SQLException, InterruptedException {	
+	public void buyflow(String brand, String campaign, String category, String kitppid, String giftppid, String shipbill, String cc, String browser) throws IOException, ClassNotFoundException, SQLException, InterruptedException {	
 		
 		// Get Source Code Information
 		String campaigncategory = db_obj.checkcampaigncategory(brand, campaign);
@@ -82,7 +84,7 @@ public class BuyflowValidation {
 		}
 				
 		// Read Merchandising Input
-		String[][] merchData = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/Merchandising Input/" + brand + ".xlsx", campaigncategory);
+		String[][] merchData = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/Merchandising Input/" + brand + ".xlsx", campaigncategory, 0);
 				
 		HashMap<String, String> sourcecodedata = merch_obj.getSourceCodeInfo(merchData, campaign);
 		
@@ -187,6 +189,9 @@ public class BuyflowValidation {
 				// Launch Browser
 				BaseTest base_obj = new BaseTest();			
 				WebDriver driver = base_obj.setUp(browser, "Local");
+				
+				System.out.println(env);
+				String url = db_obj.getUrl(brand, campaign, env);
 				driver.get(url);
 				driver.manage().timeouts().implicitlyWait(6, TimeUnit.SECONDS);	
 				
@@ -447,9 +452,15 @@ public class BuyflowValidation {
 				// Checkout SalesTax Validation
 				String salestax = bf_obj.getSalesTax(driver, expectedofferdata.get("Final Pricing"), expectedofferdata.get("Final Shipping"));
 				
-				if(salestax.contains(checkout_salestax)) {
+				Double expected_salestax = Double.valueOf(salestax);
+				Double actual_salestax = Double.valueOf(checkout_salestax);
+				Double diff = Math.abs(expected_salestax-actual_salestax);				
+				double roundOff = Math.floor(diff * 100.0) / 100.0;
+				int diff_value = (int)roundOff;
+
+				if(diff_value == 0) {
 					EntryPriceResult = "PASS";
-				}
+				}				
 				else {
 					EntryPriceResult = "FAIL";
 					remarks = remarks + "Checkout Salestax does not match with the expected salestax, Expected - " + salestax + " , Actual - " + checkout_salestax;
@@ -461,7 +472,13 @@ public class BuyflowValidation {
 				// Checkout Total Validation
 				String total = bf_obj.getTotal(expectedofferdata.get("Final Pricing"), expectedofferdata.get("Final Shipping"), salestax);
 				
-				if(total.contains(checkout_total)) {
+				Double expected_total = Double.valueOf(total);
+				Double actual_total = Double.valueOf(checkout_total);	
+				diff = Math.abs(expected_total-actual_total);				
+				roundOff = Math.floor(diff * 100.0) / 100.0;
+				diff_value = (int)roundOff;
+
+				if(diff_value == 0) {
 					EntryPriceResult = "PASS";
 				}
 				else {
@@ -628,7 +645,14 @@ public class BuyflowValidation {
 					remarks = remarks + "Shipping price on confirmation page is wrong, Expected - " + expectedofferdata.get("Final Shipping") + " , Actual - " + checkout_shipping;
 				}
 						
-				if(salestax.equalsIgnoreCase(conf_salestax)) {
+				// Sales Tax Validation
+				expected_salestax = Double.valueOf(salestax);
+				actual_salestax = Double.valueOf(conf_salestax);				
+				diff = Math.abs(expected_salestax-actual_salestax);				
+				roundOff = Math.floor(diff * 100.0) / 100.0;
+				diff_value = (int)roundOff;
+
+				if(diff_value == 0) {
 					// If Result is already fail, then the overall EntryPrice result is fail
 					if(EntryPriceResult.equalsIgnoreCase("FAIL")) {
 						EntryPriceResult = "FAIL";
@@ -642,7 +666,14 @@ public class BuyflowValidation {
 					remarks = remarks + "SalesTax on Confirmation page does not match with that of checkout page, Expected - " + salestax + " , Actual - " + conf_salestax + ",";
 				}
 				
-				if(total.equalsIgnoreCase(conf_total)) {
+				// Total Price Validation
+				expected_total = Double.valueOf(total);
+				actual_total = Double.valueOf(conf_total);
+				diff = Math.abs(expected_total-actual_total);						
+				roundOff = Math.floor(diff * 100.0) / 100.0;				
+				diff_value = (int)roundOff;
+
+				if(diff_value == 0) {
 					// If Result is already fail, then the overall EntryPrice result is fail
 					if(EntryPriceResult.equalsIgnoreCase("FAIL")) {
 						EntryPriceResult = "FAIL";

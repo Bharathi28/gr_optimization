@@ -20,24 +20,26 @@ public class DBUtilities {
 	
 	public String getUrl(String brand, String campaign, String env) throws ClassNotFoundException, SQLException {
 		String query = "select * from campaign_urls where brand='" + brand + "' and campaign='" + campaign + "'";
-//		System.out.println(query);
+		System.out.println(query);
 		List<Map<String, Object>> campaigndata = DBLibrary.dbAction("fetch", query);		
 		String url = campaigndata.get(0).get("PRODURL").toString();
-		if(url.equalsIgnoreCase("qa")) {
+		System.out.println(url);
+		if(env.equalsIgnoreCase("qa")) {
 			url = url.replace("www.", "storefront:eComweb123@");
 			url = url.replace("com", "grdev.com");
 		}
-		else if(url.equalsIgnoreCase("stg")) {
+		else if(env.equalsIgnoreCase("stg")) {
 			url = url.replace("www.", "storefront:eComweb123@www.");
 			url = url.replace("com", "stg.dw4.grdev.com");
 		}
-		else if(url.equalsIgnoreCase("prod")) {
+		else if(env.equalsIgnoreCase("prod")) {
 		}
 		else {
 			url = url.replace("www.", "storefront:eComweb123@www.");
 			url = url.replace("com", "stg.dw4.grdev.com");
 			url = url.replace(".stg.", "."+ env.toLowerCase() +".");
 		}
+		System.out.println(url);
 		return url;
 	}
 	
