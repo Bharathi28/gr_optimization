@@ -79,4 +79,99 @@ public class DBUtilities {
 		String percentage = result.get(0).get("PERCENTAGE").toString();
 		return percentage;
 	}
+	
+	// Pixel Validation
+		public List<String> getAllEvents(String pixel) throws ClassNotFoundException, SQLException {
+			String query = "select * from pixels where pixelname='" + pixel + "'";
+			List<Map<String, Object>> pixeldata = DBLibrary.dbAction("fetch",query);	
+			
+			List<String> events = new ArrayList<String>();
+			for(Map<String, Object> entry :pixeldata) {
+				String name = entry.get("EVENTNAME").toString();
+				events.add(name);
+			}
+			return events;
+		}
+		
+		public int checkBrandPixelCompatibility(String brand, String event) throws ClassNotFoundException, SQLException {
+					
+			String joinquery = "select * from brand_pixel where brand='" + brand + "' and event='" + event + "'";
+			List<Map<String, Object>> joinlist = DBLibrary.dbAction("fetch",joinquery);		
+			return joinlist.size();
+		}
+		
+		public List<String> getFiringPages(String brand, String campaign, String flow, String pixel, String event, List<String> campaignPageList) throws ClassNotFoundException, SQLException {
+									
+			String pixelQuery = "select * from pixels where pixelname='" + pixel + "' and eventname='" + event + "'";
+			List<Map<String, Object>> pixellist = DBLibrary.dbAction("fetch", pixelQuery);
+			String pages = pixellist.get(0).get("FIRINGPAGES").toString();
+			
+			String[] pageArr = pages.split(",");
+			List<String> pageList = new ArrayList<String>();
+			
+			for(String value : pageArr) {
+				if(value.equalsIgnoreCase("All")) {
+					pageList.addAll(campaignPageList);
+					pageList.remove("PrePurchaseUpsell");
+					if(flow.equalsIgnoreCase("ccflow")) {
+						pageList.remove("paypalreviewpage");
+					}
+				}
+				if(value.equalsIgnoreCase("Home")) {
+					if(campaignPageList.contains("HomePage")) {
+						pageList.add("HomePage");
+					}
+				}
+				if(value.equalsIgnoreCase("SAS")) {
+					if(campaignPageList.contains("SASPage")) {
+						pageList.add("SASPage");
+					}
+				}
+				if(value.equalsIgnoreCase("Checkout")) {
+					if(campaignPageList.contains("CheckoutPage")) {
+						pageList.add("CheckoutPage");
+					}
+				}		
+				if(value.equalsIgnoreCase("Checkout/PaypalReview")) {
+					if(flow.equalsIgnoreCase("paypalflow")) {
+						if(campaignPageList.contains("paypalreviewpage")) {
+							pageList.add("paypalreviewpage");
+						}
+					}	
+					else {
+						if(campaignPageList.contains("CheckoutPage")) {
+							pageList.add("CheckoutPage");
+						}
+					}
+				}					
+				if(value.equalsIgnoreCase("Confirmation")) {
+					if(campaignPageList.contains("ConfirmationPage")) {
+						pageList.add("ConfirmationPage");
+					}
+				}	
+				if(value.equalsIgnoreCase("Upsell/Confirmation")) {
+					if(campaignPageList.contains("PostPurchaseUpsell")) {
+						pageList.add("UpsellPage");
+					}
+					else {
+						pageList.add("ConfirmationPage");
+					}
+				}
+			}
+			return pageList;
+		}	
+		
+		public String getSearchPattern(String brand, String event) throws ClassNotFoundException, SQLException {
+			String joinquery = "select * from brand_pixel where brand='" + brand + "' and event='" + event + "'";
+			List<Map<String, Object>> joinlist = DBLibrary.dbAction("fetch",joinquery);
+			String pattern = joinlist.get(0).get("SEARCHPATTERN").toString();
+			return pattern;
+		}
+		
+		public String getPixelBrandId(String brand, String event) throws ClassNotFoundException, SQLException {
+			String joinquery = "select * from brand_pixel where brand='" + brand + "' and event='" + event + "'";
+			List<Map<String, Object>> joinlist = DBLibrary.dbAction("fetch",joinquery);
+			String id = joinlist.get(0).get("PIXELBRANDID").toString();
+			return id;
+		}
 }
