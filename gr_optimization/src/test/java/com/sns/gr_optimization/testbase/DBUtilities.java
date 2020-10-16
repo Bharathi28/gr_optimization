@@ -151,7 +151,7 @@ public class DBUtilities {
 				}	
 				if(value.equalsIgnoreCase("Upsell/Confirmation")) {
 					if(campaignPageList.contains("PostPurchaseUpsell")) {
-						pageList.add("UpsellPage");
+						pageList.add("PostPurchaseUpsell");
 					}
 					else {
 						pageList.add("ConfirmationPage");

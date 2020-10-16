@@ -80,7 +80,7 @@ public class SASUtilities {
 				jse.executeScript("window.scrollBy(0,800)", 0);
 			}
 			else if(campaign.equalsIgnoreCase("Core")) {
-				jse.executeScript("window.scrollBy(0,700)", 0);
+				jse.executeScript("window.scrollBy(0,800)", 0);
 			}
 			else if(campaign.equalsIgnoreCase("friend50poff")) {
 				jse.executeScript("window.scrollBy(0,700)", 0);
@@ -124,7 +124,7 @@ public class SASUtilities {
 			}
 		}
 		else if(brand.equalsIgnoreCase("MeaningfulBeauty")) {
-			if((campaign.equalsIgnoreCase("Core")) || (campaign.equalsIgnoreCase("mb7deluxe20offb")) || (campaign.equalsIgnoreCase("mb7deluxe20offb15"))){
+			if((campaign.equalsIgnoreCase("Core")) || (campaign.equalsIgnoreCase("mb7deluxe20offb")) || (campaign.equalsIgnoreCase("mb7deluxe20offb15")) || (campaign.equalsIgnoreCase("mb5deluxe20offb15"))){
 				driver.findElement(By.xpath("//button[@class='button checkout-special-offer']")).click();
 			}
 		}

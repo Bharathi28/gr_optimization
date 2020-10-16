@@ -464,7 +464,7 @@ public class PixelUtilities {
 	    workbook.write(outputStream);
 	    workbook.close();
 	    outputStream.close();
-	    attachmentList.add(System.getProperty("user.dir") + "\\Input_Output\\PixelValidation\\Pixel_Output\\" + brand +".xlsx");
+	    attachmentList.add(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel Output\\" + brand +".xlsx");
 	    System.out.println("pixel_output.xlsx written successfully");
 	    return attachmentList;
 	}

@@ -12,8 +12,11 @@ import com.sns.gr_optimization.testbase.DBUtilities;
 
 public class CartLanguageUtilities {
 	
+	CommonUtilities comm_obj = new CommonUtilities();
+	
 	public String getfullcartlanguage(WebDriver driver) throws InterruptedException {
-		Thread.sleep(3000);
+		comm_obj.waitUntilElementAppears(driver, "//div[contains(@class,'continuity-summary')]");
+		Thread.sleep(1000);
 		String language = driver.findElement(By.xpath("//div[contains(@class,'continuity-summary')]")).getText();
 //		if(language.contains("®")) {
 //			language = language.replace("®", "");
@@ -22,7 +25,8 @@ public class CartLanguageUtilities {
 	}
 	
 	public String getsupplementalcartlanguage(WebDriver driver) throws InterruptedException {
-		Thread.sleep(3000);
+		comm_obj.waitUntilElementAppears(driver, "//div[@class='supplementcartlanguage']");
+		Thread.sleep(1000);
 		String language = driver.findElement(By.xpath("//div[@class='supplementcartlanguage']")).getText();
 //		if(language.contains("®")) {
 //			language = language.replace("®", "");

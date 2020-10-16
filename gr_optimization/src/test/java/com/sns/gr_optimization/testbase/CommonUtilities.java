@@ -121,8 +121,8 @@ public class CommonUtilities {
 		XSSFSheet resultSheet = null;
 		
 		for(List<String> row : output) {
-			String brand = row.get(0);
-			String campaign = row.get(1);
+			String brand = row.get(1);
+			String campaign = row.get(2);
 			
 			// Check if the workbook is empty or not
 		    if (workbook.getNumberOfSheets() != 0) {
@@ -165,7 +165,8 @@ public class CommonUtilities {
 	public XSSFSheet setHeader(XSSFSheet resultSheet, String header){
 		List<String> header_list = new ArrayList<String>();
 		
-		if(header.toLowerCase().contains("buyflow")) {			
+		if(header.toLowerCase().contains("buyflow")) {		
+			header_list.add("Environment");
 			header_list.add("Brand");
 			header_list.add("Campaign");
 			header_list.add("Category");
