@@ -182,6 +182,7 @@ public class CommonUtilities {
 			header_list.add("Media Id");	
 			header_list.add("Creative Id");
 			header_list.add("Venue Id");
+			header_list.add("Price Book Id");
 			header_list.add("Shipping Billing");
 			header_list.add("Payment Method");
 			header_list.add("Browser");
@@ -267,7 +268,7 @@ public class CommonUtilities {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		
 		String datavalue = "";
-		if((variablename.equalsIgnoreCase("paymentPlanId")) || (variablename.equalsIgnoreCase("renewalPlanId"))) {
+		if((variablename.equalsIgnoreCase("paymentPlanId")) || (variablename.equalsIgnoreCase("renewalPlanId")) || (variablename.equalsIgnoreCase("pricebookId"))) {
 			List<String> value = (List<String>) jse.executeScript("return app.variableMap." + variablename);
 			for(String data : value) {
 				datavalue = datavalue + data + ",";
@@ -309,6 +310,27 @@ public class CommonUtilities {
 	public void waitUntilElementAppears(WebDriver driver, String xpath) {
 		while(driver.findElements(By.xpath(xpath)).size() == 0) {
 			// Do Nothing
+		}
+	}
+	
+	public void checkPageIsReady(WebDriver driver) {
+		JavascriptExecutor js = (JavascriptExecutor)driver;
+		//Initially below given if condition will check ready state of page.
+		if (js.executeScript("return document.readyState").toString().equals("complete")){ 
+			return; 
+		} 
+		
+		//Check every 1 second (for 25 seconds) if the page has fully loaded
+		for (int i=0; i<25; i++){
+			try {
+				Thread.sleep(1000);
+			}
+			catch(InterruptedException e) {				
+			}
+			// Try after 1 second
+			if (js.executeScript("return document.readyState").toString().equals("complete")){ 
+				break;
+			}
 		}
 	}
 }

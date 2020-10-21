@@ -124,7 +124,7 @@ public class SASUtilities {
 			}
 		}
 		else if(brand.equalsIgnoreCase("MeaningfulBeauty")) {
-			if((campaign.equalsIgnoreCase("Core")) || (campaign.equalsIgnoreCase("mb7deluxe20offb")) || (campaign.equalsIgnoreCase("mb7deluxe20offb15")) || (campaign.equalsIgnoreCase("mb5deluxe20offb15"))){
+			if((campaign.equalsIgnoreCase("Core")) || (campaign.equalsIgnoreCase("core_full_30_90")) || (campaign.equalsIgnoreCase("mb7deluxe20offb")) || (campaign.equalsIgnoreCase("mb7deluxe20offb15")) || (campaign.equalsIgnoreCase("mb5deluxe20offb15"))){
 				driver.findElement(By.xpath("//button[@class='button checkout-special-offer']")).click();
 			}
 		}

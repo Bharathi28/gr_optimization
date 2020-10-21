@@ -63,7 +63,8 @@ public class PixelUtilities {
 		return proxy.newHar(name);
 	}
 	
-	public void getHarData(BrowserMobProxy proxy, String filename) {
+	public void getHarData(BrowserMobProxy proxy, String filename, WebDriver driver) {
+		comm_obj.checkPageIsReady(driver);
 		// get the HAR data
 	    Har har = proxy.getHar();
 	    

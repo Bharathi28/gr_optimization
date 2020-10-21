@@ -75,9 +75,16 @@ public class PricingUtilities {
 		return sasprice;
 	}
 	
-	public String getCheckoutEntryKitPrice(WebDriver driver) throws ClassNotFoundException, SQLException, InterruptedException {
+	public String getCheckoutEntryKitPrice(WebDriver driver, String brand, String campaign) throws ClassNotFoundException, SQLException, InterruptedException {
 		String entrykitprice = driver.findElement(By.xpath("(//div[contains(@class,'product-card')]//div//div[2]//ul//li[3]//span[2])[1]")).getText();	
 		entrykitprice = entrykitprice.replace("$", "");
+		
+		if((brand.equalsIgnoreCase("MeaningfulBeauty")) && (campaign.equalsIgnoreCase("core_noprep_90_90"))) {
+			Double value = Double.valueOf(entrykitprice);
+			value = value/3;
+			double roundOff = Math.floor(value * 100.0) / 100.0;
+			entrykitprice = String.valueOf(roundOff);
+		}
 		return entrykitprice;
 	}
 	

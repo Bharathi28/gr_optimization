@@ -106,28 +106,7 @@ public class MerchandisingUtilities {
 		expectedofferdata.put("Entry Pricing", expectedEntryPrice);
 		
 		expectedEntryShipping = expectedEntryShipping.replace("$", "");
-		expectedofferdata.put("Entry Shipping", expectedEntryShipping);
-		
-		// Continuity Pricing and Shipping
-		String continuitypricing = "";
-		if(offerdata.get("Continuity Pricing (product)") != null) {
-			continuitypricing = offerdata.get("Continuity Pricing (product)").trim();	
-			continuitypricing = continuitypricing.replace("$", "");
-		}
-		else {
-			continuitypricing = "No Continuity";
-		}
-		expectedofferdata.put("Continuity Pricing", continuitypricing);
-		
-		String continuityshipping = "";
-		if(offerdata.get("Continuity Shipping") != null) {
-			continuityshipping = offerdata.get("Continuity Shipping").trim();
-			continuityshipping = continuityshipping.replace("$", "");
-		}		
-		else {
-			continuityshipping = "No Continuity";
-		}
-		expectedofferdata.put("Continuity Shipping", continuityshipping);
+		expectedofferdata.put("Entry Shipping", expectedEntryShipping);		
 		
 		String expectedcampaigngifts = "";
 		String expectedrenewalplanid = "No Renewal Plan";
@@ -138,6 +117,8 @@ public class MerchandisingUtilities {
 		String expectedfinalshipping = "";
 		String expectedprepuproduct = "No PrePU Product";
 		String expectedpostpuproduct = "No PostPU Product";
+		String continuitypricing = "";
+		String continuityshipping = "";
 		
 		// Post-Purchase - No
 		if(supplysize.equalsIgnoreCase("30")) {
@@ -154,6 +135,31 @@ public class MerchandisingUtilities {
 				expectedrenewalplanid = offerdata.get("Pre-Purchase Entry Renewal Plan").trim();			
 				expectedcartlanguage = offerdata.get("Pre Purchase Entry Cart Language").trim();
 				expectedsuppcartlanguage = offerdata.get("Pre Purchase Entry Supplemental Cart Language").trim();
+				
+				// Continuity Pricing and Shipping
+				if(offerdata.get("Pre Purchase Continuity Pricing (product)") != null) {
+					continuitypricing = offerdata.get("Pre Purchase Continuity Pricing (product)").trim();	
+					continuitypricing = continuitypricing.replace("$", "");
+				}
+				else if(offerdata.get("Continuity Pricing (product)") != null) {
+					continuitypricing = offerdata.get("Continuity Pricing (product)").trim();	
+					continuitypricing = continuitypricing.replace("$", "");
+				}
+				else {
+					continuitypricing = "No Continuity";
+				}
+				
+				if(offerdata.get("Pre Purchase Continuity Shipping") != null) {
+					continuityshipping = offerdata.get("Pre Purchase Continuity Shipping").trim();
+					continuityshipping = continuityshipping.replace("$", "");
+				}	
+				else if(offerdata.get("Continuity Shipping") != null) {
+					continuityshipping = offerdata.get("Continuity Shipping").trim();	
+					continuityshipping = continuityshipping.replace("$", "");
+				}
+				else {
+					continuityshipping = "No Continuity";
+				}
 			}
 			// Pre-Purchase - No
 			else {
@@ -169,6 +175,31 @@ public class MerchandisingUtilities {
 				if(offerdata.get("Entry Renewal Plan") != null) {
 					expectedrenewalplanid = offerdata.get("Entry Renewal Plan").trim();
 				}				
+								
+				// Continuity Pricing and Shipping
+				if(offerdata.get("Entry Continuity Pricing (product)") != null) {
+					continuitypricing = offerdata.get("Entry Continuity Pricing (product)").trim();	
+					continuitypricing = continuitypricing.replace("$", "");
+				}
+				else if(offerdata.get("Continuity Pricing (product)") != null) {
+					continuitypricing = offerdata.get("Continuity Pricing (product)").trim();	
+					continuitypricing = continuitypricing.replace("$", "");
+				}
+				else {
+					continuitypricing = "No Continuity";
+				}
+				
+				if(offerdata.get("Entry Continuity Shipping") != null) {
+					continuityshipping = offerdata.get("Entry Continuity Shipping").trim();
+					continuityshipping = continuityshipping.replace("$", "");
+				}	
+				else if(offerdata.get("Continuity Shipping") != null) {
+					continuityshipping = offerdata.get("Continuity Shipping").trim();	
+					continuityshipping = continuityshipping.replace("$", "");
+				}
+				else {
+					continuityshipping = "No Continuity";
+				}
 			}					
 		}
 		// Post-Purchase - Yes
@@ -195,6 +226,23 @@ public class MerchandisingUtilities {
 			}
 			if(offerdata.get("Post Purchase Upsell Payment Plan (Installment)") != null) {
 				expectedinstallmentplanid = offerdata.get("Post Purchase Upsell Payment Plan (Installment)").trim();
+			}
+			
+			// Continuity Pricing and Shipping
+			if(offerdata.get("Continuity Pricing (product)") != null) {
+				continuitypricing = offerdata.get("Continuity Pricing (product)").trim();	
+				continuitypricing = continuitypricing.replace("$", "");
+			}
+			else {
+				continuitypricing = "No Continuity";
+			}
+					
+			if(offerdata.get("Continuity Shipping") != null) {
+				continuityshipping = offerdata.get("Continuity Shipping").trim();
+				continuityshipping = continuityshipping.replace("$", "");
+			}		
+			else {
+				continuityshipping = "No Continuity";
 			}
 		}		
 		expectedfinalpricing = expectedfinalpricing.replace("$", "");
@@ -227,10 +275,13 @@ public class MerchandisingUtilities {
 		expectedofferdata.put("Installment Plan Id", expectedinstallmentplanid);
 		expectedofferdata.put("Final Pricing", expectedfinalpricing);
 		expectedofferdata.put("Final Shipping", expectedfinalshipping);
+		expectedofferdata.put("Continuity Pricing", continuitypricing);	
+		expectedofferdata.put("Continuity Shipping", continuityshipping);
 		
 		expectedofferdata.put("Media ID", sourcecodedata.get("Media ID"));
 		expectedofferdata.put("Creative ID", sourcecodedata.get("Creative ID"));
 		expectedofferdata.put("Venue ID", sourcecodedata.get("Venue ID"));
+		expectedofferdata.put("Price Book ID", sourcecodedata.get("Price Book ID"));
 		
 		return expectedofferdata;
 	}	
@@ -374,37 +425,27 @@ public class MerchandisingUtilities {
 		System.out.println(columnCount);
 		
 		int sourcecodegroupcolumn = 0;
+		int vanityurlcolumn = 0;
 		for(int i=0; i<columnCount; i++) {
 			String colName = merchData[0][i];
 			System.out.println(merchData[0][i]);
+			if(colName.equalsIgnoreCase("Vanity URL")) {
+				vanityurlcolumn = i;
+			}
 			if(colName.equalsIgnoreCase("Source Code Group")) {
 				sourcecodegroupcolumn = i;
 				break;
 			}
 		}
-//		System.out.println(merchData[0][0]);
-		
-//		for(int i=0; i<merchData.length; i++) {	
-//			if(merchData[i][0] != null) {
-//				if((merchData[i][3].toLowerCase().contains(sourcecodegroup.toLowerCase())) || (merchData[i][4].toLowerCase().contains(sourcecodegroup.toLowerCase()))){
-//					for(int j=0; j<columnCount; j++) {
-//						sourcecodedata.put(merchData[0][j], merchData[i][j]);
-//					}
-//				}				
-//			}
-//			else {
-//				break;
-//			}
-//		}
-		
 		
 		for(int i=0; i<merchData.length; i++) {	
 			if(merchData[i][0] != null) {
 				String sourcecodeinrow = merchData[i][sourcecodegroupcolumn];
+				String vanityurlinrow = merchData[i][vanityurlcolumn];
 //				String sourcecodeinrow = merchData[i][3];
 				sourcecodeinrow = sourcecodeinrow.replaceAll("[^a-zA-Z0-9$]+", "");
 				sourcecodegroup = sourcecodegroup.replaceAll("[^a-zA-Z0-9$]+", "");
-				if(sourcecodeinrow.toLowerCase().contains(sourcecodegroup.toLowerCase())) {
+				if((sourcecodeinrow.toLowerCase().contains(sourcecodegroup.toLowerCase())) || (vanityurlinrow.toLowerCase().contains(sourcecodegroup.toLowerCase()))) {
 					for(int j=0; j<columnCount; j++) {
 						sourcecodedata.put(merchData[0][j], merchData[i][j]);
 					}

@@ -199,7 +199,7 @@ public class BuyflowUtilities {
 	public List<String> getPPIDfromString(String brand, String gifts) throws ClassNotFoundException, SQLException {
 		String productlinecode = db_obj.get_sourceproductlinecode(brand);
 		
-		String[] gift_str_arr = gifts.split(" ");
+		String[] gift_str_arr = gifts.split("\\s+");
 		List<String> gift_arr = new ArrayList<String>();
 		for(String str : gift_str_arr) {
 			if(str.contains(productlinecode)) {

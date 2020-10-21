@@ -16,11 +16,8 @@ public class CartLanguageUtilities {
 	
 	public String getfullcartlanguage(WebDriver driver) throws InterruptedException {
 		comm_obj.waitUntilElementAppears(driver, "//div[contains(@class,'continuity-summary')]");
-		Thread.sleep(1000);
+		Thread.sleep(4000);
 		String language = driver.findElement(By.xpath("//div[contains(@class,'continuity-summary')]")).getText();
-//		if(language.contains("®")) {
-//			language = language.replace("®", "");
-//		}
 		return language;
 	}
 	
@@ -28,18 +25,15 @@ public class CartLanguageUtilities {
 		comm_obj.waitUntilElementAppears(driver, "//div[@class='supplementcartlanguage']");
 		Thread.sleep(1000);
 		String language = driver.findElement(By.xpath("//div[@class='supplementcartlanguage']")).getText();
-//		if(language.contains("®")) {
-//			language = language.replace("®", "");
-//		}
 		return language;
 	}	
 	
 	public String[] parse_cart_language(String language) {
-//		System.out.println("1 " + language);
+		System.out.println("1 " + language);
 		language = language.replaceAll("[^0-9.$]+", "");
-//		System.out.println("2 " + language);
+		System.out.println("2 " + language);
 		language = language.substring(language.indexOf("$"));
-//		System.out.println("3 " + language);
+		System.out.println("3 " + language);
 		while(language.endsWith(".")) {
 			language = language.substring(0, language.length() - 1);
 		}		

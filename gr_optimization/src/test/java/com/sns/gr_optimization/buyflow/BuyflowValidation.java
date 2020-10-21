@@ -201,7 +201,7 @@ public class BuyflowValidation {
 				
 				// Collect current Offer related details from Merchandising Input file
 				HashMap<String, String> expectedofferdata = merch_obj.generateExpectedOfferData(offerdata, sourcecodedata, PPUSection, postpu, pagepattern, kitppid, giftppid, brand, campaigncategory);
-//				System.out.println("Expected Offerdata : " + expectedofferdata);
+				System.out.println("Expected Offerdata : " + expectedofferdata);
 				
 				// Intialize result variables
 				String remarks = "";
@@ -217,6 +217,7 @@ public class BuyflowValidation {
 				String MediaIdResult = "";
 				String CreativeIdResult = "";
 				String VenueIdResult = "";
+				String PriceBookIdResult = "";
 				
 				//***********************************************************************
 				// Launch Browser
@@ -239,13 +240,13 @@ public class BuyflowValidation {
 				// HomePage
 				pixel_obj.defineNewHar(proxy, brand + "HomePage");				
 				driver.get(url);
-				driver.manage().timeouts().implicitlyWait(6, TimeUnit.SECONDS);					
-				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_homepage_" + pattern +".har");
+				driver.manage().timeouts().implicitlyWait(6, TimeUnit.SECONDS);	
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_homepage_" + pattern +".har", driver);
 				
 				// Move to SAS
 				pixel_obj.defineNewHar(proxy, brand + "SASPage");	  
 				bf_obj.click_cta(driver, brand, campaign, "Ordernow");
-				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har");
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver);
 				
 //				// SAS Page Validations
 //				// Price Validation							
@@ -326,7 +327,7 @@ public class BuyflowValidation {
 				}								
 								
 				// Validate entry kit price
-				String checkoutentrykitprice = pr_obj.getCheckoutEntryKitPrice(driver);
+				String checkoutentrykitprice = pr_obj.getCheckoutEntryKitPrice(driver, brand, campaign);
 				if(expectedofferdata.get("Entry Pricing").contains(checkoutentrykitprice)) {
 					EntryPriceResult = "PASS";
 				}
@@ -351,18 +352,18 @@ public class BuyflowValidation {
 				else {
 					if(expectedofferdata.get("Offer Post-Purchase").equalsIgnoreCase("Yes")) {
 						email = bf_obj.fill_out_form(driver, brand, campaigncategory, "VISA", "same", "90");
-						pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har");
+						pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver);
 						
 						pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
 						bf_obj.complete_order(driver, brand, "VISA");
-						pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern +".har");
+						pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern +".har", driver);
 						
 						bf_obj.upsell_confirmation(driver, brand, campaigncategory, expectedofferdata.get("Offer Post-Purchase"));
 					}
 					else {
 						email = bf_obj.fill_out_form(driver, brand, campaigncategory, cc, shipbill, "30");
 						System.out.println("Email : " + email);
-						pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har");
+						pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver);
 					}	
 				}						
 				
@@ -374,21 +375,21 @@ public class BuyflowValidation {
 						String full_cart_lang = lang_obj.getfullcartlanguage(driver);
 						
 						//Remove whitespace
-						String expcartlang = expectedofferdata.get("Cart Language").replaceAll(" ", "");
+						String expcartlang = expectedofferdata.get("Cart Language").replaceAll("\\s+", "");
 						String actcartlang = full_cart_lang.replaceAll(" ", "");
 						
 						// Remove special characters
 						expcartlang = expcartlang.replaceAll("[^a-zA-Z0-9$]+", "");
 						actcartlang = actcartlang.replaceAll("[^a-zA-Z0-9$]+", "");
-//						System.out.println("Actual Edited  : " + expcartlang);
-//						System.out.println("Expected Edited: " + actcartlang);
+						System.out.println("Actual Edited  : " + actcartlang);
+						System.out.println("Expected Edited: " + expcartlang);
 						
 						if(actcartlang.equalsIgnoreCase(expcartlang)) {
 							CartLanguageResult = "PASS";
 						}
 						else {
-//							System.out.println("Actual : " + full_cart_lang);
-//							System.out.println("Expected : " + expectedofferdata.get("Cart Language"));
+							System.out.println("Actual : " + full_cart_lang);
+							System.out.println("Expected : " + expectedofferdata.get("Cart Language"));
 							CartLanguageResult = "FAIL";
 							remarks = remarks + "Cart Language is wrong, Expected - " + expectedofferdata.get("Cart Language") + " , Actual - " + full_cart_lang;
 						}
@@ -430,7 +431,7 @@ public class BuyflowValidation {
 						String supp_cart_lang = lang_obj.getsupplementalcartlanguage(driver);
 										
 						//Remove whitespace
-						String expsuppcartlang = expectedofferdata.get("Supplemental Cart Language").replaceAll(" ", "");
+						String expsuppcartlang = expectedofferdata.get("Supplemental Cart Language").replaceAll("\\s+", "");
 						String actsuppcartlang = supp_cart_lang.replaceAll(" ", "");
 						
 						// Remove special characters
@@ -560,17 +561,32 @@ public class BuyflowValidation {
 					}
 				}							
 				
+				// No Post Purchase Upsell page
 				if(postpu.equalsIgnoreCase("No")) {
 					pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");
 		        	// Navigate to Confirmation Page	        
 		        	bf_obj.complete_order(driver, brand, cc);          
-		            Thread.sleep(10000);
-		            pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\PixelValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har");
+		            pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver);
 				}
+				// Post Purchase Upsell page is present
 				else {
-					pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
-					bf_obj.complete_order(driver, brand, cc);
-					pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern + ".har");
+					System.out.println("Else block - Post Purchase Upsell page is present");
+					// supplysize - 30
+					// No Fall back scenario
+					if(expectedofferdata.get("SupplySize").equalsIgnoreCase("30")) {
+						System.out.println("Else block - supplysize 30");
+						pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
+						bf_obj.complete_order(driver, brand, cc);
+						pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern + ".har", driver);
+					}
+					// supplysize - 90
+					// After Fall back scenario - control navigates to Confirmation page
+					else if(expectedofferdata.get("SupplySize").equalsIgnoreCase("90")) {
+						System.out.println("Else block - else if block - supplysize 90");
+						pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");	        
+			        	bf_obj.complete_order(driver, brand, cc);          
+			            pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver);
+					}					
 				}				
 				
 				Thread.sleep(3000);
@@ -584,7 +600,7 @@ public class BuyflowValidation {
 					if((expectedofferdata.get("SupplySize").equalsIgnoreCase("30")) || (cc.equalsIgnoreCase("Paypal"))) {
 						pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");
 						bf_obj.upsell_confirmation(driver, brand, campaigncategory, expectedofferdata.get("Offer Post-Purchase"));
-						pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har");
+						pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver);
 					}
 				}								
 				
@@ -842,6 +858,19 @@ public class BuyflowValidation {
 //				System.out.println("Expected Venue Id : " + expectedofferdata.get("Venue ID"));	
 //				System.out.println("Actual Venue Id : " + actualvenueid);
 				
+				// Price Book Id Validation
+				String actualpricebookid = comm_obj.getFromVariableMap(driver, "pricebookId");				
+				if(!(expectedofferdata.get("Price Book ID").contains(actualpricebookid))) {
+					PriceBookIdResult = "FAIL";
+					remarks = remarks + "Price Book Id does not match, Expected - " + expectedofferdata.get("Price Book ID") + " , Actual - " + actualpricebookid + ",";
+				}
+				else {
+					PriceBookIdResult = "PASS";
+				}
+				
+//				System.out.println("Expected Venue Id : " + expectedofferdata.get("Venue ID"));	
+//				System.out.println("Actual Venue Id : " + actualvenueid);
+				
 				List<String> output_row = new ArrayList<String>();
 				output_row.add(env);
 				output_row.add(brand);
@@ -859,6 +888,7 @@ public class BuyflowValidation {
 				output_row.add(actualmediaid + " - " + MediaIdResult);
 				output_row.add(actualcreativeid + " - " + CreativeIdResult);
 				output_row.add(actualvenueid + " - " + VenueIdResult);
+				output_row.add(actualpricebookid + " - " + PriceBookIdResult);
 				output_row.add(shipbill);	
 				output_row.add(cc);	
 				output_row.add(browser);	
