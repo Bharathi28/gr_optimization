@@ -285,7 +285,7 @@ public class PixelUtilities {
 	    if (workbook.getNumberOfSheets() != 0) {
 	    	String sheetExists = comm_obj.checkSheetExists(workbook, sheetName);
 	    	if(sheetExists.equalsIgnoreCase("true")) {
-	    		resultSheet = workbook.getSheet(sheetName);
+	    		resultSheet = workbook.createSheet(sheetName + "_" + workbook.getNumberOfSheets());
 	    	}
 	    	else {
 	    		resultSheet = workbook.createSheet(sheetName);

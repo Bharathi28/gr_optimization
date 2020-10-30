@@ -215,7 +215,10 @@ public class BuyflowUtilities {
 		
 		List<String> gift_arr = getPPIDfromString(brand, gifts);
 		
-		jse.executeScript("window.scrollBy(0,1000)", 0);
+		if(!((brand.equalsIgnoreCase("MallyBeauty")) && (campaign.equalsIgnoreCase("Core")))) {
+			jse.executeScript("window.scrollBy(0,1000)", 0);
+		}
+		
 		Thread.sleep(2000);
 		String giftResult = "";
 		for(String gift : gift_arr) {
@@ -434,6 +437,15 @@ public class BuyflowUtilities {
 			}						
 			
 			if(driver.findElements(By.xpath("//div[@id='loginSection']//div//div[2]//a")).size() != 0) {
+				Thread.sleep(4000);
+				driver.findElement(By.xpath("//div[@id='loginSection']//div//div[2]//a")).click();
+				Thread.sleep(2000);
+				email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
+			}
+			else if(driver.findElements(By.xpath("//button[text()='Log In']")).size() != 0) {
+				Thread.sleep(4000);
+				driver.findElement(By.xpath("//button[text()='Log In']")).click();
+				Thread.sleep(2000);
 				email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
 			}
 			else {
@@ -451,6 +463,9 @@ public class BuyflowUtilities {
 						email = ccPayment(driver, jse, realm, brand, campaign, "Visa", shipbill, supply);
 					}
 					else if(driver.findElements(By.xpath("//div[@id='loginSection']//div//div[2]//a")).size() != 0) {
+						email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
+					}
+					else if(driver.findElements(By.xpath("//button[text()='Log In']")).size() != 0) {
 						email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
 					}
 					if(!(email.equalsIgnoreCase(""))) {
@@ -545,7 +560,7 @@ public class BuyflowUtilities {
 	public String paypalPayment(WebDriver driver, WebDriverWait wait, JavascriptExecutor jse, String winHandleBefore, String realm) throws ClassNotFoundException, SQLException, InterruptedException {
 //		comm_obj.waitUntilElementAppears(driver, "//div[@id='loginSection']//div//div[2]//a");
 		Thread.sleep(4000);
-		driver.findElement(By.xpath("//div[@id='loginSection']//div//div[2]//a")).click();
+		
 			
 		comm_obj.waitUntilElementAppears(driver, "//div[@id='login_emaildiv']//div//input");
 		driver.findElement(By.xpath("//div[@id='login_emaildiv']//div//input")).sendKeys("testbuyer2@guthy-renker.com");

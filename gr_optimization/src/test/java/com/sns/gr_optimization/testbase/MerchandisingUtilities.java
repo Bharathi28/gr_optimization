@@ -132,9 +132,16 @@ public class MerchandisingUtilities {
 				if(offerdata.get("Pre-Purchase Entry Promotion 2") != null) {
 					expectedprepuproduct = offerdata.get("Pre-Purchase Entry Promotion 2").trim();
 				}
-				expectedrenewalplanid = offerdata.get("Pre-Purchase Entry Renewal Plan").trim();			
-				expectedcartlanguage = offerdata.get("Pre Purchase Entry Cart Language").trim();
-				expectedsuppcartlanguage = offerdata.get("Pre Purchase Entry Supplemental Cart Language").trim();
+				if(offerdata.get("Pre-Purchase Entry Renewal Plan") != null) {
+					expectedrenewalplanid = offerdata.get("Pre-Purchase Entry Renewal Plan").trim();
+				}
+				if(offerdata.get("Pre Purchase Entry Cart Language") != null) {
+					expectedcartlanguage = offerdata.get("Pre Purchase Entry Cart Language").trim();
+				}				
+				
+				if(offerdata.get("Pre Purchase Entry Supplemental Cart Language") != null) {
+					expectedsuppcartlanguage = offerdata.get("Pre Purchase Entry Supplemental Cart Language").trim();
+				}				
 				
 				// Continuity Pricing and Shipping
 				if(offerdata.get("Pre Purchase Continuity Pricing (product)") != null) {
@@ -447,8 +454,11 @@ public class MerchandisingUtilities {
 				sourcecodegroup = sourcecodegroup.replaceAll("[^a-zA-Z0-9$]+", "");
 				if((sourcecodeinrow.toLowerCase().contains(sourcecodegroup.toLowerCase())) || (vanityurlinrow.toLowerCase().contains(sourcecodegroup.toLowerCase()))) {
 					for(int j=0; j<columnCount; j++) {
-						sourcecodedata.put(merchData[0][j], merchData[i][j]);
+						if(merchData[0][j] != null) {
+							sourcecodedata.put(merchData[0][j].trim(), merchData[i][j]);
+						}
 					}
+					break;
 				}
 			}
 			else {
@@ -468,7 +478,7 @@ public class MerchandisingUtilities {
 				if(merchData[i][0].equalsIgnoreCase("Kit")) {		
 					while(!(merchData[i][0].equalsIgnoreCase("Entry Kit"))) {
 						i++;
-						offerdata.put(merchData[i][0], merchData[i][column]);
+						offerdata.put(merchData[i][0].trim(), merchData[i][column]);
 					}
 				}
 				if(merchData[i][0].equalsIgnoreCase("Entry Kit")) {

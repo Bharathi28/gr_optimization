@@ -45,6 +45,7 @@ public class SASUtilities {
 	}
 	
 	public void select_kit(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
+		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		String kitname = offerdata.get("Kit Name");
 		
 		List<Map<String, Object>> locator = null;
@@ -56,10 +57,24 @@ public class SASUtilities {
 		
 		String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
 		String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();
-		
+
 		WebElement kit_elmt = comm_obj.find_webelement(driver, elementlocator, elementvalue);
+		
+		
+		
+//		comm_obj.checkPageIsReady(driver);
 		comm_obj.waitUntilElementAppears(driver, elementvalue);
-		Thread.sleep(1000);
+		
+		
+		
+//		if((brand.equalsIgnoreCase("MallyBeauty")) && (campaign.equalsIgnoreCase("Core"))) {
+////			Thread.sleep(5000);
+//			System.out.println(kit_elmt.isDisplayed());
+//			Thread.sleep(3000);	
+//			jse.executeScript("window.scrollBy(0,0)", 0);
+//			Thread.sleep(3000);	
+//		}
+		Thread.sleep(1000);	
 		kit_elmt.click();
 		Thread.sleep(1000);
 	}
@@ -124,7 +139,7 @@ public class SASUtilities {
 			}
 		}
 		else if(brand.equalsIgnoreCase("MeaningfulBeauty")) {
-			if((campaign.equalsIgnoreCase("Core")) || (campaign.equalsIgnoreCase("core_full_30_90")) || (campaign.equalsIgnoreCase("mb7deluxe20offb")) || (campaign.equalsIgnoreCase("mb7deluxe20offb15")) || (campaign.equalsIgnoreCase("mb5deluxe20offb15"))){
+			if((campaign.equalsIgnoreCase("Core")) || (campaign.equalsIgnoreCase("core_full_30_90")) || (campaign.equalsIgnoreCase("mb7deluxe20offb")) || (campaign.equalsIgnoreCase("mb7deluxe20offb15")) || (campaign.equalsIgnoreCase("mb5-deluxe20offb15"))){
 				driver.findElement(By.xpath("//button[@class='button checkout-special-offer']")).click();
 			}
 		}
@@ -189,19 +204,24 @@ public class SASUtilities {
 		String kitname = offerdata.get("Kit Name");
 		String kitshade = offerdata.get("KitShade");
 		
-		List<Map<String, Object>> locator = null;
-		
-		locator = bf_obj.get_element_locator(brand, campaign, "KitShade", kitshade + " " + kitname);		
-		if(locator.size() == 0) {
-			locator = bf_obj.get_element_locator(brand, null, "KitShade", kitshade + " " + kitname);
+		if(!(kitshade.equalsIgnoreCase("No"))) {
+			List<Map<String, Object>> locator = null;
+			
+			locator = bf_obj.get_element_locator(brand, campaign, "KitShade", kitshade + " " + kitname);		
+			if(locator.size() == 0) {
+				locator = bf_obj.get_element_locator(brand, null, "KitShade", kitshade + " " + kitname);
+			}
+			
+			String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
+			String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();
+			
+			if(!(elementvalue.equalsIgnoreCase("n/a"))) {
+				WebElement shade_elmt = comm_obj.find_webelement(driver, elementlocator, elementvalue);
+				comm_obj.waitUntilElementAppears(driver, elementvalue);
+				Thread.sleep(2000);
+				shade_elmt.click();
+				Thread.sleep(1000);
+			}			
 		}
-		
-		String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
-		String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();
-		
-		WebElement shade_elmt = comm_obj.find_webelement(driver, elementlocator, elementvalue);
-		comm_obj.waitUntilElementAppears(driver, elementvalue);
-		shade_elmt.click();
-		Thread.sleep(1000);
 	}
 }

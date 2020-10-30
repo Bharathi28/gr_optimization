@@ -147,10 +147,10 @@ public class BuyflowValidation {
 			Iterator itr = offerdata.entrySet().iterator();
 			while (itr.hasNext()) {
 				Map.Entry mapElement = (Map.Entry)itr.next(); 
-//	            System.out.println(mapElement.getKey() + " : " + mapElement.getValue()); 
+	            System.out.println(mapElement.getKey() + " : " + mapElement.getValue()); 
 	        } 
-//			System.out.println("End of offerdata");
-//			System.out.println("--------------------------------------------------------------------------");
+			System.out.println("End of offerdata");
+			System.out.println("--------------------------------------------------------------------------");
 			
 			// Collect current campaign related data
 			// Pagepattern, Pre-purchase upsell - Yes or No, Post-purchase upsell - Yes or No
@@ -277,8 +277,6 @@ public class BuyflowValidation {
 				// Move to Checkout
 				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
 				bf_obj.move_to_checkout(driver, brand, campaigncategory, category);	
-				
-				
 				
 				// Checkout Page Validation
 				// Validate Line Items
@@ -690,7 +688,7 @@ public class BuyflowValidation {
 				String conf_total = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Confirmation Total");
 				
 				String conf_pricing = conf_subtotal + " ; " + conf_shipping + " ; " + conf_salestax + " ; " + conf_total;	
-//				System.out.println("Confirmation Pricing fetched : " + conf_pricing);
+				System.out.println("Confirmation Pricing fetched : " + conf_pricing);
 				
 				// Subtotal validation
 				if(expectedofferdata.get("Final Pricing").contains(conf_subtotal)) {
@@ -790,8 +788,8 @@ public class BuyflowValidation {
 						actualrenewalplanid = expectedofferdata.get("Renewal Plan Id");
 					}
 					
-//					System.out.println("Expected Renewal Plan Id : " + expectedofferdata.get("Renewal Plan Id"));	
-//					System.out.println("Actual Renewal Plan Id : " + actualrenewalplanid);
+					System.out.println("Expected Renewal Plan Id : " + expectedofferdata.get("Renewal Plan Id"));	
+					System.out.println("Actual Renewal Plan Id : " + actualrenewalplanid);
 				}					
 				
 				// Installment Plan Validation
@@ -810,8 +808,8 @@ public class BuyflowValidation {
 							actualinstallmentplanid = expectedofferdata.get("Installment Plan Id");
 						}
 						
-//						System.out.println("Expected Installment Plan Id : " + expectedofferdata.get("Installment Plan Id"));	
-//						System.out.println("Actual Installment Plan Id : " + actualinstallmentplanid);
+						System.out.println("Expected Installment Plan Id : " + expectedofferdata.get("Installment Plan Id"));	
+						System.out.println("Actual Installment Plan Id : " + actualinstallmentplanid);
 					}				
 					else {
 						actualinstallmentplanid = "";
@@ -829,8 +827,8 @@ public class BuyflowValidation {
 					MediaIdResult = "PASS";
 				}
 //				
-//				System.out.println("Expected Media Id : " + expectedofferdata.get("Media ID"));	
-//				System.out.println("Actual Media Id : " + actualmediaid);
+				System.out.println("Expected Media Id : " + expectedofferdata.get("Media ID"));	
+				System.out.println("Actual Media Id : " + actualmediaid);
 				
 				// Creative ID Validation
 				String actualcreativeid = comm_obj.getFromVariableMap(driver, "creativeId");				
@@ -842,8 +840,8 @@ public class BuyflowValidation {
 					CreativeIdResult = "PASS";
 				}
 				
-//				System.out.println("Expected Creative Id : " + expectedofferdata.get("Creative ID"));	
-//				System.out.println("Actual Creative Id : " + actualcreativeid);
+				System.out.println("Expected Creative Id : " + expectedofferdata.get("Creative ID"));	
+				System.out.println("Actual Creative Id : " + actualcreativeid);
 				
 				// Venue ID Validation
 				String actualvenueid = comm_obj.getFromVariableMap(driver, "venueId");				
@@ -855,8 +853,8 @@ public class BuyflowValidation {
 					VenueIdResult = "PASS";
 				}
 				
-//				System.out.println("Expected Venue Id : " + expectedofferdata.get("Venue ID"));	
-//				System.out.println("Actual Venue Id : " + actualvenueid);
+				System.out.println("Expected Venue Id : " + expectedofferdata.get("Venue ID"));	
+				System.out.println("Actual Venue Id : " + actualvenueid);
 				
 				// Price Book Id Validation
 				String actualpricebookid = comm_obj.getFromVariableMap(driver, "pricebookId");				
@@ -868,8 +866,8 @@ public class BuyflowValidation {
 					PriceBookIdResult = "PASS";
 				}
 				
-//				System.out.println("Expected Venue Id : " + expectedofferdata.get("Venue ID"));	
-//				System.out.println("Actual Venue Id : " + actualvenueid);
+				System.out.println("Expected Venue Id : " + expectedofferdata.get("Venue ID"));	
+				System.out.println("Actual Venue Id : " + actualvenueid);
 				
 				List<String> output_row = new ArrayList<String>();
 				output_row.add(env);
