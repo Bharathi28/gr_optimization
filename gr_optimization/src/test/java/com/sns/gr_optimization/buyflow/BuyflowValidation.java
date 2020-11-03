@@ -117,7 +117,7 @@ public class BuyflowValidation {
 		}
 				
 		// Read Merchandising Input
-		String[][] merchData = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/Merchandising Input/" + brand + ".xlsx", campaigncategory, 0);
+		String[][] merchData = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/Merchandising Input/" + brand + "/" + campaigncategory + ".xlsx", "Active Campaign", 0);
 				
 		HashMap<String, String> sourcecodedata = merch_obj.getSourceCodeInfo(merchData, campaign);
 		
@@ -152,13 +152,24 @@ public class BuyflowValidation {
 			System.out.println("End of offerdata");
 			System.out.println("--------------------------------------------------------------------------");
 			
+			// Check Post-purchase Upsell
+			String postpu = merch_obj.checkPostPU(offerdata);
+			if(((brand.equalsIgnoreCase("CrepeErase")) && (campaign.equalsIgnoreCase("order30fsh2b"))) && (PPUSection.equalsIgnoreCase("No"))) {
+				postpu = "No";
+			}
+			
+			// Collect current Offer related details from Merchandising Input file
+			HashMap<String, String> expectedofferdata = merch_obj.generateExpectedOfferData(offerdata, sourcecodedata, PPUSection, postpu, kitppid, giftppid, brand, campaigncategory);
+			System.out.println("Expected Offerdata : " + expectedofferdata);
+			
 			// Collect current campaign related data
 			// Pagepattern, Pre-purchase upsell - Yes or No, Post-purchase upsell - Yes or No
-			String pagepattern = comm_obj.getPagePattern(brand,campaigncategory);
-			if(pagepattern.equalsIgnoreCase("")) {
-				System.out.println(brand + "-" + campaign + "has no pattern");
-			}
-			else {
+//			String pagepattern = comm_obj.getPagePattern(brand,campaigncategory);
+			String pagepattern = expectedofferdata.get("PagePattern");
+//			if(pagepattern.equalsIgnoreCase("")) {
+//				System.out.println(brand + "-" + campaign + "has no pattern");
+//			}
+//			else {
 				// Check Pre-purchase Upsell
 				String prepu = "";
 				if(pagepattern.contains("prepu")) {
@@ -170,17 +181,13 @@ public class BuyflowValidation {
 //					System.out.println("No Pre Purchase Upsell for " + brand + " - " + campaign);
 				}
 				
-				// Check Post-purchase Upsell
-				String postpu = merch_obj.checkPostPU(offerdata);
-				if(((brand.equalsIgnoreCase("CrepeErase")) && (campaign.equalsIgnoreCase("order30fsh2b"))) && (PPUSection.equalsIgnoreCase("No"))) {
-					postpu = "No";
-				}
-				if(postpu.equalsIgnoreCase("Yes")) {
-//					System.out.println("Post Purchase Upsell exists for " + brand + " - " + campaign);
-				}
-				else {
-//					System.out.println("No Post Purchase Upsell for " + brand + " - " + campaign);
-				}
+				
+//				if(postpu.equalsIgnoreCase("Yes")) {
+////					System.out.println("Post Purchase Upsell exists for " + brand + " - " + campaign);
+//				}
+//				else {
+////					System.out.println("No Post Purchase Upsell for " + brand + " - " + campaign);
+//				}
 				
 				// List pages in this campaign
 				List<String> campaignpages = new ArrayList<String>();
@@ -199,9 +206,7 @@ public class BuyflowValidation {
 //				System.out.println();
 //				System.out.println();
 				
-				// Collect current Offer related details from Merchandising Input file
-				HashMap<String, String> expectedofferdata = merch_obj.generateExpectedOfferData(offerdata, sourcecodedata, PPUSection, postpu, pagepattern, kitppid, giftppid, brand, campaigncategory);
-				System.out.println("Expected Offerdata : " + expectedofferdata);
+				
 				
 				// Intialize result variables
 				String remarks = "";
@@ -275,7 +280,7 @@ public class BuyflowValidation {
 				sas_obj.select_offer(driver, expectedofferdata);
 				
 				// Move to Checkout
-				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
+//				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
 				bf_obj.move_to_checkout(driver, brand, campaigncategory, category);	
 				
 				// Checkout Page Validation
@@ -826,7 +831,7 @@ public class BuyflowValidation {
 				else {
 					MediaIdResult = "PASS";
 				}
-//				
+				
 				System.out.println("Expected Media Id : " + expectedofferdata.get("Media ID"));	
 				System.out.println("Actual Media Id : " + actualmediaid);
 				
@@ -856,19 +861,16 @@ public class BuyflowValidation {
 				System.out.println("Expected Venue Id : " + expectedofferdata.get("Venue ID"));	
 				System.out.println("Actual Venue Id : " + actualvenueid);
 				
-				// Price Book Id Validation
-				String actualpricebookid = comm_obj.getFromVariableMap(driver, "pricebookId");				
-				if(!(expectedofferdata.get("Price Book ID").contains(actualpricebookid))) {
-					PriceBookIdResult = "FAIL";
-					remarks = remarks + "Price Book Id does not match, Expected - " + expectedofferdata.get("Price Book ID") + " , Actual - " + actualpricebookid + ",";
-				}
-				else {
-					PriceBookIdResult = "PASS";
-				}
-				
-				System.out.println("Expected Venue Id : " + expectedofferdata.get("Venue ID"));	
-				System.out.println("Actual Venue Id : " + actualvenueid);
-				
+//				// Price Book Id Validation
+//				String actualpricebookid = comm_obj.getFromVariableMap(driver, "pricebookId");				
+//				if(!(expectedofferdata.get("Price Book ID").contains(actualpricebookid))) {
+//					PriceBookIdResult = "FAIL";
+//					remarks = remarks + "Price Book Id does not match, Expected - " + expectedofferdata.get("Price Book ID") + " , Actual - " + actualpricebookid + ",";
+//				}
+//				else {
+//					PriceBookIdResult = "PASS";
+//				}
+//				
 				List<String> output_row = new ArrayList<String>();
 				output_row.add(env);
 				output_row.add(brand);
@@ -886,7 +888,7 @@ public class BuyflowValidation {
 				output_row.add(actualmediaid + " - " + MediaIdResult);
 				output_row.add(actualcreativeid + " - " + CreativeIdResult);
 				output_row.add(actualvenueid + " - " + VenueIdResult);
-				output_row.add(actualpricebookid + " - " + PriceBookIdResult);
+//				output_row.add(actualpricebookid + " - " + PriceBookIdResult);
 				output_row.add(shipbill);	
 				output_row.add(cc);	
 				output_row.add(browser);	
@@ -899,7 +901,7 @@ public class BuyflowValidation {
 					HashMap<Integer, HashMap> overallOutput = pixel_obj.validatePixels(pixelStr, pattern, brand, campaign, env, campaignpages);
 					attachmentList = pixel_obj.writePixelOutput(overallOutput, brand, campaign, attachmentList);
 				}				
-			}				
+//			}				
 		}		
 	}
 	

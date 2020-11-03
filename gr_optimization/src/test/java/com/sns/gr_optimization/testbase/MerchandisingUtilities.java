@@ -11,12 +11,12 @@ public class MerchandisingUtilities {
 	DBUtilities db_obj = new DBUtilities();
 	BuyflowUtilities bf_obj = new BuyflowUtilities();
 	
-	public HashMap<String, String> generateExpectedOfferData(HashMap<String, String> offerdata, HashMap<String, String> sourcecodedata, String PPUSection, String PostPU, String pagepattern, String kitppid, String giftppid, String brand, String campaign) throws ClassNotFoundException, SQLException {
+	public HashMap<String, String> generateExpectedOfferData(HashMap<String, String> offerdata, HashMap<String, String> sourcecodedata, String PPUSection, String PostPU, String kitppid, String giftppid, String brand, String campaign) throws ClassNotFoundException, SQLException {
 		LinkedHashMap<String, String> expectedofferdata = new LinkedHashMap<String, String>();
 				
 		expectedofferdata.put("Brand", brand);
 		expectedofferdata.put("Campaign", campaign);
-		expectedofferdata.put("PagePattern", pagepattern);		
+		expectedofferdata.put("PagePattern", offerdata.get("PagePattern").trim());		
 		
 		// Check PrePU for current offercode
 		// No gift for MeaningfulBeauty - one-shot campaign
@@ -77,12 +77,12 @@ public class MerchandisingUtilities {
 		}
 		
 		// Fragrance
-		if(pagepattern.contains("fragrance")) {
+		if(offerdata.get("PagePattern").trim().contains("fragrance")) {
 			expectedofferdata.put("Fragrance", offerdata.get("Fragrance").trim());
 		}
 		
 		//KitShade
-		if(pagepattern.contains("kitshade")) {
+		if(offerdata.get("PagePattern").trim().contains("kitshade")) {
 			expectedofferdata.put("KitShade", offerdata.get("KitShade").trim());
 		}
 		
@@ -433,6 +433,7 @@ public class MerchandisingUtilities {
 		
 		int sourcecodegroupcolumn = 0;
 		int vanityurlcolumn = 0;
+		int sourcecodecolumn = 0;
 		for(int i=0; i<columnCount; i++) {
 			String colName = merchData[0][i];
 			System.out.println(merchData[0][i]);
@@ -441,18 +442,22 @@ public class MerchandisingUtilities {
 			}
 			if(colName.equalsIgnoreCase("Source Code Group")) {
 				sourcecodegroupcolumn = i;
-				break;
+			}
+			if(colName.equalsIgnoreCase("Source Code")) {
+				sourcecodecolumn = i;
 			}
 		}
 		
 		for(int i=0; i<merchData.length; i++) {	
 			if(merchData[i][0] != null) {
-				String sourcecodeinrow = merchData[i][sourcecodegroupcolumn];
+				String sourcecodegroupinrow = merchData[i][sourcecodegroupcolumn];
+				String sourcecodeinrow = merchData[i][sourcecodecolumn];
 				String vanityurlinrow = merchData[i][vanityurlcolumn];
-//				String sourcecodeinrow = merchData[i][3];
+
+				sourcecodegroupinrow = sourcecodegroupinrow.replaceAll("[^a-zA-Z0-9$]+", "");
 				sourcecodeinrow = sourcecodeinrow.replaceAll("[^a-zA-Z0-9$]+", "");
 				sourcecodegroup = sourcecodegroup.replaceAll("[^a-zA-Z0-9$]+", "");
-				if((sourcecodeinrow.toLowerCase().contains(sourcecodegroup.toLowerCase())) || (vanityurlinrow.toLowerCase().contains(sourcecodegroup.toLowerCase()))) {
+				if((sourcecodegroupinrow.toLowerCase().contains(sourcecodegroup.toLowerCase())) || (sourcecodeinrow.toLowerCase().contains(sourcecodegroup.toLowerCase())) || (vanityurlinrow.toLowerCase().contains(sourcecodegroup.toLowerCase()))) {
 					for(int j=0; j<columnCount; j++) {
 						if(merchData[0][j] != null) {
 							sourcecodedata.put(merchData[0][j].trim(), merchData[i][j]);

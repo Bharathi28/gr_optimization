@@ -59,21 +59,9 @@ public class SASUtilities {
 		String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();
 
 		WebElement kit_elmt = comm_obj.find_webelement(driver, elementlocator, elementvalue);
-		
-		
-		
-//		comm_obj.checkPageIsReady(driver);
+
 		comm_obj.waitUntilElementAppears(driver, elementvalue);
-		
-		
-		
-//		if((brand.equalsIgnoreCase("MallyBeauty")) && (campaign.equalsIgnoreCase("Core"))) {
-////			Thread.sleep(5000);
-//			System.out.println(kit_elmt.isDisplayed());
-//			Thread.sleep(3000);	
-//			jse.executeScript("window.scrollBy(0,0)", 0);
-//			Thread.sleep(3000);	
-//		}
+
 		Thread.sleep(1000);	
 		kit_elmt.click();
 		Thread.sleep(1000);
@@ -126,33 +114,32 @@ public class SASUtilities {
 		Thread.sleep(1000);
 	}
 	
-	public void moveto_prepu(WebDriver driver, String brand, String campaign) throws InterruptedException {
+	public void moveto_prepu(WebDriver driver, String brand, String campaign) throws InterruptedException, ClassNotFoundException, SQLException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
-		jse.executeScript("window.scrollBy(0,200)", 0);
+		jse.executeScript("window.scrollBy(0,400)", 0);
 		
-		if(brand.equalsIgnoreCase("CrepeErase")) {
-			if(campaign.equalsIgnoreCase("Core")) {
-				driver.findElement(By.xpath("//div[@class = 'sas-sticky-footer']//a[contains(text(),'Proceed to Checkout')]")).click();
-			}
-			else if(campaign.equalsIgnoreCase("advanced-one")) {
-				driver.findElement(By.xpath("//button[@class='button checkout special-offer']")).click();
-			}
+		List<Map<String, Object>> locator = null;
+		
+		locator = bf_obj.get_element_locator(brand, campaign, "MoveToPrePU", null);		
+		if(locator.size() == 0) {
+			locator = bf_obj.get_element_locator(brand, null, "MoveToPrePU", null);
 		}
-		else if(brand.equalsIgnoreCase("MeaningfulBeauty")) {
-			if((campaign.equalsIgnoreCase("Core")) || (campaign.equalsIgnoreCase("core_full_30_90")) || (campaign.equalsIgnoreCase("mb7deluxe20offb")) || (campaign.equalsIgnoreCase("mb7deluxe20offb15")) || (campaign.equalsIgnoreCase("mb5-deluxe20offb15"))){
-				driver.findElement(By.xpath("//button[@class='button checkout-special-offer']")).click();
-			}
-		}
-		else if((brand.equalsIgnoreCase("WestmoreBeauty")) && (campaign.equalsIgnoreCase("pnlfcp"))) {
-			driver.findElement(By.xpath("//a[@class='cta']")).click();
-			Thread.sleep(2000);
-			jse.executeScript("window.scrollBy(0,200)", 0);
-		}
+		
+		String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
+		String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();
+			
+		WebElement prepu_elmt = comm_obj.find_webelement(driver, elementlocator, elementvalue);
+		comm_obj.waitUntilElementAppears(driver, elementvalue);
+		prepu_elmt.click();
+		Thread.sleep(4000);
 	}
 
 	public void select_prepu(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
 		moveto_prepu(driver, brand, campaign);
 		Thread.sleep(1000);
+		
+		JavascriptExecutor jse = (JavascriptExecutor) driver;
+		jse.executeScript("window.scrollBy(0,200)", 0);
 		
 		String prepu = offerdata.get("Offer Pre-Purchase");
 		
