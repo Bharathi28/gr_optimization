@@ -452,20 +452,25 @@ public class BuyflowUtilities {
 				while(driver.findElements(By.xpath("//div[@id='loginSection']//div//div[2]//a")).size() == 0) {
 					if(driver.findElements(By.xpath("//section[@id='genericError']//div//div[2]")).size() != 0) {
 						driver.close();
-//						driver.switchTo().window(winHandleBefore);
+						driver.switchTo().window(winHandleBefore);
 						Thread.sleep(2000);
 						email = ccPayment(driver, jse, realm, brand, campaign, "Visa", shipbill, supply);
 					}
-					else if(driver.findElements(By.xpath("//div[@class='message']")).size() != 0) {
+					else if(driver.findElements(By.xpath("//div[contains[text(),'Things don't appear to be working at the moment']]")).size() != 0) {
 //						getText().equalsIgnoreCase("Things don't appear to be working at the moment. Please try again later.")) {
 						driver.close();
+						driver.switchTo().window(winHandleBefore);
 						Thread.sleep(2000);
 						email = ccPayment(driver, jse, realm, brand, campaign, "Visa", shipbill, supply);
 					}
 					else if(driver.findElements(By.xpath("//div[@id='loginSection']//div//div[2]//a")).size() != 0) {
+						driver.findElement(By.xpath("//div[@id='loginSection']//div//div[2]//a")).click();
+						Thread.sleep(2000);
 						email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
 					}
 					else if(driver.findElements(By.xpath("//button[text()='Log In']")).size() != 0) {
+						driver.findElement(By.xpath("//button[text()='Log In']")).click();
+						Thread.sleep(2000);
 						email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
 					}
 					if(!(email.equalsIgnoreCase(""))) {
@@ -547,7 +552,8 @@ public class BuyflowUtilities {
 		fill_form_field(driver, realm, "Month", "12");
 		fill_form_field(driver, realm, "Year", "2020");	
 		
-		if((brand.equalsIgnoreCase("Volaire")) || (brand.equalsIgnoreCase("WestmoreBeauty")) || (brand.equalsIgnoreCase("CrepeErase"))) {
+//		if((brand.equalsIgnoreCase("Volaire")) || (brand.equalsIgnoreCase("WestmoreBeauty")) || (brand.equalsIgnoreCase("CrepeErase"))) {
+		if(realm.equalsIgnoreCase("R4")) {
 			fill_form_field(driver, realm, "CVV", "349");	
 		}
 		jse.executeScript("window.scrollBy(0,200)", 0);
@@ -559,8 +565,7 @@ public class BuyflowUtilities {
 	
 	public String paypalPayment(WebDriver driver, WebDriverWait wait, JavascriptExecutor jse, String winHandleBefore, String realm) throws ClassNotFoundException, SQLException, InterruptedException {
 //		comm_obj.waitUntilElementAppears(driver, "//div[@id='loginSection']//div//div[2]//a");
-		Thread.sleep(4000);
-		
+		Thread.sleep(4000);		
 			
 		comm_obj.waitUntilElementAppears(driver, "//div[@id='login_emaildiv']//div//input");
 		driver.findElement(By.xpath("//div[@id='login_emaildiv']//div//input")).sendKeys("testbuyer2@guthy-renker.com");
@@ -618,17 +623,24 @@ public class BuyflowUtilities {
 	}
 	
 	public String getSalesTax(WebDriver driver, String subtotal, String shipping) throws ClassNotFoundException, SQLException {
-		
-		String query = "select * from form_locators where realm='R4' and form='Checkout' and field='State'";
-		List<Map<String, Object>> locator = DBLibrary.dbAction("fetch", query);
-		
-		String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
-		String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();
-		
-		Select select = new Select(comm_obj.find_webelement(driver, elementlocator, elementvalue));
-		WebElement selectedoption = select.getFirstSelectedOption();
-		String state = selectedoption.getText();
-		System.out.println(state);
+		String state = "";
+		if(driver.findElements(By.xpath("(//div[@class='order-city'])[2]")).size() != 0) {
+			String[] citytext = driver.findElement(By.xpath("(//div[@class='order-city'])[2]")).getText().split(" ");
+			state = citytext[2];
+//			System.out.println(state);
+		}
+		else {
+			String query = "select * from form_locators where realm='R4' and form='Checkout' and field='State'";
+			List<Map<String, Object>> locator = DBLibrary.dbAction("fetch", query);
+			
+			String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
+			String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();
+			
+			Select select = new Select(comm_obj.find_webelement(driver, elementlocator, elementvalue));
+			WebElement selectedoption = select.getFirstSelectedOption();
+			state = selectedoption.getText();
+//			System.out.println(state);
+		}
 		
 		// Remove $
 		if(subtotal.contains("$")) {

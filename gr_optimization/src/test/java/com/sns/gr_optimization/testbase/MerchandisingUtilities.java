@@ -291,7 +291,7 @@ public class MerchandisingUtilities {
 		expectedofferdata.put("Price Book ID", sourcecodedata.get("Price Book ID"));
 		
 		return expectedofferdata;
-	}	
+	}
 
 	public String checkPostPU(HashMap<String, String> offerdata) {
 		String PostPU;
@@ -429,14 +429,14 @@ public class MerchandisingUtilities {
 	public HashMap<String, String> getSourceCodeInfo(String[][] merchData, String sourcecodegroup) {
 		LinkedHashMap<String, String> sourcecodedata = new LinkedHashMap<String, String>();
 		int columnCount = merchData[0].length;
-		System.out.println(columnCount);
+//		System.out.println(columnCount);
 		
 		int sourcecodegroupcolumn = 0;
 		int vanityurlcolumn = 0;
 		int sourcecodecolumn = 0;
 		for(int i=0; i<columnCount; i++) {
 			String colName = merchData[0][i];
-			System.out.println(merchData[0][i]);
+//			System.out.println(merchData[0][i]);
 			if(colName.equalsIgnoreCase("Vanity URL")) {
 				vanityurlcolumn = i;
 			}
@@ -470,7 +470,7 @@ public class MerchandisingUtilities {
 				break;
 			}
 		}
-		System.out.println(sourcecodedata);
+//		System.out.println(sourcecodedata);
 		return sourcecodedata;
 	}
 	
@@ -488,6 +488,10 @@ public class MerchandisingUtilities {
 				}
 				if(merchData[i][0].equalsIgnoreCase("Entry Kit")) {
 					entrystart=i;
+				}
+				if(merchData[i][0].equalsIgnoreCase("End")) {
+					ppustart=i;
+					break;
 				}
 				if(merchData[i][0].equalsIgnoreCase("Pre Purchase Upsell")) {
 					ppustart=i;

@@ -45,6 +45,7 @@ import com.sns.gr_optimization.testbase.PixelUtilities;
 import com.sns.gr_optimization.testbase.PricingUtilities;
 import com.sns.gr_optimization.testbase.SASUtilities;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import net.lightbody.bmp.BrowserMobProxy;
 import net.lightbody.bmp.BrowserMobProxyServer;
 import net.lightbody.bmp.client.ClientUtil;
@@ -68,7 +69,7 @@ public class BuyflowValidation {
 	static List<String> attachmentList = new ArrayList<String>();
 	
 	List<List<String>> output = new ArrayList<List<String>>();
-	String sendReportTo = "";
+	String sendReportTo = "manibharathi@searchnscore.com";
 //	String env = "";
 //	String env = System.getProperty("Environment");
 	
@@ -77,8 +78,8 @@ public class BuyflowValidation {
 	public void getEmailId() {
 //	public void getEmailId(String environment) {
 //		env = environment;
-		System.out.println("Enter Email id : ");
-		sendReportTo = in.next();
+//		System.out.println("Enter Email id : ");
+//		sendReportTo = in.next();
 	}
 	
 	@DataProvider(name="buyflowInput", parallel=true)
@@ -90,7 +91,7 @@ public class BuyflowValidation {
 	
 	@Test(dataProvider="buyflowInput")
 	public void buyflow(String env, String brand, String campaign, String category, String kitppid, String giftppid, String shipbill, String cc, String browser, String pixelStr) throws IOException, ClassNotFoundException, SQLException, InterruptedException {	
-		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver.exe");
+//		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver.exe");
 		
 		// start the proxy
 	    BrowserMobProxy proxy = new BrowserMobProxyServer();
@@ -147,10 +148,10 @@ public class BuyflowValidation {
 			Iterator itr = offerdata.entrySet().iterator();
 			while (itr.hasNext()) {
 				Map.Entry mapElement = (Map.Entry)itr.next(); 
-	            System.out.println(mapElement.getKey() + " : " + mapElement.getValue()); 
+//	            System.out.println(mapElement.getKey() + " : " + mapElement.getValue()); 
 	        } 
-			System.out.println("End of offerdata");
-			System.out.println("--------------------------------------------------------------------------");
+//			System.out.println("End of offerdata");
+//			System.out.println("--------------------------------------------------------------------------");
 			
 			// Check Post-purchase Upsell
 			String postpu = merch_obj.checkPostPU(offerdata);
@@ -206,8 +207,7 @@ public class BuyflowValidation {
 //				System.out.println();
 //				System.out.println();
 				
-				
-				
+								
 				// Intialize result variables
 				String remarks = "";
 				String giftResult = "";
@@ -229,16 +229,17 @@ public class BuyflowValidation {
 //				BaseTest base_obj = new BaseTest();			
 //				WebDriver driver = base_obj.setUp(browser, "Local");
 				
+				WebDriverManager.chromedriver().setup();
 				WebDriver driver = new ChromeDriver(capabilities);
 				driver.manage().window().maximize();
 				
 				// enable more detailed HAR capture, if desired (see CaptureType for the complete list)
 			    proxy.enableHarCaptureTypes(CaptureType.REQUEST_CONTENT, CaptureType.RESPONSE_CONTENT);
 				
-				System.out.println(env);
+//				System.out.println(env);
 				String url = db_obj.getUrl(brand, campaign, env);
 				url = pixel_obj.generateURL(url, pixelStr, brand);
-				System.out.println(url);
+//				System.out.println(url);
 				
 				String pattern = pixel_obj.getPattern(url, pixelStr);
 				
@@ -384,15 +385,15 @@ public class BuyflowValidation {
 						// Remove special characters
 						expcartlang = expcartlang.replaceAll("[^a-zA-Z0-9$]+", "");
 						actcartlang = actcartlang.replaceAll("[^a-zA-Z0-9$]+", "");
-						System.out.println("Actual Edited  : " + actcartlang);
-						System.out.println("Expected Edited: " + expcartlang);
+//						System.out.println("Actual Edited  : " + actcartlang);
+//						System.out.println("Expected Edited: " + expcartlang);
 						
 						if(actcartlang.equalsIgnoreCase(expcartlang)) {
 							CartLanguageResult = "PASS";
 						}
 						else {
-							System.out.println("Actual : " + full_cart_lang);
-							System.out.println("Expected : " + expectedofferdata.get("Cart Language"));
+//							System.out.println("Actual : " + full_cart_lang);
+//							System.out.println("Expected : " + expectedofferdata.get("Cart Language"));
 							CartLanguageResult = "FAIL";
 							remarks = remarks + "Cart Language is wrong, Expected - " + expectedofferdata.get("Cart Language") + " , Actual - " + full_cart_lang;
 						}
@@ -475,8 +476,8 @@ public class BuyflowValidation {
 					checkout_salestax = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Salestax");
 					checkout_total = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Total");
 				}			
-				System.out.println("Checkout Pricing expected : " + expectedofferdata.get("Final Pricing") + "," + expectedofferdata.get("Final Shipping"));
-				System.out.println("Checkout Pricing fetched : " + checkout_subtotal + "," + checkout_shipping + "," + checkout_salestax + "," + checkout_total);
+//				System.out.println("Checkout Pricing expected : " + expectedofferdata.get("Final Pricing") + "," + expectedofferdata.get("Final Shipping"));
+//				System.out.println("Checkout Pricing fetched : " + checkout_subtotal + "," + checkout_shipping + "," + checkout_salestax + "," + checkout_total);
 							
 				if(expectedofferdata.get("Final Pricing").contains(checkout_subtotal)) {
 					EntryPriceResult = "PASS";
@@ -528,8 +529,8 @@ public class BuyflowValidation {
 					remarks = remarks + "Checkout Salestax does not match with the expected salestax, Expected - " + salestax + " , Actual - " + checkout_salestax;
 				}
 				
-				System.out.println("Expected SalesTax : " + salestax);
-				System.out.println("Actual SalesTax : " + checkout_salestax);
+//				System.out.println("Expected SalesTax : " + salestax);
+//				System.out.println("Actual SalesTax : " + checkout_salestax);
 				
 				// Checkout Total Validation
 				String total = bf_obj.getTotal(expectedofferdata.get("Final Pricing"), expectedofferdata.get("Final Shipping"), salestax);
@@ -548,8 +549,8 @@ public class BuyflowValidation {
 					remarks = remarks + "Checkout Total does not match with the expected total, Expected - " + total + " , Actual - " + checkout_total;
 				}
 				
-				System.out.println("Expected Total : " + total);
-				System.out.println("Actual Total : " + checkout_total);
+//				System.out.println("Expected Total : " + total);
+//				System.out.println("Actual Total : " + checkout_total);
 				
 				
 				JavascriptExecutor jse = (JavascriptExecutor) driver;
@@ -558,9 +559,8 @@ public class BuyflowValidation {
 						jse.executeScript("window.scrollBy(0,600)", 0);
 						bf_obj.clear_form_field(driver, realm, "Zip");
 						bf_obj.fill_form_field(driver, realm, "Zip", "90245");
-						if((brand.equalsIgnoreCase("Volaire")) || (brand.equalsIgnoreCase("WestmoreBeauty")) || (brand.equalsIgnoreCase("CrepeErase"))) {
-							bf_obj.fill_form_field(driver, realm, "CVV", "349");	
-						}
+						Thread.sleep(2000);
+						bf_obj.fill_form_field(driver, realm, "CVV", "349");	
 					}
 				}							
 				
@@ -573,11 +573,11 @@ public class BuyflowValidation {
 				}
 				// Post Purchase Upsell page is present
 				else {
-					System.out.println("Else block - Post Purchase Upsell page is present");
+//					System.out.println("Else block - Post Purchase Upsell page is present");
 					// supplysize - 30
 					// No Fall back scenario
 					if(expectedofferdata.get("SupplySize").equalsIgnoreCase("30")) {
-						System.out.println("Else block - supplysize 30");
+//						System.out.println("Else block - supplysize 30");
 						pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
 						bf_obj.complete_order(driver, brand, cc);
 						pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern + ".har", driver);
@@ -585,7 +585,7 @@ public class BuyflowValidation {
 					// supplysize - 90
 					// After Fall back scenario - control navigates to Confirmation page
 					else if(expectedofferdata.get("SupplySize").equalsIgnoreCase("90")) {
-						System.out.println("Else block - else if block - supplysize 90");
+//						System.out.println("Else block - else if block - supplysize 90");
 						pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");	        
 			        	bf_obj.complete_order(driver, brand, cc);          
 			            pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver);
@@ -693,7 +693,7 @@ public class BuyflowValidation {
 				String conf_total = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Confirmation Total");
 				
 				String conf_pricing = conf_subtotal + " ; " + conf_shipping + " ; " + conf_salestax + " ; " + conf_total;	
-				System.out.println("Confirmation Pricing fetched : " + conf_pricing);
+//				System.out.println("Confirmation Pricing fetched : " + conf_pricing);
 				
 				// Subtotal validation
 				if(expectedofferdata.get("Final Pricing").contains(conf_subtotal)) {
@@ -793,8 +793,8 @@ public class BuyflowValidation {
 						actualrenewalplanid = expectedofferdata.get("Renewal Plan Id");
 					}
 					
-					System.out.println("Expected Renewal Plan Id : " + expectedofferdata.get("Renewal Plan Id"));	
-					System.out.println("Actual Renewal Plan Id : " + actualrenewalplanid);
+//					System.out.println("Expected Renewal Plan Id : " + expectedofferdata.get("Renewal Plan Id"));	
+//					System.out.println("Actual Renewal Plan Id : " + actualrenewalplanid);
 				}					
 				
 				// Installment Plan Validation
@@ -813,8 +813,8 @@ public class BuyflowValidation {
 							actualinstallmentplanid = expectedofferdata.get("Installment Plan Id");
 						}
 						
-						System.out.println("Expected Installment Plan Id : " + expectedofferdata.get("Installment Plan Id"));	
-						System.out.println("Actual Installment Plan Id : " + actualinstallmentplanid);
+//						System.out.println("Expected Installment Plan Id : " + expectedofferdata.get("Installment Plan Id"));	
+//						System.out.println("Actual Installment Plan Id : " + actualinstallmentplanid);
 					}				
 					else {
 						actualinstallmentplanid = "";
@@ -832,8 +832,8 @@ public class BuyflowValidation {
 					MediaIdResult = "PASS";
 				}
 				
-				System.out.println("Expected Media Id : " + expectedofferdata.get("Media ID"));	
-				System.out.println("Actual Media Id : " + actualmediaid);
+//				System.out.println("Expected Media Id : " + expectedofferdata.get("Media ID"));	
+//				System.out.println("Actual Media Id : " + actualmediaid);
 				
 				// Creative ID Validation
 				String actualcreativeid = comm_obj.getFromVariableMap(driver, "creativeId");				
@@ -845,8 +845,8 @@ public class BuyflowValidation {
 					CreativeIdResult = "PASS";
 				}
 				
-				System.out.println("Expected Creative Id : " + expectedofferdata.get("Creative ID"));	
-				System.out.println("Actual Creative Id : " + actualcreativeid);
+//				System.out.println("Expected Creative Id : " + expectedofferdata.get("Creative ID"));	
+//				System.out.println("Actual Creative Id : " + actualcreativeid);
 				
 				// Venue ID Validation
 				String actualvenueid = comm_obj.getFromVariableMap(driver, "venueId");				
@@ -858,8 +858,8 @@ public class BuyflowValidation {
 					VenueIdResult = "PASS";
 				}
 				
-				System.out.println("Expected Venue Id : " + expectedofferdata.get("Venue ID"));	
-				System.out.println("Actual Venue Id : " + actualvenueid);
+//				System.out.println("Expected Venue Id : " + expectedofferdata.get("Venue ID"));	
+//				System.out.println("Actual Venue Id : " + actualvenueid);
 				
 //				// Price Book Id Validation
 //				String actualpricebookid = comm_obj.getFromVariableMap(driver, "pricebookId");				
