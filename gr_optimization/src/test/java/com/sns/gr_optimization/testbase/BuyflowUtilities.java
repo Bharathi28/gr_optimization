@@ -224,7 +224,7 @@ public class BuyflowUtilities {
 		for(String gift : gift_arr) {
 			String query = "select * from locators where brand='" + brand + "' and campaign='" + campaign + "' and step='Gift' and offer like '%" + gift + "%'";
 			List<Map<String, Object>> giftloc = DBLibrary.dbAction("fetch", query);
-			
+			System.out.println(query);
 			Thread.sleep(4000);
 			if(driver.findElements(By.xpath(giftloc.get(0).get("ELEMENTVALUE").toString())).size() != 0) {
 				if(driver.findElement(By.xpath(giftloc.get(0).get("ELEMENTVALUE").toString())).isDisplayed()) {

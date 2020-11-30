@@ -91,7 +91,7 @@ public class BuyflowValidation {
 	
 	@Test(dataProvider="buyflowInput")
 	public void buyflow(String env, String brand, String campaign, String category, String kitppid, String giftppid, String shipbill, String cc, String browser, String pixelStr) throws IOException, ClassNotFoundException, SQLException, InterruptedException {	
-//		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver.exe");
+		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver.exe");
 		
 		// start the proxy
 	    BrowserMobProxy proxy = new BrowserMobProxyServer();
@@ -103,7 +103,9 @@ public class BuyflowValidation {
 	    
 	    ChromeOptions options = new ChromeOptions();
 	    options.addArguments("--ignore-certificate-errors");
-
+//	    options.addArguments("--no-sandbox");
+//	    options.addArguments("--disable-dev-shm-usage");
+	    
 	    // configure it as a desired capability
 	    DesiredCapabilities capabilities = new DesiredCapabilities();
 	    capabilities.setCapability(ChromeOptions.CAPABILITY, options);
@@ -134,7 +136,7 @@ public class BuyflowValidation {
 				PPUSection = "Yes";
 			}
 		}
-//		System.out.println(PPIDcolumn + PPUSection);
+		System.out.println(PPIDcolumn + PPUSection);
 		
 		// Check if the PPID is present in the campaign
 		if(PPIDcolumn == 0) {
@@ -148,7 +150,7 @@ public class BuyflowValidation {
 			Iterator itr = offerdata.entrySet().iterator();
 			while (itr.hasNext()) {
 				Map.Entry mapElement = (Map.Entry)itr.next(); 
-//	            System.out.println(mapElement.getKey() + " : " + mapElement.getValue()); 
+	            System.out.println(mapElement.getKey() + " : " + mapElement.getValue()); 
 	        } 
 //			System.out.println("End of offerdata");
 //			System.out.println("--------------------------------------------------------------------------");
@@ -229,7 +231,7 @@ public class BuyflowValidation {
 //				BaseTest base_obj = new BaseTest();			
 //				WebDriver driver = base_obj.setUp(browser, "Local");
 				
-				WebDriverManager.chromedriver().setup();
+//				WebDriverManager.chromedriver().setup();
 				WebDriver driver = new ChromeDriver(capabilities);
 				driver.manage().window().maximize();
 				

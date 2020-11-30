@@ -482,6 +482,7 @@ public class MerchandisingUtilities {
 			if(merchData[i][0] != null) {
 				if(merchData[i][0].equalsIgnoreCase("Kit")) {		
 					while(!(merchData[i][0].equalsIgnoreCase("Entry Kit"))) {
+						System.out.println(merchData[i][0]);
 						i++;
 						offerdata.put(merchData[i][0].trim(), merchData[i][column]);
 					}

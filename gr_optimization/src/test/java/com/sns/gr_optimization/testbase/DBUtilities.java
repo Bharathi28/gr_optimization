@@ -67,7 +67,10 @@ public class DBUtilities {
 	public String getGiftname(String brand, String campaign, String ppid) throws ClassNotFoundException, SQLException {
 		String query = "select * from locators where brand='" + brand + "' and campaign='" + campaign + "' and step='Gift' and offer like '%" + ppid + "%'";
 		List<Map<String, Object>> giftloc = DBLibrary.dbAction("fetch", query);
-//		System.out.println(query);
+		System.out.println(query);
+		System.out.println(giftloc);
+		System.out.println(giftloc.get(0));
+		System.out.println(giftloc.get(0).get("OFFER"));
 		String[] giftarr = giftloc.get(0).get("OFFER").toString().split("_");
 		String giftname = giftarr[0];
 		return giftname;		

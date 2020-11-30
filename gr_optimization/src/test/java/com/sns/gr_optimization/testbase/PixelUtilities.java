@@ -63,8 +63,9 @@ public class PixelUtilities {
 		return proxy.newHar(name);
 	}
 	
-	public void getHarData(BrowserMobProxy proxy, String filename, WebDriver driver) {
+	public void getHarData(BrowserMobProxy proxy, String filename, WebDriver driver) throws InterruptedException {
 		comm_obj.checkPageIsReady(driver);
+		Thread.sleep(10000);
 		// get the HAR data
 	    Har har = proxy.getHar();
 	    
