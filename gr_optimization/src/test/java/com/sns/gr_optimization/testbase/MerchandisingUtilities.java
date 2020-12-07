@@ -1,10 +1,13 @@
 package com.sns.gr_optimization.testbase;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class MerchandisingUtilities {
 	
@@ -425,7 +428,7 @@ public class MerchandisingUtilities {
 	    }
 		return PPUSection;
 	}
-	
+		
 	public HashMap<String, String> getSourceCodeInfo(String[][] merchData, String sourcecodegroup) {
 		LinkedHashMap<String, String> sourcecodedata = new LinkedHashMap<String, String>();
 		int columnCount = merchData[0].length;
@@ -521,5 +524,63 @@ public class MerchandisingUtilities {
 			}
 		}
 		return offerdata;
+	}
+	
+	public HashMap<String, String> getProdRowfromCatalog(String[][] catalogData, String ppid) {
+		LinkedHashMap<String, String> productdata = new LinkedHashMap<String, String>();
+		
+		int ppidcolumn = 0;
+		for(int i=0; i<catalogData[0].length; i++) {
+			String colName = catalogData[0][i];
+			if(colName.equalsIgnoreCase("PPID")) {
+				ppidcolumn = i;
+			}
+		}
+		System.out.println("ppidcolumn:" + ppidcolumn);
+		
+		for(int i=0; i<catalogData.length; i++) {	
+			if(catalogData[i][0] != null) {
+				String ppidinrow = catalogData[i][ppidcolumn].trim();
+				
+				if(ppidinrow.equalsIgnoreCase(ppid)) {
+					for(int j=0; j<catalogData[0].length; j++) {
+						if(catalogData[0][j] != null) {
+							productdata.put(catalogData[0][j].trim(), catalogData[i][j]);
+						}
+					}
+					break;
+				}
+			}
+			else {
+				break;
+			}
+		}
+		System.out.println(productdata);
+		return productdata;
+	}
+	
+	public List<String> fetch_random_singles(String[][] catalogData, int count) {
+
+		int ppidcolumn = 0;
+		for(int i=0; i<catalogData[0].length; i++) {
+			String colName = catalogData[0][i];
+			if(colName.equalsIgnoreCase("PPID")) {
+				ppidcolumn = i;
+			}
+		}
+		
+		String[] ppidarray = new String[catalogData.length];
+		for(int i=0; i<catalogData.length; i++) {	
+			ppidarray[i] = catalogData[i][ppidcolumn];
+		}
+		
+		List<String> randsingles = new ArrayList<String>();
+		for(int i=0; i<count; i++) {			
+			int rnd = new Random().nextInt(ppidarray.length);
+			randsingles.add(ppidarray[rnd]);
+		}
+		
+		System.out.println("Chosen single : " + randsingles);
+		return randsingles;
 	}
 }

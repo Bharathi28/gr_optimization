@@ -49,7 +49,16 @@ public class CommonUtilities {
 						continue;
 					}
 				}
-				rowdata =  dataSheet.getRow(k).getCell(0).getStringCellValue();
+				String cellType = dataSheet.getRow(k).getCell(0).getCellTypeEnum().toString();
+				if(cellType.equalsIgnoreCase("STRING")) {
+					rowdata =  dataSheet.getRow(k).getCell(0).getStringCellValue();
+				}
+				else if(cellType.equalsIgnoreCase("NUMERIC")) {
+					Double value = dataSheet.getRow(k).getCell(0).getNumericCellValue();
+					rowdata = Double.toString(value);
+				}
+				
+//				rowdata =  dataSheet.getRow(k).getCell(0).getStringCellValue();
 			}
 			int totalNoOfRows = k;
 			

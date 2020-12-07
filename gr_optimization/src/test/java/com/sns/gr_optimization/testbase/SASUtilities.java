@@ -128,10 +128,12 @@ public class SASUtilities {
 		String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
 		String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();
 			
-		WebElement prepu_elmt = comm_obj.find_webelement(driver, elementlocator, elementvalue);
-		comm_obj.waitUntilElementAppears(driver, elementvalue);
-		prepu_elmt.click();
-		Thread.sleep(4000);
+		if(!(elementvalue.equalsIgnoreCase("n/a"))) {
+			WebElement prepu_elmt = comm_obj.find_webelement(driver, elementlocator, elementvalue);
+			comm_obj.waitUntilElementAppears(driver, elementvalue);
+			prepu_elmt.click();
+			Thread.sleep(4000);
+		}		
 	}
 
 	public void select_prepu(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {

@@ -157,10 +157,12 @@ public class BuyflowUtilities {
 			String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
 			String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();			
 
-			WebElement element = comm_obj.find_webelement(driver, elementlocator, elementvalue);	
-			Thread.sleep(3000);
-			element.click();
-			Thread.sleep(2000);			
+			if(!(elementvalue.equalsIgnoreCase("n/a"))) {
+				WebElement element = comm_obj.find_webelement(driver, elementlocator, elementvalue);	
+				Thread.sleep(3000);
+				element.click();
+				Thread.sleep(2000);
+			}						
 		}	
 	}
 	
