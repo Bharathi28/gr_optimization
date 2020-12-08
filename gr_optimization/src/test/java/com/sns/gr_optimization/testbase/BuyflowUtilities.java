@@ -58,7 +58,7 @@ public class BuyflowUtilities {
 		List<Map<String, Object>> locator = DBLibrary.dbAction("fetch",query);
 		return locator;		
 	}
-
+	
 	public void click_cta(WebDriver driver, String brand, String campaign, String step) throws ClassNotFoundException, SQLException, InterruptedException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 				
@@ -76,18 +76,18 @@ public class BuyflowUtilities {
 		}	
 	}
 	
-//	public void click_logo(WebDriver driver, String brand, String campaign) throws ClassNotFoundException, SQLException {
-//		System.out.println("Clicking Logo");
-//		List<Map<String, Object>> logo_locators = get_element_locator(brand, campaign, "Logo", null);
-//		for(Map<String,Object> logo : logo_locators) {
-//			System.out.println(logo.get("ELEMENTVALUE").toString());
-//			String elementvalue = logo.get("ELEMENTVALUE").toString();
-//			if(driver.findElements(By.xpath(elementvalue)).size() != 0) {
-//				driver.findElement(By.xpath(elementvalue)).click();
-//				break;
-//			}
-//		}
-//	}		
+	public void click_logo(WebDriver driver, String brand, String campaign) throws ClassNotFoundException, SQLException {
+		System.out.println("Clicking Logo");
+		List<Map<String, Object>> logo_locators = get_element_locator(brand, campaign, "Logo", null);
+		for(Map<String,Object> logo : logo_locators) {
+			System.out.println(logo.get("ELEMENTVALUE").toString());
+			String elementvalue = logo.get("ELEMENTVALUE").toString();
+			if(driver.findElements(By.xpath(elementvalue)).size() != 0) {
+				driver.findElement(By.xpath(elementvalue)).click();
+				break;
+			}
+		}
+	}		
 
 //	public void move_to_sas(WebDriver driver, String env, String brand, String campaign, String offercode, String category) throws ClassNotFoundException, SQLException, InterruptedException {
 //		System.out.println("Moving to SAS Page...");
