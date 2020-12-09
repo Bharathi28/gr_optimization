@@ -209,11 +209,20 @@ public class BuyflowValidation {
 		driver.get(url);
 		driver.manage().timeouts().implicitlyWait(6, TimeUnit.SECONDS);	
 		pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_homepage_" + pattern +".har", driver);
-				
+								
+		// Read Source code details from Merchandising template for the campaign
+		HashMap<String, String> sourcecodedata = merch_obj.getSourceCodeInfo(merchData, campaign);	
+		// Collect Source code details for the campaign
+		HashMap<String, String> expectedsourcecodedata = merch_obj.generateExpectedSourceCodeData(sourcecodedata);
+		
+		// HashMap variable to collect Kit related details from Merchandising Template
+		HashMap<String, String> expectedofferdata_kit;
+		
+		List<String> subtotal_list = new ArrayList<String>();
+		List<List<String>> expected_lineitems =  new ArrayList<List<String>>();
+		
 		while(offerIterator.hasNext() && categoryIterator.hasNext()) {
-			String ppid = offerIterator.next();
-			
-			HashMap<String, String> sourcecodedata = merch_obj.getSourceCodeInfo(merchData, campaign);			
+			String ppid = offerIterator.next();			
 			
 			if(categoryIterator.next().equalsIgnoreCase("Kit")) {
 				// Get column in which the PPID is present and check if the PPID belongs to Pre-Purchase Entry Kit
@@ -239,14 +248,16 @@ public class BuyflowValidation {
 				// Read the entire column data
 				HashMap<String, String> kit_offerdata = merch_obj.getColumnData(merchData, PPIDcolumn, PPUSection);
 					
-				// Check Post-purchase Upsell
+				// Check Post-purchase Upsell for the campaign
 				String postpu = merch_obj.checkPostPU(kit_offerdata);
 				if(((brand.equalsIgnoreCase("CrepeErase")) && (campaign.equalsIgnoreCase("order30fsh2b"))) && (PPUSection.equalsIgnoreCase("No"))) {
 					postpu = "No";
 				}
 				
+				// PagePattern for the Current PPID
 				String pagepattern = kit_offerdata.get("PagePattern").trim();
 				
+				// Check Pre-purchase Upsell for the campaign
 				String prepu = "";
 				if(pagepattern.contains("prepu")) {
 					prepu = "Yes";
@@ -254,7 +265,7 @@ public class BuyflowValidation {
 				else {
 					prepu = "No";
 				}
-				
+								
 				// List pages in this campaign
 				List<String> campaignpages = new ArrayList<String>();
 				campaignpages.add("HomePage");
@@ -269,8 +280,25 @@ public class BuyflowValidation {
 				campaignpages.add("ConfirmationPage");	
 				
 				// Collect current Offer related details from Merchandising Input file
-				HashMap<String, String> expectedofferdata_kit = merch_obj.generateExpectedOfferDataForKit(kit_offerdata, sourcecodedata, PPUSection, postpu, kitppid, giftppid, brand, campaigncategory);
+				expectedofferdata_kit = merch_obj.generateExpectedOfferDataForKit(kit_offerdata, sourcecodedata, PPUSection, postpu, ppid, giftppid, brand, campaigncategory);
 				System.out.println("Expected Offerdata - Kit : " + expectedofferdata_kit);
+				
+				// Add Kit PPID to lineitem list
+				List<String> kit_lineitem = new ArrayList<String>();
+				kit_lineitem.add("Kit");
+				kit_lineitem.add(expectedofferdata_kit.get("30 day PPID"));
+				kit_lineitem.add(expectedofferdata_kit.get("Entry Pricing"));
+				expected_lineitems.add(kit_lineitem);				
+				
+				// Add Gift PPIDs to lineitem list				
+				String[] giftppidarr = expectedofferdata_kit.get("Gift PPID").split(",");				
+				for (String gift : giftppidarr) {
+					List<String> gift_lineitem = new ArrayList<String>();
+					gift_lineitem.add("Gift");
+					gift_lineitem.add(gift);
+					gift_lineitem.add("FREE");
+					expected_lineitems.add(gift_lineitem);
+				}				
 				
 				// Move to SAS
 				pixel_obj.defineNewHar(proxy, brand + "SASPage");	  
@@ -278,15 +306,15 @@ public class BuyflowValidation {
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver);
 			
 				// Gift Validation
-				if(!(expectedofferdata_kit.get("Gift Name").equalsIgnoreCase("No Gift"))) {
+//				if(!(expectedofferdata_kit.get("Gift Name").equalsIgnoreCase("No Gift"))) {
 					if(!(expectedofferdata_kit.get("Campaign Gifts").equalsIgnoreCase("-"))) {
-						giftResult = bf_obj.checkGifts(driver, brand, campaigncategory, expectedofferdata_kit.get("Campaign Gifts"));
+						giftResult = bf_obj.checkGifts(driver, brand, campaigncategory, giftppidarr);
 						remarks = remarks + giftResult;
 					}
-				}								
+//				}								
 				
 				// Select offer				
-				sas_obj.select_offer(driver, expectedofferdata);
+				sas_obj.select_offer(driver, expectedofferdata_kit);
 				
 				// Move to Checkout
 				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
@@ -308,58 +336,45 @@ public class BuyflowValidation {
 		
 		// Checkout Page Validation
 		// Validate Line Items
-		List<String> lineitems = bf_obj.getLineItems(driver);
+		List<List<String>> actual_lineitems = bf_obj.getLineItems(driver);
 		
-		// Validate Added Kit
-		if(lineitems.contains(expectedofferdata.get("30 day PPID"))) {
-			ppidResult = "PASS";
-		}
-		else {
-			ppidResult = "FAIL";
-			remarks = remarks + "Wrong Kit added to cart, Expected - " + expectedofferdata.get("30 day PPID") + " , Actual - " + lineitems.get(0);
-		}
-						
-		// Validate Added Gift
-		if(!(expectedofferdata.get("Gift Name").equalsIgnoreCase("No Gift"))) {
-			if(expectedofferdata.get("GiftSeperateLineItem").equalsIgnoreCase("Yes")) {
-				if(!(expectedofferdata.get("Campaign Gifts").equalsIgnoreCase("-"))) {
-					// When there is no gift choice
-					if(giftppid.equalsIgnoreCase("-")) {
-						giftppid = bf_obj.getPPIDfromString(brand, expectedofferdata.get("Campaign Gifts")).get(0);
-					}
+		// When some more lineitems are expected
+		List<List<String>> temp_lineitemlist = new ArrayList<>(expected_lineitems);
 					
-					// In case of gift combo - multiple gift ppids
-					if(giftppid.contains(",")) {								
-						String[] giftarr = giftppid.split(",");
-						if((lineitems.contains(giftarr[0])) &&  (lineitems.contains(giftarr[1]))){
-							ppidResult = "PASS";
-						}
-						else {
-							ppidResult = "FAIL";
-							remarks = remarks + "Wrong Gift added to cart, Expected - " + giftppid + " , Actual - " + lineitems;
-						}
+		for(List<String> actual_item : actual_lineitems) {
+			String actual_ppid = actual_item.get(0);
+			String actual_price = actual_item.get(1);
+				
+			for(List<String> expected_item : temp_lineitemlist) {
+				if(expected_item.contains(actual_ppid)) {
+					if(expected_item.get(2).equalsIgnoreCase(actual_price)) {
+						temp_lineitemlist.remove(expected_item);
 					}
-					else {								
-						if(lineitems.contains(giftppid)) {
-							ppidResult = "PASS";
-						}
-						else {
-							ppidResult = "FAIL";
-							remarks = remarks + "Wrong Gift added to cart, Expected - " + giftppid + " , Actual - " + lineitems;
-						}
+					else {
+						remarks = remarks + "Checkout Cart - " + expected_item.get(0) + " " + expected_item.get(1) + " Price Mismatch. Expected - " + expected_item.get(1) + " , Actual - " + actual_price + " ; ";
 					}
 				}
-			}
-		}	
-		
-		// Validate entry kit price
-		String checkoutentrykitprice = pr_obj.getCheckoutEntryKitPrice(driver, brand, campaign);
-		if(expectedofferdata.get("Entry Pricing").contains(checkoutentrykitprice)) {
-			EntryPriceResult = "PASS";
+			}				
+		}			
+		for(List<String> lineitem : temp_lineitemlist) {
+			remarks = remarks + "Missing " + lineitem.get(0) + " - " + lineitem.get(1) + " in Checkout Cart ; ";
 		}
-		else {
-			EntryPriceResult = "FAIL";
-			remarks = remarks + "Entry Kit Price on Checkout Page is wrong, Expected - " + expectedofferdata.get("Entry Pricing") + " , Actual - " + checkoutentrykitprice;
+		
+		// When Extra lineitems are present
+		temp_lineitemlist = new ArrayList<>(actual_lineitems);
+		
+		for(List<String> expected_item : expected_lineitems) {
+			String expected_ppid = expected_item.get(0);
+			String expected_price = expected_item.get(1);
+				
+			for(List<String> actual_item : temp_lineitemlist) {
+				if(actual_item.contains(expected_ppid)) {
+					temp_lineitemlist.remove(actual_item);					
+				}
+			}				
+		}			
+		for(List<String> lineitem : temp_lineitemlist) {
+			remarks = remarks + lineitem.get(0) + " - " + lineitem.get(1) + " is present in Checkout Cart ; ";
 		}				
 		
 		// Fill out form
@@ -376,7 +391,7 @@ public class BuyflowValidation {
 			}
 		}
 		else {
-			if(expectedofferdata.get("Offer Post-Purchase").equalsIgnoreCase("Yes")) {
+			if(expectedofferdata_kit.get("Offer Post-Purchase").equalsIgnoreCase("Yes")) {
 				email = bf_obj.fill_out_form(driver, brand, campaigncategory, "VISA", "same", "90");
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver);
 				
@@ -846,42 +861,33 @@ public class BuyflowValidation {
 		
 		// Media ID Validation
 		String actualmediaid = comm_obj.getFromVariableMap(driver, "mediaId");				
-		if(!(expectedofferdata.get("Media ID").contains(actualmediaid))) {
+		if(!(expectedsourcecodedata.get("Media ID").contains(actualmediaid))) {
 			MediaIdResult = "FAIL";
-			remarks = remarks + "Media Id does not match, Expected - " + expectedofferdata.get("Media ID") + " , Actual - " + actualmediaid + ",";
+			remarks = remarks + "Media Id does not match, Expected - " + expectedsourcecodedata.get("Media ID") + " , Actual - " + actualmediaid + ",";
 		}
 		else {
 			MediaIdResult = "PASS";
 		}
 		
-//		System.out.println("Expected Media Id : " + expectedofferdata.get("Media ID"));	
-//		System.out.println("Actual Media Id : " + actualmediaid);
-		
 		// Creative ID Validation
 		String actualcreativeid = comm_obj.getFromVariableMap(driver, "creativeId");				
-		if(!(expectedofferdata.get("Creative ID").contains(actualcreativeid))) {
+		if(!(expectedsourcecodedata.get("Creative ID").contains(actualcreativeid))) {
 			CreativeIdResult = "FAIL";
-			remarks = remarks + "Creative Id does not match, Expected - " + expectedofferdata.get("Creative ID") + " , Actual - " + actualcreativeid + ",";
+			remarks = remarks + "Creative Id does not match, Expected - " + expectedsourcecodedata.get("Creative ID") + " , Actual - " + actualcreativeid + ",";
 		}
 		else {
 			CreativeIdResult = "PASS";
 		}
 		
-//		System.out.println("Expected Creative Id : " + expectedofferdata.get("Creative ID"));	
-//		System.out.println("Actual Creative Id : " + actualcreativeid);
-		
 		// Venue ID Validation
 		String actualvenueid = comm_obj.getFromVariableMap(driver, "venueId");				
-		if(!(expectedofferdata.get("Venue ID").contains(actualvenueid))) {
+		if(!(expectedsourcecodedata.get("Venue ID").contains(actualvenueid))) {
 			VenueIdResult = "FAIL";
-			remarks = remarks + "Venue Id does not match, Expected - " + expectedofferdata.get("Venue ID") + " , Actual - " + actualvenueid + ",";
+			remarks = remarks + "Venue Id does not match, Expected - " + expectedsourcecodedata.get("Venue ID") + " , Actual - " + actualvenueid + ",";
 		}
 		else {
 			VenueIdResult = "PASS";
 		}
-		
-//		System.out.println("Expected Venue Id : " + expectedofferdata.get("Venue ID"));	
-//		System.out.println("Actual Venue Id : " + actualvenueid);
 		
 //		// Price Book Id Validation
 //		String actualpricebookid = comm_obj.getFromVariableMap(driver, "pricebookId");				

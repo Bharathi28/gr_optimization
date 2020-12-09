@@ -14,11 +14,20 @@ public class MerchandisingUtilities {
 	DBUtilities db_obj = new DBUtilities();
 	BuyflowUtilities bf_obj = new BuyflowUtilities();
 	
+	public HashMap<String, String> generateExpectedSourceCodeData(HashMap<String, String> sourcecodedata) throws ClassNotFoundException, SQLException {
+		LinkedHashMap<String, String> expectedsourcecodedata = new LinkedHashMap<String, String>();
+				
+		expectedsourcecodedata.put("Media ID", sourcecodedata.get("Media ID"));
+		expectedsourcecodedata.put("Creative ID", sourcecodedata.get("Creative ID"));
+		expectedsourcecodedata.put("Venue ID", sourcecodedata.get("Venue ID"));
+		expectedsourcecodedata.put("Price Book ID", sourcecodedata.get("Price Book ID"));
+		
+		return expectedsourcecodedata;
+	}
+	
 	public HashMap<String, String> generateExpectedOfferDataForKit(HashMap<String, String> offerdata, HashMap<String, String> sourcecodedata, String PPUSection, String PostPU, String kitppid, String giftppid, String brand, String campaign) throws ClassNotFoundException, SQLException {
 		LinkedHashMap<String, String> expectedofferdata = new LinkedHashMap<String, String>();
 				
-		expectedofferdata.put("Brand", brand);
-		expectedofferdata.put("Campaign", campaign);
 		expectedofferdata.put("PagePattern", offerdata.get("PagePattern").trim());		
 		
 		// Check PrePU for current offercode
@@ -70,15 +79,15 @@ public class MerchandisingUtilities {
 		expectedofferdata.put("SupplySize", supplysize);
 //		System.out.println("SupplySize" + supplysize);		
 		
-		// Gift name
-		String giftname = getGift(PPUSection, giftppid, offerdata, brand, campaign);
-		expectedofferdata.put("Gift Name", giftname);
-		String giftseperatelineitem = "";
-		if(!(giftname.equalsIgnoreCase("No Gift"))) {
-			giftseperatelineitem = db_obj.checkgiftlineitem(brand, campaign);
-			expectedofferdata.put("GiftSeperateLineItem", giftseperatelineitem);
-		}
-		
+//		// Gift name
+//		String giftname = getGift(PPUSection, giftppid, offerdata, brand, campaign);
+//		expectedofferdata.put("Gift Name", giftname);
+//		String giftseperatelineitem = "";
+//		if(!(giftname.equalsIgnoreCase("No Gift"))) {
+		String giftseperatelineitem = db_obj.checkgiftlineitem(brand, campaign);
+		expectedofferdata.put("GiftSeperateLineItem", giftseperatelineitem);
+//		}
+//		
 		// Fragrance
 		if(offerdata.get("PagePattern").trim().contains("fragrance")) {
 			expectedofferdata.put("Fragrance", offerdata.get("Fragrance").trim());
@@ -129,7 +138,7 @@ public class MerchandisingUtilities {
 			expectedfinalshipping = expectedEntryShipping;
 			// Pre-Purchase - Yes
 			if(PPUSection.equalsIgnoreCase("Yes")) {		
-				if(!(giftname.equalsIgnoreCase("No Gift"))) {
+				if(offerdata.get("Pre-Purchase Entry Promotion 1") != null) {
 					expectedcampaigngifts = offerdata.get("Pre-Purchase Entry Promotion 1").trim();
 				}					
 				if(offerdata.get("Pre-Purchase Entry Promotion 2") != null) {
@@ -140,8 +149,7 @@ public class MerchandisingUtilities {
 				}
 				if(offerdata.get("Pre Purchase Entry Cart Language") != null) {
 					expectedcartlanguage = offerdata.get("Pre Purchase Entry Cart Language").trim();
-				}				
-				
+				}							
 				if(offerdata.get("Pre Purchase Entry Supplemental Cart Language") != null) {
 					expectedsuppcartlanguage = offerdata.get("Pre Purchase Entry Supplemental Cart Language").trim();
 				}				
@@ -173,7 +181,7 @@ public class MerchandisingUtilities {
 			}
 			// Pre-Purchase - No
 			else {
-				if(!(giftname.equalsIgnoreCase("No Gift"))) {
+				if(offerdata.get("Entry Promotion 1") != null) {
 					expectedcampaigngifts = offerdata.get("Entry Promotion 1").trim();
 				}				
 				if(offerdata.get("Entry Cart Language") != null) {
@@ -216,7 +224,7 @@ public class MerchandisingUtilities {
 		else {
 			expectedfinalpricing = offerdata.get("Post Purchase Upsell Pricing").trim();	
 			expectedfinalshipping = offerdata.get("Post Purchase Upsell Shipping").trim();	
-			if(!(giftname.equalsIgnoreCase("No Gift"))) {
+			if(offerdata.get("Post Purchase Upsell Promotion 1") != null) {
 				expectedcampaigngifts = offerdata.get("Post Purchase Upsell Promotion 1").trim();
 			}			
 			if(offerdata.get("Post Purchase Upsell Promotion 2") != null) {
@@ -262,14 +270,19 @@ public class MerchandisingUtilities {
 		// No gift for MeaningfulBeauty - one-shot campaign
 		// And GiftPPID will carry Pre-Purchase value
 		if(!(campaign.equalsIgnoreCase("os"))) {
+			// There is a gift choice - so giftppid will be mentioned in run_input
 			if(!(giftppid.equalsIgnoreCase("-"))) {
 				expectedofferdata.put("Gift PPID", giftppid);
 			}		
+			// No Gift choice
 			else {
 				// If no seperate lineitem, then no GiftPPID
 				if(giftseperatelineitem.equalsIgnoreCase("Yes")) {
 					if((expectedcampaigngifts != null) && (!(expectedcampaigngifts.equals("-")))) {
-						giftppid = bf_obj.getPPIDfromString(brand, expectedcampaigngifts).get(0);
+						
+						giftppid = String.join(",", bf_obj.getPPIDfromString(brand, expectedcampaigngifts));
+						
+//						giftppid = bf_obj.getPPIDfromString(brand, expectedcampaigngifts).get(0);
 						expectedofferdata.put("Gift PPID", giftppid);
 					}
 				}				
@@ -295,6 +308,8 @@ public class MerchandisingUtilities {
 		
 		return expectedofferdata;
 	}
+	
+	
 	
 	public HashMap<String, String> generateExpectedOfferData(HashMap<String, String> offerdata, HashMap<String, String> sourcecodedata, String PPUSection, String PostPU, String kitppid, String giftppid, String brand, String campaign) throws ClassNotFoundException, SQLException {
 		LinkedHashMap<String, String> expectedofferdata = new LinkedHashMap<String, String>();
@@ -599,19 +614,13 @@ public class MerchandisingUtilities {
 	public String checkSupplySize(String ppid, HashMap<String, String> offerdata) {
 		String supplysize = "";		
 		if((offerdata.containsKey("Entry PPID")) && (offerdata.get("Entry PPID").contains(ppid))) {
-//			if(offerdata.get("Entry PPID").contains(ppid)) {
-				supplysize = "30";
-//			}
+			supplysize = "30";
 		}
 		else if((offerdata.containsKey("Pre-Purchase Entry PPID")) && (offerdata.get("Pre-Purchase Entry PPID").contains(ppid))) {
-//			if(offerdata.get("Pre-Purchase Entry PPID").contains(ppid)) {
-				supplysize = "30";
-//			}
+			supplysize = "30";
 		}
 		else if((offerdata.containsKey("Post Purchase Upsell to")) && (offerdata.get("Post Purchase Upsell to").contains(ppid))) {
-//			if(offerdata.get("Post Purchase Upsell to").contains(ppid)) {
-				supplysize = "90";
-//			}
+			supplysize = "90";
 		}
 		return supplysize;
 	}
@@ -629,8 +638,9 @@ public class MerchandisingUtilities {
 			giftvalue = offerdata.get("Entry Promotion 1");	
 		}
 //		System.out.println(giftvalue);
-		giftvalue = giftvalue.trim();
+		
 		if((giftvalue != null) && (!(giftvalue.equalsIgnoreCase("-")))){
+			giftvalue = giftvalue.trim();
 			if(!(giftppid.equalsIgnoreCase("-"))) {
 				if(!((brand.equalsIgnoreCase("MeaningfulBeauty")) && (campaign.equalsIgnoreCase("os")))) {
 					giftname = db_obj.getGiftname(brand, campaign, giftppid);

@@ -2,6 +2,8 @@ package com.sns.gr_optimization.testbase;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -186,41 +188,35 @@ public class BuyflowUtilities {
 		comm_obj.find_webelement(driver, elementlocator, elementvalue).click();
 	}
 	
-//	public void upsell_confirmation(WebDriver driver, String brand, String campaign, String postpu) throws InterruptedException, ClassNotFoundException, SQLException {
-//	String query = "select * from locators where brand='" + brand + "' and campaign='" + campaign + "' and step='PostPU' and offer = '" + postpu + "'";
-//	List<Map<String, Object>> upsellloc = DBLibrary.dbAction("fetch", query);
-//	
-//	WebElement upsell_elmt = comm_obj.find_webelement(driver, upsellloc.get(0).get("ELEMENTLOCATOR").toString(), upsellloc.get(0).get("ELEMENTVALUE").toString());
-//	Thread.sleep(2000);
-//	
-//	upsell_elmt.click();
-//	Thread.sleep(3000);
-//}
-	
 	// To get all Gift PPIDs of a campaign
 	public List<String> getPPIDfromString(String brand, String gifts) throws ClassNotFoundException, SQLException {
 		String productlinecode = db_obj.get_sourceproductlinecode(brand);
 		
 		String[] gift_str_arr = gifts.split("\\s+");
-		List<String> gift_arr = new ArrayList<String>();
+		List<String> gift_list = new ArrayList<String>();
 		for(String str : gift_str_arr) {
 			if(str.contains(productlinecode)) {
-				gift_arr.add(str);
+				if(str.contains(",")) {
+					String[] arr = str.split(",");
+					for(String a : arr) {
+						gift_list.add(a);
+					}
+				}
+				else {
+					gift_list.add(str);
+				}				
 			}
 		}	
-		return gift_arr;
+		return gift_list;
 	}	
 	
 	// To check if all the gifts are present in the campaign
-	public String checkGifts(WebDriver driver, String brand, String campaign, String gifts) throws ClassNotFoundException, SQLException, InterruptedException {		
+	public String checkGifts(WebDriver driver, String brand, String campaign, String[] gift_arr) throws InterruptedException, ClassNotFoundException, SQLException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
-		
-		List<String> gift_arr = getPPIDfromString(brand, gifts);
 		
 		if(!((brand.equalsIgnoreCase("MallyBeauty")) && (campaign.equalsIgnoreCase("Core")))) {
 			jse.executeScript("window.scrollBy(0,1000)", 0);
 		}
-		
 		Thread.sleep(2000);
 		String giftResult = "";
 		for(String gift : gift_arr) {
@@ -229,8 +225,7 @@ public class BuyflowUtilities {
 			System.out.println(query);
 			Thread.sleep(4000);
 			if(driver.findElements(By.xpath(giftloc.get(0).get("ELEMENTVALUE").toString())).size() != 0) {
-				if(driver.findElement(By.xpath(giftloc.get(0).get("ELEMENTVALUE").toString())).isDisplayed()) {
-				}
+				
 			}
 			else {
 				giftResult = giftResult + giftloc.get(0).get("OFFER").toString() + " is not present on SAS";
@@ -241,14 +236,64 @@ public class BuyflowUtilities {
 		return giftResult;
 	}
 	
-	public List<String> getLineItems(WebDriver driver) {
-		List<WebElement> lineitem = driver.findElements(By.xpath("//span[@class='PPID disclaimer-ppid']"));
+	
+//	public String checkGifts(WebDriver driver, String brand, String campaign, String gifts) throws ClassNotFoundException, SQLException, InterruptedException {		
+//		JavascriptExecutor jse = (JavascriptExecutor) driver;
+//		
+//		List<String> gift_arr = getPPIDfromString(brand, gifts);
+//		
+//		if(!((brand.equalsIgnoreCase("MallyBeauty")) && (campaign.equalsIgnoreCase("Core")))) {
+//			jse.executeScript("window.scrollBy(0,1000)", 0);
+//		}
+//		
+//		Thread.sleep(2000);
+//		String giftResult = "";
+//		for(String gift : gift_arr) {
+//			String query = "select * from locators where brand='" + brand + "' and campaign='" + campaign + "' and step='Gift' and offer like '%" + gift + "%'";
+//			List<Map<String, Object>> giftloc = DBLibrary.dbAction("fetch", query);
+//			System.out.println(query);
+//			Thread.sleep(4000);
+//			if(driver.findElements(By.xpath(giftloc.get(0).get("ELEMENTVALUE").toString())).size() != 0) {
+//				if(driver.findElement(By.xpath(giftloc.get(0).get("ELEMENTVALUE").toString())).isDisplayed()) {
+//				}
+//			}
+//			else {
+//				giftResult = giftResult + giftloc.get(0).get("OFFER").toString() + " is not present on SAS";
+//			}
+//		}
+//		jse.executeScript("window.scrollBy(0,0)", 0);
+//		Thread.sleep(2000);
+//		return giftResult;
+//	}
+	
+	public List<List<String>> getLineItems(WebDriver driver) {
+		List<List<String>> actual_lineitems = new ArrayList<List<String>>();
 		
-		List<String> ppids = new ArrayList<String>();
-		for(WebElement item : lineitem) {
-			ppids.add(item.getText());
+		List<WebElement> lineitems = driver.findElements(By.xpath("//div[@id='cartsummary']//div[contains(@class,'product-card')]"));
+		
+		for(int i=1; i<=lineitems.size(); i++) {
+			List<String> item = new ArrayList<String>();
+			
+			String ppid = driver.findElement(By.xpath("(//span[@class='PPID disclaimer-ppid'])[" + i + "]")).getText();
+			String price = driver.findElement(By.xpath("(//div[contains(@class,'product-card')]//div//div[2]//ul//li[3]//span[last()])[" + i + "]")).getText();
+			item.add(ppid);
+			item.add(price);
+			
+			actual_lineitems.add(item);
 		}
-		return ppids;
+		
+		return actual_lineitems;
+		
+//		(//div[contains(@class,'product-card')]//span[@class='PPID disclaimer-ppid'])
+//		
+//		
+//		List<WebElement> lineitem = driver.findElements(By.xpath("//span[@class='PPID disclaimer-ppid']"));
+//		
+//		List<String> ppids = new ArrayList<String>();
+//		for(WebElement item : lineitem) {
+//			ppids.add(item.getText());
+//		}
+//		return ppids;
 	}
 	
 	public String checkAddedLineItem(WebDriver driver, String brand, String campaign, String offer, String name) throws ClassNotFoundException, SQLException, InterruptedException {
