@@ -28,6 +28,8 @@ public class MerchandisingUtilities {
 	public HashMap<String, String> generateExpectedOfferDataForKit(HashMap<String, String> offerdata, HashMap<String, String> sourcecodedata, String PPUSection, String PostPU, String kitppid, String giftppid, String brand, String campaign) throws ClassNotFoundException, SQLException {
 		LinkedHashMap<String, String> expectedofferdata = new LinkedHashMap<String, String>();
 				
+		expectedofferdata.put("Brand", brand);
+		expectedofferdata.put("Campaign", campaign);
 		expectedofferdata.put("PagePattern", offerdata.get("PagePattern").trim());		
 		
 		// Check PrePU for current offercode

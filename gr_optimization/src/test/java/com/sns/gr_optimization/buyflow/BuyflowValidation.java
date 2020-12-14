@@ -216,15 +216,23 @@ public class BuyflowValidation {
 		HashMap<String, String> expectedsourcecodedata = merch_obj.generateExpectedSourceCodeData(sourcecodedata);
 		
 		// HashMap variable to collect Kit related details from Merchandising Template
-		HashMap<String, String> expectedofferdata_kit;
+		HashMap<String, String> expectedofferdata_kit = null;
 		
 		List<String> subtotal_list = new ArrayList<String>();
+		List<String> shipping_list = new ArrayList<String>();
+		List<String> expected_supp_cart_lang = new ArrayList<String>();
+		List<String> renewal_plan_list = new ArrayList<String>();
 		List<List<String>> expected_lineitems =  new ArrayList<List<String>>();
+		
+		List<String> campaignpages = new ArrayList<String>();
+		
+		String postpu = null;
 		
 		while(offerIterator.hasNext() && categoryIterator.hasNext()) {
 			String ppid = offerIterator.next();			
+			String currentCategory = categoryIterator.next();
 			
-			if(categoryIterator.next().equalsIgnoreCase("Kit")) {
+			if(currentCategory.equalsIgnoreCase("Kit")) {
 				// Get column in which the PPID is present and check if the PPID belongs to Pre-Purchase Entry Kit
 				int PPIDcolumn = merch_obj.getPPIDColumn(merchData, ppid);
 				String PPUSection = merch_obj.IsPrePurchase(merchData, ppid);
@@ -249,7 +257,7 @@ public class BuyflowValidation {
 				HashMap<String, String> kit_offerdata = merch_obj.getColumnData(merchData, PPIDcolumn, PPUSection);
 					
 				// Check Post-purchase Upsell for the campaign
-				String postpu = merch_obj.checkPostPU(kit_offerdata);
+				postpu = merch_obj.checkPostPU(kit_offerdata);
 				if(((brand.equalsIgnoreCase("CrepeErase")) && (campaign.equalsIgnoreCase("order30fsh2b"))) && (PPUSection.equalsIgnoreCase("No"))) {
 					postpu = "No";
 				}
@@ -267,7 +275,7 @@ public class BuyflowValidation {
 				}
 								
 				// List pages in this campaign
-				List<String> campaignpages = new ArrayList<String>();
+				campaignpages = new ArrayList<String>();
 				campaignpages.add("HomePage");
 				campaignpages.add("SASPage");
 				if(prepu.equalsIgnoreCase("Yes")) {
@@ -288,7 +296,12 @@ public class BuyflowValidation {
 				kit_lineitem.add("Kit");
 				kit_lineitem.add(expectedofferdata_kit.get("30 day PPID"));
 				kit_lineitem.add(expectedofferdata_kit.get("Entry Pricing"));
-				expected_lineitems.add(kit_lineitem);				
+				kit_lineitem.add(expectedofferdata_kit.get("Cart Language"));
+				kit_lineitem.add(expectedofferdata_kit.get("Continuity Pricing"));
+				kit_lineitem.add(expectedofferdata_kit.get("Continuity Shipping"));
+				expected_lineitems.add(kit_lineitem);		
+				
+				expected_supp_cart_lang.add(expectedofferdata_kit.get("Supplemental Cart Language"));
 				
 				// Add Gift PPIDs to lineitem list				
 				String[] giftppidarr = expectedofferdata_kit.get("Gift PPID").split(",");				
@@ -297,8 +310,15 @@ public class BuyflowValidation {
 					gift_lineitem.add("Gift");
 					gift_lineitem.add(gift);
 					gift_lineitem.add("FREE");
+					gift_lineitem.add("No Cart Language");
+					gift_lineitem.add("No Continuity Pricing");
+					gift_lineitem.add("No Continuity Shipping");
 					expected_lineitems.add(gift_lineitem);
 				}				
+				
+				subtotal_list.add(expectedofferdata_kit.get("Final Pricing"));
+				shipping_list.add(expectedofferdata_kit.get("Final Shipping"));
+				renewal_plan_list.add(expectedofferdata_kit.get("Renewal Plan Id"));
 				
 				// Move to SAS
 				pixel_obj.defineNewHar(proxy, brand + "SASPage");	  
@@ -320,11 +340,11 @@ public class BuyflowValidation {
 				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
 				bf_obj.move_to_checkout(driver, brand, campaigncategory, category);
 			}
-			else if(categoryIterator.next().equalsIgnoreCase("Product")) {
+			else if(currentCategory.equalsIgnoreCase("Product")) {
 				HashMap<String, String> product_offerdata = merch_obj.getProdRowfromCatalog(catalogData, ppid);
 				String pagepattern = product_offerdata.get("PagePattern").trim();
 			}
-			else if(categoryIterator.next().equalsIgnoreCase("SubscribeandSave")) {
+			else if(currentCategory.equalsIgnoreCase("SubscribeandSave")) {
 				HashMap<String, String> product_offerdata = merch_obj.getProdRowfromCatalog(catalogData, ppid);
 				String pagepattern = product_offerdata.get("PagePattern").trim();
 			}			
@@ -332,7 +352,7 @@ public class BuyflowValidation {
 			if(offerIterator.hasNext() && categoryIterator.hasNext()) {
 				bf_obj.click_logo(driver, brand, campaigncategory);
 			}		
-		}
+		}		
 		
 		// Checkout Page Validation
 		// Validate Line Items
@@ -344,19 +364,63 @@ public class BuyflowValidation {
 		for(List<String> actual_item : actual_lineitems) {
 			String actual_ppid = actual_item.get(0);
 			String actual_price = actual_item.get(1);
+			String actual_cart_language = actual_item.get(2);
+			String actual_continuity_price = actual_item.get(3);
+			String actual_continuity_shipping = actual_item.get(4);
 				
 			for(List<String> expected_item : temp_lineitemlist) {
 				if(expected_item.contains(actual_ppid)) {
 					if(expected_item.get(2).equalsIgnoreCase(actual_price)) {
-						temp_lineitemlist.remove(expected_item);
+						EntryPriceResult = "PASS";
 					}
 					else {
-						remarks = remarks + "Checkout Cart - " + expected_item.get(0) + " " + expected_item.get(1) + " Price Mismatch. Expected - " + expected_item.get(1) + " , Actual - " + actual_price + " ; ";
+						EntryPriceResult = "FAIL";
+						remarks = remarks + "Checkout Cart - " + expected_item.get(0) + " " + expected_item.get(1) + " Price Mismatch. Expected - " + expected_item.get(2) + " , Actual - " + actual_price + " ; ";
 					}
-				}
+					
+					if(!(expected_item.get(3).equalsIgnoreCase("No Cart Language"))) {
+						// Scenario - 90-day order + Paypal - could not validate 90-day cart language and supplemental language because invalid zipcode could not be fill-in for Paypal
+						if(!((cc.equalsIgnoreCase("Paypal")) && (expectedofferdata_kit.get("Offer Post-Purchase").equalsIgnoreCase("Yes")))) {
+							//Remove whitespace
+							String expcartlang = expected_item.get(3).replaceAll("\\s+", "");
+							String actcartlang = actual_cart_language.replaceAll(" ", "");
+							
+							// Remove special characters
+							expcartlang = expcartlang.replaceAll("[^a-zA-Z0-9$]+", "");
+							actcartlang = actcartlang.replaceAll("[^a-zA-Z0-9$]+", "");
+							if(expcartlang.equalsIgnoreCase(actcartlang)) {
+								CartLanguageResult = "PASS";
+							}
+							else {
+								CartLanguageResult = "FAIL";
+								remarks = remarks + "Checkout Cart - " + expected_item.get(0) + " " + expected_item.get(1) + " Cart Language Mismatch. Expected - " + expected_item.get(3) + " , Actual - " + actual_cart_language + " ; ";
+							}
+							
+							// Continuity Pricing
+							if(expected_item.get(4).equalsIgnoreCase(actual_continuity_price)) {
+								ContinuityPriceResult = "PASS";
+							}
+							else {
+								ContinuityPriceResult = "FAIL";
+								remarks = remarks + "Checkout Cart - " + expected_item.get(0) + " " + expected_item.get(1) + " Continuity Pricing Mismatch. Expected - " + expected_item.get(4) + " , Actual - " + actual_continuity_price + " ; ";
+							}
+							
+							// Continuity Shipping
+							if(expected_item.get(5).equalsIgnoreCase(actual_continuity_shipping)) {
+								ContinuityPriceResult = "PASS";
+							}
+							else {
+								ContinuityPriceResult = "FAIL";
+								remarks = remarks + "Checkout Cart - " + expected_item.get(0) + " " + expected_item.get(1) + " Continuity Shipping Mismatch. Expected - " + expected_item.get(5) + " , Actual - " + actual_continuity_shipping + " ; ";
+							}
+						}						
+					}					
+					temp_lineitemlist.remove(expected_item);
+				}					
 			}				
 		}			
 		for(List<String> lineitem : temp_lineitemlist) {
+			ppidResult = "FAIL";
 			remarks = remarks + "Missing " + lineitem.get(0) + " - " + lineitem.get(1) + " in Checkout Cart ; ";
 		}
 		
@@ -374,7 +438,14 @@ public class BuyflowValidation {
 			}				
 		}			
 		for(List<String> lineitem : temp_lineitemlist) {
-			remarks = remarks + lineitem.get(0) + " - " + lineitem.get(1) + " is present in Checkout Cart ; ";
+			// If Result is already fail, then the overall ppid result is fail
+			if(ppidResult.equalsIgnoreCase("FAIL")) {
+				ppidResult = "FAIL";
+			}
+			else {
+				ppidResult = "PASS";
+			}
+			remarks = remarks + lineitem.get(0) + " is present in Checkout Cart ; ";
 		}				
 		
 		// Fill out form
@@ -391,7 +462,7 @@ public class BuyflowValidation {
 			}
 		}
 		else {
-			if(expectedofferdata_kit.get("Offer Post-Purchase").equalsIgnoreCase("Yes")) {
+			if((categorylist.contains("Kit")) && (expectedofferdata_kit.get("Offer Post-Purchase").equalsIgnoreCase("Yes"))) {
 				email = bf_obj.fill_out_form(driver, brand, campaigncategory, "VISA", "same", "90");
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver);
 				
@@ -399,7 +470,7 @@ public class BuyflowValidation {
 				bf_obj.complete_order(driver, brand, "VISA");
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern +".har", driver);
 				
-				bf_obj.upsell_confirmation(driver, brand, campaigncategory, expectedofferdata.get("Offer Post-Purchase"));
+				bf_obj.upsell_confirmation(driver, brand, campaigncategory, expectedofferdata_kit.get("Offer Post-Purchase"));
 			}
 			else {
 				email = bf_obj.fill_out_form(driver, brand, campaigncategory, cc, shipbill, "30");
@@ -408,92 +479,35 @@ public class BuyflowValidation {
 			}	
 		}						
 		
-		String cartlang_pricing = "";
-		if(!(expectedofferdata.get("Continuity Pricing").equalsIgnoreCase("No Continuity"))) {
-			// Scenario - 90-day order + Paypal - could not validate 90-day cart language and supplemental language because invalid zipcode could not be fill-in for Paypal
-			if(!((cc.equalsIgnoreCase("Paypal")) && (expectedofferdata.get("Offer Post-Purchase").equalsIgnoreCase("Yes")))) {
-				// Validate Cart Language
-				String full_cart_lang = lang_obj.getfullcartlanguage(driver);
+		// Supplemental Cart Language Validation
+		// Scenario - 90-day order + Paypal - could not validate 90-day cart language and supplemental language because invalid zipcode could not be fill-in for Paypal
+		if(!((cc.equalsIgnoreCase("Paypal")) && (expectedofferdata_kit.get("Offer Post-Purchase").equalsIgnoreCase("Yes")))) {
+			String actual_suppl_cart_lang = lang_obj.getsupplementalcartlanguage(driver);
+			for(List<String> expected_item : expected_lineitems) {
+				String exp_suppl_cart_lang = expected_item.get(6);
 				
 				//Remove whitespace
-				String expcartlang = expectedofferdata.get("Cart Language").replaceAll("\\s+", "");
-				String actcartlang = full_cart_lang.replaceAll(" ", "");
-				
-				// Remove special characters
-				expcartlang = expcartlang.replaceAll("[^a-zA-Z0-9$]+", "");
-				actcartlang = actcartlang.replaceAll("[^a-zA-Z0-9$]+", "");
-//				System.out.println("Actual Edited  : " + actcartlang);
-//				System.out.println("Expected Edited: " + expcartlang);
-				
-				if(actcartlang.equalsIgnoreCase(expcartlang)) {
-					CartLanguageResult = "PASS";
-				}
-				else {
-//					System.out.println("Actual : " + full_cart_lang);
-//					System.out.println("Expected : " + expectedofferdata.get("Cart Language"));
-					CartLanguageResult = "FAIL";
-					remarks = remarks + "Cart Language is wrong, Expected - " + expectedofferdata.get("Cart Language") + " , Actual - " + full_cart_lang;
-				}
-				
-				// Validate Continuity pricing
-				String cart_lang = lang_obj.getfullcartlanguage(driver);						
-				String[] lang_price_arr = lang_obj.parse_cart_language(cart_lang);		
-//				String cart_lang_price = "$" + lang_price_arr[1];
-//				String cart_lang_shipping = "$" + lang_price_arr[2];	
-				
-				String cart_lang_price = lang_price_arr[1];
-				String cart_lang_shipping = lang_price_arr[2];	
-				cartlang_pricing = cart_lang_price + "," + cart_lang_shipping;
-								
-				if(expectedofferdata.get("Continuity Pricing").equalsIgnoreCase(cart_lang_price)) {
-					ContinuityPriceResult = "PASS";
-				}
-				else {
-					ContinuityPriceResult = "FAIL";
-					remarks = remarks + "Continuity Price is wrong, Expected - " + expectedofferdata.get("Continuity Pricing") + " , Actual - " + cart_lang_price;
-				}
-				
-				if(expectedofferdata.get("Continuity Shipping").equalsIgnoreCase(cart_lang_shipping)) {
-					
-					// If Result is already fail, then the overall Continuity result is fail
-					if(ContinuityPriceResult.equalsIgnoreCase("FAIL")) {
-						ContinuityPriceResult = "FAIL";
-					}
-					else {
-						ContinuityPriceResult = "PASS";
-					}						
-				}
-				else {
-					ContinuityPriceResult = "FAIL";
-					remarks = remarks + "Continuity Shipping is wrong, Expected - " + expectedofferdata.get("Continuity Shipping") + " , Actual - " + cart_lang_shipping;
-				}	
-				
-				// Validate supplemental cart language
-				String supp_cart_lang = lang_obj.getsupplementalcartlanguage(driver);
-								
-				//Remove whitespace
-				String expsuppcartlang = expectedofferdata.get("Supplemental Cart Language").replaceAll("\\s+", "");
-				String actsuppcartlang = supp_cart_lang.replaceAll(" ", "");
+				String expsuppcartlang = exp_suppl_cart_lang.replaceAll("\\s+", "");
+				String actsuppcartlang = actual_suppl_cart_lang.replaceAll(" ", "");
 				
 				// Remove special characters
 				expsuppcartlang = expsuppcartlang.replaceAll("[^a-zA-Z0-9$]+", "");
 				actsuppcartlang = actsuppcartlang.replaceAll("[^a-zA-Z0-9$]+", "");
-//				System.out.println("Actual Edited  : " + expsuppcartlang);
-//				System.out.println("Expected Edited: " + actsuppcartlang);
-								
-				if(actsuppcartlang.equalsIgnoreCase(expsuppcartlang)) {
+				
+				if(actsuppcartlang.contains(expsuppcartlang)) {
 					SuppCartLanguageResult = "PASS";
 				}
 				else {
-//					System.out.println("Actual : " + supp_cart_lang);
-//					System.out.println("Expected : " + expectedofferdata.get("Supplemental Cart Language"));
 					SuppCartLanguageResult = "FAIL";
-					remarks = remarks + "Supplemental Cart Language is wrong, Expected - " + expectedofferdata.get("Supplemental Cart Language") + " , Actual - " + supp_cart_lang;
+					remarks = remarks + "Checkout - " + expected_item.get(0) + " " + expected_item.get(1) + " Supplemental Cart Language Mismatch. Expected - " + exp_suppl_cart_lang + " ; ";
+				
 				}
-			}							
-//		}
+			}	
+		}
+				
+		// Validate Checkout pricing		
 		
-		// Validate Checkout pricing
+		// Get Actual Checkout Price
 		String checkout_subtotal = "";
 		String checkout_shipping = "";
 		String checkout_salestax = "";
@@ -516,26 +530,22 @@ public class BuyflowValidation {
 //		System.out.println("Checkout Pricing expected : " + expectedofferdata.get("Final Pricing") + "," + expectedofferdata.get("Final Shipping"));
 //		System.out.println("Checkout Pricing fetched : " + checkout_subtotal + "," + checkout_shipping + "," + checkout_salestax + "," + checkout_total);
 					
-		if(expectedofferdata.get("Final Pricing").contains(checkout_subtotal)) {
+		
+		// Calculate Expected Checkout Price
+		String expected_subtotal = bf_obj.CalculateTotalPrice(subtotal_list);
+				
+		if(expected_subtotal.contains(checkout_subtotal)) {
 			EntryPriceResult = "PASS";
 		}
 		else {
 			EntryPriceResult = "FAIL";
-			remarks = remarks + "Checkout Subtotal does not match with the expected price, Expected - " + expectedofferdata.get("Final Pricing") + " , Actual - " + checkout_subtotal;
+			remarks = remarks + "Checkout Subtotal does not match with the expected price, Expected - " + expected_subtotal + " , Actual - " + checkout_subtotal;
 		}
 		
-		if((expectedofferdata.get("Final Shipping").contains("0.0")) || (expectedofferdata.get("Final Shipping").equalsIgnoreCase("FREE")) || (expectedofferdata.get("Final Shipping").equalsIgnoreCase("0"))) {
-			if((checkout_shipping.contains("0.0")) || (checkout_shipping.equalsIgnoreCase("FREE"))) {
-				// If Result is already fail, then the overall EntryPrice result is fail
-				if(EntryPriceResult.equalsIgnoreCase("FAIL")) {
-					EntryPriceResult = "FAIL";
-				}
-				else {
-					EntryPriceResult = "PASS";
-				}	
-			}
-		}				
-		else if(expectedofferdata.get("Final Shipping").equalsIgnoreCase(checkout_shipping)) {
+		// Calculate Expected Checkout - Shipping Price
+		String expected_shipping = bf_obj.CalculateTotalPrice(shipping_list);
+		
+		if(expected_shipping.equalsIgnoreCase(checkout_shipping)) {
 			// If Result is already fail, then the overall EntryPrice result is fail
 			if(EntryPriceResult.equalsIgnoreCase("FAIL")) {
 				EntryPriceResult = "FAIL";
@@ -546,11 +556,11 @@ public class BuyflowValidation {
 		}
 		else {
 			EntryPriceResult = "FAIL";
-			remarks = remarks + "Checkout Shipping does not match with the expected shipping price, Expected - " + expectedofferdata.get("Final Shipping") + " , Actual - " + checkout_shipping;
+			remarks = remarks + "Checkout Shipping does not match with the expected shipping price, Expected - " + expected_shipping + " , Actual - " + checkout_shipping;
 		}
 		
 		// Checkout SalesTax Validation
-		String salestax = bf_obj.getSalesTax(driver, expectedofferdata.get("Final Pricing"), expectedofferdata.get("Final Shipping"));
+		String salestax = bf_obj.getSalesTax(driver, expected_subtotal, expected_shipping);
 		
 		Double expected_salestax = Double.valueOf(salestax);
 		Double actual_salestax = Double.valueOf(checkout_salestax);
@@ -570,7 +580,11 @@ public class BuyflowValidation {
 //		System.out.println("Actual SalesTax : " + checkout_salestax);
 		
 		// Checkout Total Validation
-		String total = bf_obj.getTotal(expectedofferdata.get("Final Pricing"), expectedofferdata.get("Final Shipping"), salestax);
+		List<String> total_list = new ArrayList<String>();
+		total_list.add(expected_subtotal);
+		total_list.add(expected_shipping);
+		total_list.add(salestax);
+		String total = bf_obj.CalculateTotalPrice(total_list);
 		
 		Double expected_total = Double.valueOf(total);
 		Double actual_total = Double.valueOf(checkout_total);	
@@ -587,12 +601,11 @@ public class BuyflowValidation {
 		}
 		
 //		System.out.println("Expected Total : " + total);
-//		System.out.println("Actual Total : " + checkout_total);
-		
+//		System.out.println("Actual Total : " + checkout_total);		
 		
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		if(!(cc.equalsIgnoreCase("Paypal"))) {
-			if(expectedofferdata.get("Offer Post-Purchase").equalsIgnoreCase("Yes")) {
+			if(expectedofferdata_kit.get("Offer Post-Purchase").equalsIgnoreCase("Yes")) {
 				jse.executeScript("window.scrollBy(0,600)", 0);
 				bf_obj.clear_form_field(driver, realm, "Zip");
 				bf_obj.fill_form_field(driver, realm, "Zip", "90245");
@@ -610,25 +623,21 @@ public class BuyflowValidation {
 		}
 		// Post Purchase Upsell page is present
 		else {
-//			System.out.println("Else block - Post Purchase Upsell page is present");
 			// supplysize - 30
 			// No Fall back scenario
-			if(expectedofferdata.get("SupplySize").equalsIgnoreCase("30")) {
-//				System.out.println("Else block - supplysize 30");
+			if(expectedofferdata_kit.get("SupplySize").equalsIgnoreCase("30")) {
 				pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
 				bf_obj.complete_order(driver, brand, cc);
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern + ".har", driver);
 			}
 			// supplysize - 90
 			// After Fall back scenario - control navigates to Confirmation page
-			else if(expectedofferdata.get("SupplySize").equalsIgnoreCase("90")) {
-//				System.out.println("Else block - else if block - supplysize 90");
+			else if(expectedofferdata_kit.get("SupplySize").equalsIgnoreCase("90")) {
 				pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");	        
 	        	bf_obj.complete_order(driver, brand, cc);          
 	            pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver);
 			}					
-		}				
-		
+		}			
 		Thread.sleep(3000);
 		
 //		// Upsell page validations
@@ -637,9 +646,9 @@ public class BuyflowValidation {
 		// No Upsell Confirmation if fall-back has happened previously(90-day - CC Order)
 		// For 30-day order or Paypal order - Select Upsell Confirmation
 		if(postpu.equalsIgnoreCase("Yes")) {
-			if((expectedofferdata.get("SupplySize").equalsIgnoreCase("30")) || (cc.equalsIgnoreCase("Paypal"))) {
+			if((expectedofferdata_kit.get("SupplySize").equalsIgnoreCase("30")) || (cc.equalsIgnoreCase("Paypal"))) {
 				pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");
-				bf_obj.upsell_confirmation(driver, brand, campaigncategory, expectedofferdata.get("Offer Post-Purchase"));
+				bf_obj.upsell_confirmation(driver, brand, campaigncategory, expectedofferdata_kit.get("Offer Post-Purchase"));
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver);
 			}
 		}								
@@ -647,43 +656,56 @@ public class BuyflowValidation {
 		// Confirmation page validations
 		String conf_offercode = bf_obj.fetch_confoffercode(driver, brand);
 		System.out.println("Confirmation PPIDs : " + conf_offercode);
-		if(conf_offercode.contains(kitppid)){
+		
+		List<String> conf_offercode_list = Arrays.asList(conf_offercode.split("\\s*,\\s*"));
+		
+		// When some more lineitems are expected
+		temp_lineitemlist = new ArrayList<>(expected_lineitems);
+							
+		for(String offercode : conf_offercode_list) {									
+			for(List<String> expected_item : temp_lineitemlist) {
+				if(expected_item.contains(offercode)) {											
+					temp_lineitemlist.remove(expected_item);
+				}
+			}				
+		}			
+		for(List<String> lineitem : temp_lineitemlist) {
 			// If Result is already fail, then the overall ppid result is fail
 			if(ppidResult.equalsIgnoreCase("FAIL")) {
 				ppidResult = "FAIL";
 			}
 			else {
 				ppidResult = "PASS";
-			}	
-		}
-		else {
-			ppidResult = "FAIL";
-			remarks = remarks + "Confirmation page - Wrong Kit added, Expected - " + kitppid + " , Actual - " + conf_offercode;
-		}
-		
-		if(!(expectedofferdata.get("Gift Name").equalsIgnoreCase("No Gift"))) {
-			if(expectedofferdata.get("GiftSeperateLineItem").equalsIgnoreCase("Yes")) {
-				if(!(expectedofferdata.get("Campaign Gifts").equalsIgnoreCase("-"))) {
-					if(conf_offercode.contains(giftppid)){
-						// If Result is already fail, then the overall ppid result is fail
-						if(ppidResult.equalsIgnoreCase("FAIL")) {
-							ppidResult = "FAIL";
-						}
-						else {
-							ppidResult = "PASS";
-						}	
-					}
-					else {
-						ppidResult = "FAIL";
-						remarks = remarks + "Confirmation page - Wrong Gift added, Expected - " + giftppid + " , Actual - " + conf_offercode;
-					}
-				}	
 			}
-		}		
+			remarks = remarks + "Missing " + lineitem.get(0) + " - " + lineitem.get(1) + " in Confirmation page ; ";
+		}
+				
+		// When Extra lineitems are present
+		List<String> temp_ppidlist = new ArrayList<>(conf_offercode_list);
+				
+		for(List<String> expected_item : expected_lineitems) {
+			String expected_ppid = expected_item.get(0);
+						
+			for(String actual_item : temp_ppidlist) {
+				if(actual_item.contains(expected_ppid)) {
+					temp_ppidlist.remove(actual_item);					
+				}
+			}				
+		}			
+		for(String extrappid : temp_ppidlist) {
+			// If Result is already fail, then the overall ppid result is fail
+			if(ppidResult.equalsIgnoreCase("FAIL")) {
+				ppidResult = "FAIL";
+			}
+			else {
+				ppidResult = "PASS";
+			}
+			remarks = remarks + extrappid + " is present in Confirmation page ; ";
+		}			
 		
 		// Validate PrepU Product
-		if(!(expectedofferdata.get("PrePU Product").equalsIgnoreCase("No PrePU Product"))) {
-			String expectedprepuppid = bf_obj.getPPIDfromString(brand, expectedofferdata.get("PrePU Product")).get(0);
+		if(!(expectedofferdata_kit.get("PrePU Product").equalsIgnoreCase("No PrePU Product"))) {
+			String expectedprepuppid = bf_obj.getPPIDfromString(brand, expectedofferdata_kit.get("PrePU Product")).get(0);
 			if(conf_offercode.contains(expectedprepuppid)){
 				// If Result is already fail, then the overall ppid result is fail
 				if(ppidResult.equalsIgnoreCase("FAIL")) {
@@ -700,8 +722,8 @@ public class BuyflowValidation {
 		}
 		
 		// Validate PostpU Product
-		if(!(expectedofferdata.get("PostPU Product").equalsIgnoreCase("No PostPU Product"))) {
-			String expectedpostpuppid = bf_obj.getPPIDfromString(brand, expectedofferdata.get("PostPU Product")).get(0);
+		if(!(expectedofferdata_kit.get("PostPU Product").equalsIgnoreCase("No PostPU Product"))) {
+			String expectedpostpuppid = bf_obj.getPPIDfromString(brand, expectedofferdata_kit.get("PostPU Product")).get(0);
 			if(conf_offercode.contains(expectedpostpuppid)){
 				// If Result is already fail, then the overall ppid result is fail
 				if(ppidResult.equalsIgnoreCase("FAIL")) {
@@ -733,7 +755,7 @@ public class BuyflowValidation {
 //		System.out.println("Confirmation Pricing fetched : " + conf_pricing);
 		
 		// Subtotal validation
-		if(expectedofferdata.get("Final Pricing").contains(conf_subtotal)) {
+		if(expected_subtotal.contains(conf_subtotal)) {
 			// If Result is already fail, then the overall EntryPrice result is fail
 			if(EntryPriceResult.equalsIgnoreCase("FAIL")) {
 				EntryPriceResult = "FAIL";
@@ -744,22 +766,11 @@ public class BuyflowValidation {
 		}
 		else {
 			EntryPriceResult = "FAIL";
-			remarks = remarks + "Confirmation Subtotal is wrong, Expected - " + expectedofferdata.get("Final Pricing") + " , Actual - " + conf_subtotal + ",";
+			remarks = remarks + "Confirmation Subtotal is wrong, Expected - " + expected_subtotal + " , Actual - " + conf_subtotal + ",";
 		}
 		
 		// Shipping validation
-		if((expectedofferdata.get("Final Shipping").contains("0.0")) || (expectedofferdata.get("Final Shipping").equalsIgnoreCase("FREE")) || (expectedofferdata.get("Final Shipping").equalsIgnoreCase("0"))) {
-			if((conf_shipping.contains("0.0")) || (conf_shipping.equalsIgnoreCase("FREE"))) {
-				// If Result is already fail, then the overall EntryPrice result is fail
-				if(EntryPriceResult.equalsIgnoreCase("FAIL")) {
-					EntryPriceResult = "FAIL";
-				}
-				else {
-					EntryPriceResult = "PASS";
-				}	
-			}
-		}				
-		else if(expectedofferdata.get("Final Shipping").equalsIgnoreCase(conf_shipping)) {
+		if(expected_shipping.equalsIgnoreCase(conf_shipping)) {
 			// If Result is already fail, then the overall EntryPrice result is fail
 			if(EntryPriceResult.equalsIgnoreCase("FAIL")) {
 				EntryPriceResult = "FAIL";
@@ -770,8 +781,9 @@ public class BuyflowValidation {
 		}
 		else {
 			EntryPriceResult = "FAIL";
-			remarks = remarks + "Shipping price on confirmation page is wrong, Expected - " + expectedofferdata.get("Final Shipping") + " , Actual - " + checkout_shipping;
+			remarks = remarks + "Shipping price on confirmation page is wrong, Expected - " + expected_shipping + " , Actual - " + checkout_shipping;
 		}
+		
 				
 		// Sales Tax Validation
 		expected_salestax = Double.valueOf(salestax);
@@ -816,38 +828,64 @@ public class BuyflowValidation {
 		}
 		
 		// Renewal Plan Validation
-		String actualrenewalplanid = "";
-		if(!(expectedofferdata.get("Renewal Plan Id").equalsIgnoreCase("No Renewal Plan"))) {
-			actualrenewalplanid = comm_obj.getFromVariableMap(driver, "renewalPlanId");				
-			if(!(actualrenewalplanid.contains(expectedofferdata.get("Renewal Plan Id")))) {
+		String actualrenewalplanid = comm_obj.getFromVariableMap(driver, "renewalPlanId");	
+		
+		List<String> actual_renewal_plan_list = Arrays.asList(conf_offercode.split("\\s*,\\s*"));
+		
+		// When some more lineitems are expected
+		List<String> temp_renewlist = new ArrayList<>(renewal_plan_list);
+							
+		for(String plan : actual_renewal_plan_list) {									
+			for(String expected_plan : temp_renewlist) {
+				if(expected_plan.contains(plan)) {											
+					temp_renewlist.remove(expected_plan);
+				}
+			}				
+		}			
+		for(String plan : temp_renewlist) {
+			RenewalPlanResult = "FAIL";			
+			remarks = remarks + "Renewal Plan Id - " + plan + " is Missing ; ";
+		}
+				
+		// When Extra lineitems are present
+		temp_renewlist = new ArrayList<>(actual_renewal_plan_list);
+				
+		for(String expected_plan : renewal_plan_list) {						
+			for(String actual_plan : temp_renewlist) {
+				if(actual_plan.contains(expected_plan)) {
+					temp_renewlist.remove(actual_plan);					
+				}
+			}				
+		}			
+		for(String plan : temp_renewlist) {
+			// If Result is already fail, then the overall ppid result is fail
+			if(RenewalPlanResult.equalsIgnoreCase("FAIL")) {
 				RenewalPlanResult = "FAIL";
-				remarks = remarks + "Renewal Plan Id does not match, Expected - " + expectedofferdata.get("Renewal Plan Id") + " , Actual - " + actualrenewalplanid + ",";
 			}
 			else {
 				RenewalPlanResult = "PASS";
-				
-				// To remove null and commas
-				actualrenewalplanid = expectedofferdata.get("Renewal Plan Id");
 			}
+			remarks = remarks + "Additional Renewal Plan Id - " + plan + " is Present ; ";
+		}	
 			
 //			System.out.println("Expected Renewal Plan Id : " + expectedofferdata.get("Renewal Plan Id"));	
 //			System.out.println("Actual Renewal Plan Id : " + actualrenewalplanid);
-		}					
+				
 		
 		// Installment Plan Validation
 		String actualinstallmentplanid = "";
-		if(!(expectedofferdata.get("Installment Plan Id").equalsIgnoreCase("No Installment Plan"))) {
+		if(!(expectedofferdata_kit.get("Installment Plan Id").equalsIgnoreCase("No Installment Plan"))) {
 			actualinstallmentplanid = comm_obj.getFromVariableMap(driver, "paymentPlanId");
-			if(expectedofferdata.get("Offer Post-Purchase").equalsIgnoreCase("Yes")) {					
-				if(!(actualinstallmentplanid.contains(expectedofferdata.get("Installment Plan Id")))) {
+			if(expectedofferdata_kit.get("Offer Post-Purchase").equalsIgnoreCase("Yes")) {					
+				if(!(actualinstallmentplanid.contains(expectedofferdata_kit.get("Installment Plan Id")))) {
 					InstallmentPlanResult = "FAIL";
-					remarks = remarks + "Installment Plan Id does not match, Expected - " + expectedofferdata.get("Installment Plan Id") + " , Actual - " + actualinstallmentplanid + ",";
+					remarks = remarks + "Installment Plan Id does not match, Expected - " + expectedofferdata_kit.get("Installment Plan Id") + " , Actual - " + actualinstallmentplanid + ",";
 				}
 				else {
 					InstallmentPlanResult = "PASS";
 					
 					// To remove null and commas
-					actualinstallmentplanid = expectedofferdata.get("Installment Plan Id");
+					actualinstallmentplanid = expectedofferdata_kit.get("Installment Plan Id");
 				}
 				
 //				System.out.println("Expected Installment Plan Id : " + expectedofferdata.get("Installment Plan Id"));	
@@ -908,7 +946,7 @@ public class BuyflowValidation {
 		output_row.add(conf_offercode + " - " + ppidResult);
 		output_row.add(conf_num);
 		output_row.add(conf_pricing + " - " + EntryPriceResult);
-		output_row.add(cartlang_pricing + " - " + ContinuityPriceResult);
+		output_row.add(ContinuityPriceResult);
 		output_row.add(actualrenewalplanid + " - " + RenewalPlanResult);
 		output_row.add(actualinstallmentplanid + " - " + InstallmentPlanResult);
 		output_row.add(CartLanguageResult);
@@ -925,11 +963,22 @@ public class BuyflowValidation {
 		
 		driver.close();
 //		
-	if(!(pixelStr.equalsIgnoreCase("-"))) {
-		HashMap<Integer, HashMap> overallOutput = pixel_obj.validatePixels(pixelStr, pattern, brand, campaign, env, campaignpages);
-		attachmentList = pixel_obj.writePixelOutput(overallOutput, brand, campaign, attachmentList);
-	}
+		if(!(pixelStr.equalsIgnoreCase("-"))) {
+			HashMap<Integer, HashMap> overallOutput = pixel_obj.validatePixels(pixelStr, pattern, brand, campaign, env, campaignpages);
+			attachmentList = pixel_obj.writePixelOutput(overallOutput, brand, campaign, attachmentList);
 		}
+	}
+	
+	@AfterSuite
+	public void populateExcel() throws IOException {
+		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Run Output\\");
+		
+//		List<String> attachmentList = new ArrayList<String>();
+		attachmentList.add(file);
+		
+		mailObj.sendEmail("Buyflow Results", sendReportTo, attachmentList);
+	}	
+}
 		
 //		offer_array = kitppid.split(",");	
 //		
@@ -1725,16 +1774,16 @@ public class BuyflowValidation {
 //				
 //			}
 //		}		
-	}
+//	}
 	
-	@AfterSuite
-	public void populateExcel() throws IOException {
-		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Run Output\\");
-		
-//		List<String> attachmentList = new ArrayList<String>();
-		attachmentList.add(file);
-		
-		mailObj.sendEmail("Buyflow Results", sendReportTo, attachmentList);
-	}	
-}
+//	@AfterSuite
+//	public void populateExcel() throws IOException {
+//		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Run Output\\");
+//		
+////		List<String> attachmentList = new ArrayList<String>();
+//		attachmentList.add(file);
+//		
+//		mailObj.sendEmail("Buyflow Results", sendReportTo, attachmentList);
+//	}	
+//}
 

@@ -17,6 +17,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import com.google.common.base.CharMatcher;
 import com.sns.gr_optimization.testbase.CommonUtilities;
 import com.sns.gr_optimization.testbase.DBLibrary;
 import com.sns.gr_optimization.testbase.DBUtilities;
@@ -25,6 +26,7 @@ public class BuyflowUtilities {
 	
 	CommonUtilities comm_obj = new CommonUtilities();
 	DBUtilities db_obj = new DBUtilities();
+	CartLanguageUtilities lang_obj = new CartLanguageUtilities();
 	
 	public List<Map<String, Object>> get_element_locator(String brand, String campaign, String step, String offer) throws ClassNotFoundException, SQLException {
 		
@@ -275,9 +277,27 @@ public class BuyflowUtilities {
 			List<String> item = new ArrayList<String>();
 			
 			String ppid = driver.findElement(By.xpath("(//span[@class='PPID disclaimer-ppid'])[" + i + "]")).getText();
-			String price = driver.findElement(By.xpath("(//div[contains(@class,'product-card')]//div//div[2]//ul//li[3]//span[last()])[" + i + "]")).getText();
+			String price = driver.findElement(By.xpath("(//div[contains(@class,'product-card')]//ul//li[contains(@class,'item-total')]//span[last()])[" + i + "]")).getText();
+			
 			item.add(ppid);
 			item.add(price);
+			
+			if(driver.findElements(By.xpath("(//div[contains(@class,'kitproduct')]//div[contains(@class,'continuity-summary')])[" + i + "]")).size() != 0) {
+				String cart_language = driver.findElement(By.xpath("(//div[contains(@class,'kitproduct')]//div[contains(@class,'continuity-summary')])[" + i + "]")).getText();
+				
+				String[] lang_price_arr = lang_obj.parse_cart_language(cart_language);			
+				String cart_lang_price = lang_price_arr[1];
+				String cart_lang_shipping = lang_price_arr[2];	
+								
+				item.add(cart_language);
+				item.add(cart_lang_price);
+				item.add(cart_lang_shipping);
+			}			
+			else {
+				item.add("No Cart Language");
+				item.add("No Continuity Pricing");
+				item.add("No Continuity Shipping");
+			}
 			
 			actual_lineitems.add(item);
 		}
@@ -673,7 +693,13 @@ public class BuyflowUtilities {
 		String state = "";
 		if(driver.findElements(By.xpath("(//div[@class='order-city'])[2]")).size() != 0) {
 			String[] citytext = driver.findElement(By.xpath("(//div[@class='order-city'])[2]")).getText().split(" ");
-			state = citytext[2];
+			for(String str : citytext) {
+				if((str.length() == 2) && (CharMatcher.javaUpperCase().matchesAllOf(str))) {
+					state = str;
+					break;
+				}
+			}
+//			state = citytext[2];
 //			System.out.println(state);
 		}
 		else {
@@ -715,14 +741,34 @@ public class BuyflowUtilities {
 		return salestax;
 	}
 	
-	public String getTotal(String subtotal, String shipping, String salestax) {
-		Double subtotal_value = Double.valueOf(subtotal);
-		Double shipping_value = Double.valueOf(shipping);
-		Double salestax_value = Double.valueOf(salestax);
-		
-		Double total_value = subtotal_value + shipping_value + salestax_value;
-		double total_roundOff = Math.floor(total_value * 100.0) / 100.0;
-				
+//	public String getTotal(String subtotal, String shipping, String salestax) {
+//		Double subtotal_value = Double.valueOf(subtotal);
+//		Double shipping_value = Double.valueOf(shipping);
+//		Double salestax_value = Double.valueOf(salestax);
+//		
+//		Double total_value = subtotal_value + shipping_value + salestax_value;
+//		double total_roundOff = Math.floor(total_value * 100.0) / 100.0;
+//				
+//		String total = String.valueOf(total_roundOff);		
+//		return total;
+//	}
+	
+	public String CalculateTotalPrice(List<String> price) {
+		Double total_value = (double) 0;
+		for(String value : price) {
+			if((value.equalsIgnoreCase("FREE")) || (value.equalsIgnoreCase("0.0")) || (value.equalsIgnoreCase("0"))) {
+				value="0";
+			}
+			
+			if(value.contains("$")) {
+				value = value.replace("$", "");
+			}
+			
+			Double temp_value = Double.valueOf(value);
+			
+			total_value = total_value + temp_value;
+		}
+		double total_roundOff = Math.floor(total_value * 100.0) / 100.0;				
 		String total = String.valueOf(total_roundOff);		
 		return total;
 	}
