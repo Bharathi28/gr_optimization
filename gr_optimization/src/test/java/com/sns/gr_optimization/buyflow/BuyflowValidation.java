@@ -220,7 +220,6 @@ public class BuyflowValidation {
 		
 		List<String> subtotal_list = new ArrayList<String>();
 		List<String> shipping_list = new ArrayList<String>();
-		List<String> expected_supp_cart_lang = new ArrayList<String>();
 		List<String> renewal_plan_list = new ArrayList<String>();
 		List<List<String>> expected_lineitems =  new ArrayList<List<String>>();
 		
@@ -294,14 +293,13 @@ public class BuyflowValidation {
 				// Add Kit PPID to lineitem list
 				List<String> kit_lineitem = new ArrayList<String>();
 				kit_lineitem.add("Kit");
-				kit_lineitem.add(expectedofferdata_kit.get("30 day PPID"));
+				kit_lineitem.add(expectedofferdata_kit.get("Kit PPID"));
 				kit_lineitem.add(expectedofferdata_kit.get("Entry Pricing"));
 				kit_lineitem.add(expectedofferdata_kit.get("Cart Language"));
 				kit_lineitem.add(expectedofferdata_kit.get("Continuity Pricing"));
 				kit_lineitem.add(expectedofferdata_kit.get("Continuity Shipping"));
+				kit_lineitem.add(expectedofferdata_kit.get("Supplemental Cart Language"));
 				expected_lineitems.add(kit_lineitem);		
-				
-				expected_supp_cart_lang.add(expectedofferdata_kit.get("Supplemental Cart Language"));
 				
 				// Add Gift PPIDs to lineitem list				
 				String[] giftppidarr = expectedofferdata_kit.get("Gift PPID").split(",");				
@@ -313,6 +311,7 @@ public class BuyflowValidation {
 					gift_lineitem.add("No Cart Language");
 					gift_lineitem.add("No Continuity Pricing");
 					gift_lineitem.add("No Continuity Shipping");
+					gift_lineitem.add("No Supplemental Cart Language");
 					expected_lineitems.add(gift_lineitem);
 				}				
 				
@@ -354,12 +353,45 @@ public class BuyflowValidation {
 			}		
 		}		
 		
+		// Fill out form
+		String email = "";
+				
+		// Fall-back scenario
+		// Paypal - Cannot fill-in invalid address-zipcode
+		if(cc.equalsIgnoreCase("Paypal")) {
+			email = bf_obj.fill_out_form(driver, brand, campaigncategory, cc, shipbill, "30");
+			System.out.println("Email : " + email);
+			if(!(email.contains("testbuyer"))) {
+				remarks = remarks + "Paypal Down - Credit card order placed";
+				cc = "Visa";
+			}
+		}
+		else {
+			if((categorylist.contains("Kit")) && (expectedofferdata_kit.get("Offer Post-Purchase").equalsIgnoreCase("Yes"))) {
+				email = bf_obj.fill_out_form(driver, brand, campaigncategory, "VISA", "same", "90");
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver);
+						
+				pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
+				bf_obj.complete_order(driver, brand, "VISA");
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern +".har", driver);
+						
+				bf_obj.upsell_confirmation(driver, brand, campaigncategory, expectedofferdata_kit.get("Offer Post-Purchase"));
+			}
+			else {
+				email = bf_obj.fill_out_form(driver, brand, campaigncategory, cc, shipbill, "30");
+				System.out.println("Email : " + email);
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver);
+			}	
+		}	
+		
 		// Checkout Page Validation
 		// Validate Line Items
 		List<List<String>> actual_lineitems = bf_obj.getLineItems(driver);
 		
 		// When some more lineitems are expected
-		List<List<String>> temp_lineitemlist = new ArrayList<>(expected_lineitems);
+//		List<List<String>> temp_lineitemlist = new ArrayList<>(expected_lineitems);
+		List<List<String>> temp_lineitemlist = new ArrayList<>();
+		List<List<String>> diff_lineitemlist = new ArrayList<>(expected_lineitems);
 					
 		for(List<String> actual_item : actual_lineitems) {
 			String actual_ppid = actual_item.get(0);
@@ -367,9 +399,13 @@ public class BuyflowValidation {
 			String actual_cart_language = actual_item.get(2);
 			String actual_continuity_price = actual_item.get(3);
 			String actual_continuity_shipping = actual_item.get(4);
+			
+			System.out.println("Actual Lineitem : " + actual_item);
 				
-			for(List<String> expected_item : temp_lineitemlist) {
+			for(List<String> expected_item : expected_lineitems) {
+				System.out.println("Expected Lineitem : " + expected_item);
 				if(expected_item.contains(actual_ppid)) {
+					actual_price = actual_price.replace("$", "");
 					if(expected_item.get(2).equalsIgnoreCase(actual_price)) {
 						EntryPriceResult = "PASS";
 					}
@@ -415,29 +451,34 @@ public class BuyflowValidation {
 							}
 						}						
 					}					
-					temp_lineitemlist.remove(expected_item);
+					temp_lineitemlist.add(expected_item);
 				}					
 			}				
 		}			
-		for(List<String> lineitem : temp_lineitemlist) {
+		diff_lineitemlist.removeAll(temp_lineitemlist);
+		for(List<String> lineitem : diff_lineitemlist) {
 			ppidResult = "FAIL";
 			remarks = remarks + "Missing " + lineitem.get(0) + " - " + lineitem.get(1) + " in Checkout Cart ; ";
 		}
 		
 		// When Extra lineitems are present
-		temp_lineitemlist = new ArrayList<>(actual_lineitems);
+		temp_lineitemlist.clear();
+		temp_lineitemlist = new ArrayList<>();
+		diff_lineitemlist = new ArrayList<>(actual_lineitems);
 		
 		for(List<String> expected_item : expected_lineitems) {
 			String expected_ppid = expected_item.get(0);
-			String expected_price = expected_item.get(1);
 				
-			for(List<String> actual_item : temp_lineitemlist) {
+			for(List<String> actual_item : actual_lineitems) {
 				if(actual_item.contains(expected_ppid)) {
-					temp_lineitemlist.remove(actual_item);					
+					temp_lineitemlist.add(actual_item);					
 				}
 			}				
 		}			
-		for(List<String> lineitem : temp_lineitemlist) {
+		System.out.println(temp_lineitemlist);
+		diff_lineitemlist.removeAll(temp_lineitemlist);
+		System.out.println(diff_lineitemlist);
+		for(List<String> lineitem : diff_lineitemlist) {
 			// If Result is already fail, then the overall ppid result is fail
 			if(ppidResult.equalsIgnoreCase("FAIL")) {
 				ppidResult = "FAIL";
@@ -447,48 +488,18 @@ public class BuyflowValidation {
 			}
 			remarks = remarks + lineitem.get(0) + " is present in Checkout Cart ; ";
 		}				
-		
-		// Fill out form
-		String email = "";
-		
-		// Fall-back scenario
-		// Paypal - Cannot fill-in invalid address-zipcode
-		if(cc.equalsIgnoreCase("Paypal")) {
-			email = bf_obj.fill_out_form(driver, brand, campaigncategory, cc, shipbill, "30");
-			System.out.println("Email : " + email);
-			if(!(email.contains("testbuyer"))) {
-				remarks = remarks + "Paypal Down - Credit card order placed";
-				cc = "Visa";
-			}
-		}
-		else {
-			if((categorylist.contains("Kit")) && (expectedofferdata_kit.get("Offer Post-Purchase").equalsIgnoreCase("Yes"))) {
-				email = bf_obj.fill_out_form(driver, brand, campaigncategory, "VISA", "same", "90");
-				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver);
 				
-				pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
-				bf_obj.complete_order(driver, brand, "VISA");
-				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern +".har", driver);
-				
-				bf_obj.upsell_confirmation(driver, brand, campaigncategory, expectedofferdata_kit.get("Offer Post-Purchase"));
-			}
-			else {
-				email = bf_obj.fill_out_form(driver, brand, campaigncategory, cc, shipbill, "30");
-				System.out.println("Email : " + email);
-				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver);
-			}	
-		}						
-		
 		// Supplemental Cart Language Validation
 		// Scenario - 90-day order + Paypal - could not validate 90-day cart language and supplemental language because invalid zipcode could not be fill-in for Paypal
 		if(!((cc.equalsIgnoreCase("Paypal")) && (expectedofferdata_kit.get("Offer Post-Purchase").equalsIgnoreCase("Yes")))) {
 			String actual_suppl_cart_lang = lang_obj.getsupplementalcartlanguage(driver);
+			System.out.println(actual_suppl_cart_lang);
 			for(List<String> expected_item : expected_lineitems) {
 				String exp_suppl_cart_lang = expected_item.get(6);
 				
 				//Remove whitespace
 				String expsuppcartlang = exp_suppl_cart_lang.replaceAll("\\s+", "");
-				String actsuppcartlang = actual_suppl_cart_lang.replaceAll(" ", "");
+				String actsuppcartlang = actual_suppl_cart_lang.replaceAll("\\s+", "");
 				
 				// Remove special characters
 				expsuppcartlang = expsuppcartlang.replaceAll("[^a-zA-Z0-9$]+", "");
@@ -660,16 +671,18 @@ public class BuyflowValidation {
 		List<String> conf_offercode_list = Arrays.asList(conf_offercode.split("\\s*,\\s*"));
 		
 		// When some more lineitems are expected
-		temp_lineitemlist = new ArrayList<>(expected_lineitems);
+		temp_lineitemlist = new ArrayList<>();
+		diff_lineitemlist = new ArrayList<>(expected_lineitems);
 							
 		for(String offercode : conf_offercode_list) {									
-			for(List<String> expected_item : temp_lineitemlist) {
+			for(List<String> expected_item : expected_lineitems) {
 				if(expected_item.contains(offercode)) {											
-					temp_lineitemlist.remove(expected_item);
+					temp_lineitemlist.add(expected_item);
 				}
 			}				
 		}			
-		for(List<String> lineitem : temp_lineitemlist) {
+		diff_lineitemlist.removeAll(temp_lineitemlist);
+		for(List<String> lineitem : diff_lineitemlist) {
 			// If Result is already fail, then the overall ppid result is fail
 			if(ppidResult.equalsIgnoreCase("FAIL")) {
 				ppidResult = "FAIL";
@@ -681,18 +694,22 @@ public class BuyflowValidation {
 		}
 				
 		// When Extra lineitems are present
-		List<String> temp_ppidlist = new ArrayList<>(conf_offercode_list);
+		List<String> temp_ppidlist = new ArrayList<>();
+		List<String> diff_ppidlist = new ArrayList<>(conf_offercode_list);
 				
 		for(List<String> expected_item : expected_lineitems) {
 			String expected_ppid = expected_item.get(0);
 						
-			for(String actual_item : temp_ppidlist) {
+			for(String actual_item : conf_offercode_list) {
 				if(actual_item.contains(expected_ppid)) {
-					temp_ppidlist.remove(actual_item);					
+					temp_ppidlist.add(actual_item);					
 				}
 			}				
-		}			
-		for(String extrappid : temp_ppidlist) {
+		}		
+		System.out.println(temp_ppidlist);
+		diff_ppidlist.removeAll(temp_ppidlist);
+		System.out.println(diff_ppidlist);
+		for(String extrappid : diff_ppidlist) {
 			// If Result is already fail, then the overall ppid result is fail
 			if(ppidResult.equalsIgnoreCase("FAIL")) {
 				ppidResult = "FAIL";
@@ -830,34 +847,38 @@ public class BuyflowValidation {
 		// Renewal Plan Validation
 		String actualrenewalplanid = comm_obj.getFromVariableMap(driver, "renewalPlanId");	
 		
-		List<String> actual_renewal_plan_list = Arrays.asList(conf_offercode.split("\\s*,\\s*"));
+		List<String> actual_renewal_plan_list = Arrays.asList(actualrenewalplanid.split("\\s*,\\s*"));
 		
 		// When some more lineitems are expected
-		List<String> temp_renewlist = new ArrayList<>(renewal_plan_list);
+		List<String> temp_renewlist = new ArrayList<>();
+		List<String> diff_renewlist = new ArrayList<>(renewal_plan_list);
 							
 		for(String plan : actual_renewal_plan_list) {									
-			for(String expected_plan : temp_renewlist) {
+			for(String expected_plan : renewal_plan_list) {
 				if(expected_plan.contains(plan)) {											
-					temp_renewlist.remove(expected_plan);
+					temp_renewlist.add(expected_plan);
 				}
 			}				
 		}			
-		for(String plan : temp_renewlist) {
+		diff_renewlist.removeAll(temp_renewlist);
+		for(String plan : diff_renewlist) {
 			RenewalPlanResult = "FAIL";			
 			remarks = remarks + "Renewal Plan Id - " + plan + " is Missing ; ";
 		}
 				
 		// When Extra lineitems are present
-		temp_renewlist = new ArrayList<>(actual_renewal_plan_list);
+		temp_renewlist = new ArrayList<>();
+		diff_renewlist = new ArrayList<>(actual_renewal_plan_list);
 				
 		for(String expected_plan : renewal_plan_list) {						
-			for(String actual_plan : temp_renewlist) {
+			for(String actual_plan : actual_renewal_plan_list) {
 				if(actual_plan.contains(expected_plan)) {
-					temp_renewlist.remove(actual_plan);					
+					temp_renewlist.add(actual_plan);					
 				}
 			}				
 		}			
-		for(String plan : temp_renewlist) {
+		diff_renewlist.removeAll(temp_renewlist);
+		for(String plan : diff_renewlist) {
 			// If Result is already fail, then the overall ppid result is fail
 			if(RenewalPlanResult.equalsIgnoreCase("FAIL")) {
 				RenewalPlanResult = "FAIL";
