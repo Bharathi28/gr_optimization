@@ -25,11 +25,21 @@ public class DBUtilities {
 		String url = campaigndata.get(0).get("PRODURL").toString();
 //		System.out.println(url);
 		if(env.equalsIgnoreCase("qa")) {
-			url = url.replace("www.", "storefront:eComweb123@");
+			if(brand.equalsIgnoreCase("JLoBeauty")) {
+				url = url.replace("www.", "storefront:Jloqa123@");
+			}
+			else {
+				url = url.replace("www.", "storefront:eComweb123@");
+			}			
 			url = url.replace("com", "grdev.com");
 		}
 		else if(env.equalsIgnoreCase("stg")) {
-			url = url.replace("www.", "storefront:eComweb123@www.");
+			if(brand.equalsIgnoreCase("JLoBeauty")) {
+				url = url.replace("www.", "storefront:Jlostg123@");
+			}
+			else {
+				url = url.replace("www.", "storefront:eComweb123@www.");
+			}			
 			url = url.replace("com", "stg.dw4.grdev.com");
 		}
 		else if(env.equalsIgnoreCase("prod")) {

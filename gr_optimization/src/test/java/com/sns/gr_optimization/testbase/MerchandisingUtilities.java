@@ -25,7 +25,33 @@ public class MerchandisingUtilities {
 		return expectedsourcecodedata;
 	}
 	
-	public HashMap<String, String> generateExpectedOfferDataForKit(HashMap<String, String> offerdata, HashMap<String, String> sourcecodedata, String PPUSection, String PostPU, String kitppid, String giftppid, String brand, String campaign) throws ClassNotFoundException, SQLException {
+	public HashMap<String, String> generateExpectedOfferDataForProduct(HashMap<String, String> offerdata, String kitppid, String brand, String campaign, String category) throws ClassNotFoundException, SQLException {
+		LinkedHashMap<String, String> expectedofferdata = new LinkedHashMap<String, String>();
+		
+		expectedofferdata.put("Brand", brand);
+		expectedofferdata.put("Campaign", campaign);
+		if(offerdata.get("Master Product") != null) {
+			expectedofferdata.put("Master PPID", offerdata.get("Master Product").trim());
+		}		
+		expectedofferdata.put("Product PPID", offerdata.get("PPID").trim());
+		expectedofferdata.put("Product Name", offerdata.get("Product Name").trim());
+		
+		if(offerdata.get("Shade if any") != null) {
+			expectedofferdata.put("Shade", offerdata.get("Shade if any").trim());
+		}
+		expectedofferdata.put("Size", offerdata.get("Size").trim());
+		expectedofferdata.put("One-time Price", offerdata.get("Acq One Time price (PJLA3BR)").trim());
+		if(offerdata.get("Subscribe and Save price (PJLA3BS)") != null) {
+			expectedofferdata.put("Subscribe and Save Price", offerdata.get("Subscribe and Save price (PJLA3BS)").trim());
+		}		
+		expectedofferdata.put("Renewal Plan ID", offerdata.get("Renewal Plan ID").trim());
+		expectedofferdata.put("Cart Language", offerdata.get("Cart Language").trim());
+		expectedofferdata.put("Supplemental Cart Language", offerdata.get("Supplementary Cart Language").trim());
+		
+		return expectedofferdata;
+	}
+	
+	public HashMap<String, String> generateExpectedOfferDataForKit(HashMap<String, String> offerdata, String PPUSection, String PostPU, String kitppid, String giftppid, String brand, String campaign) throws ClassNotFoundException, SQLException {
 		LinkedHashMap<String, String> expectedofferdata = new LinkedHashMap<String, String>();
 				
 		expectedofferdata.put("Brand", brand);
@@ -302,11 +328,6 @@ public class MerchandisingUtilities {
 		expectedofferdata.put("Final Shipping", expectedfinalshipping);
 		expectedofferdata.put("Continuity Pricing", continuitypricing);	
 		expectedofferdata.put("Continuity Shipping", continuityshipping);
-		
-		expectedofferdata.put("Media ID", sourcecodedata.get("Media ID"));
-		expectedofferdata.put("Creative ID", sourcecodedata.get("Creative ID"));
-		expectedofferdata.put("Venue ID", sourcecodedata.get("Venue ID"));
-		expectedofferdata.put("Price Book ID", sourcecodedata.get("Price Book ID"));
 		
 		return expectedofferdata;
 	}

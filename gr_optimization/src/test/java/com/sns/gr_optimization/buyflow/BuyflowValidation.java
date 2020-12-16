@@ -209,14 +209,19 @@ public class BuyflowValidation {
 		driver.get(url);
 		driver.manage().timeouts().implicitlyWait(6, TimeUnit.SECONDS);	
 		pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_homepage_" + pattern +".har", driver);
-								
-		// Read Source code details from Merchandising template for the campaign
-		HashMap<String, String> sourcecodedata = merch_obj.getSourceCodeInfo(merchData, campaign);	
-		// Collect Source code details for the campaign
-		HashMap<String, String> expectedsourcecodedata = merch_obj.generateExpectedSourceCodeData(sourcecodedata);
+						
+		HashMap<String, String> sourcecodedata = null;
+		HashMap<String, String> expectedsourcecodedata = null;
+		if(!(brand.equalsIgnoreCase("JloBeauty"))) {
+			// Read Source code details from Merchandising template for the campaign
+			sourcecodedata = merch_obj.getSourceCodeInfo(merchData, campaign);	
+			// Collect Source code details for the campaign
+			expectedsourcecodedata = merch_obj.generateExpectedSourceCodeData(sourcecodedata);
+		}		
 		
 		// HashMap variable to collect Kit related details from Merchandising Template
 		HashMap<String, String> expectedofferdata_kit = null;
+		HashMap<String, String> expectedofferdata_product = null;
 		
 		List<String> subtotal_list = new ArrayList<String>();
 		List<String> shipping_list = new ArrayList<String>();
@@ -287,9 +292,11 @@ public class BuyflowValidation {
 				campaignpages.add("ConfirmationPage");	
 				
 				// Collect current Offer related details from Merchandising Input file
-				expectedofferdata_kit = merch_obj.generateExpectedOfferDataForKit(kit_offerdata, sourcecodedata, PPUSection, postpu, ppid, giftppid, brand, campaigncategory);
-				System.out.println("Expected Offerdata - Kit : " + expectedofferdata_kit);
-				
+				if(!(brand.equalsIgnoreCase("JloBeauty"))) {
+					expectedofferdata_kit = merch_obj.generateExpectedOfferDataForKit(kit_offerdata, PPUSection, postpu, ppid, giftppid, brand, campaigncategory);
+					System.out.println("Expected Offerdata - Kit : " + expectedofferdata_kit);
+				}
+								
 				// Add Kit PPID to lineitem list
 				List<String> kit_lineitem = new ArrayList<String>();
 				kit_lineitem.add("Kit");
@@ -345,15 +352,16 @@ public class BuyflowValidation {
 				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
 				bf_obj.move_to_checkout(driver, brand, campaigncategory, category);
 			}
-			else if(currentCategory.equalsIgnoreCase("Product")) {
+			else if((currentCategory.equalsIgnoreCase("Product")) || (currentCategory.equalsIgnoreCase("SubscribeandSave"))) {
+				// Get the product data from Web Catalog
 				HashMap<String, String> product_offerdata = merch_obj.getProdRowfromCatalog(catalogData, ppid);
-				String pagepattern = product_offerdata.get("PagePattern").trim();
+//				System.out.println(product_offerdata);
+				
+				// Collect current Offer related details from Merchandising Input file
+				expectedofferdata_product = merch_obj.generateExpectedOfferDataForProduct(product_offerdata, ppid, brand, campaigncategory, currentCategory);
+				System.out.println("Expected Offerdata - Product : " + expectedofferdata_product);
 			}
-			else if(currentCategory.equalsIgnoreCase("SubscribeandSave")) {
-				HashMap<String, String> product_offerdata = merch_obj.getProdRowfromCatalog(catalogData, ppid);
-				String pagepattern = product_offerdata.get("PagePattern").trim();
-			}			
-			
+						
 			if(offerIterator.hasNext() && categoryIterator.hasNext()) {
 				bf_obj.click_logo(driver, brand, campaigncategory);
 			}		
