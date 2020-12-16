@@ -598,7 +598,8 @@ public class MerchandisingUtilities {
 	public String checkPostPU(HashMap<String, String> offerdata) {
 		String PostPU;
 		if(offerdata.get("Post Purchase Upsell to") != null) {
-			String postpuppid = offerdata.get("Post Purchase Upsell to").trim();
+//			String postpuppid = offerdata.get("Post Purchase Upsell to").trim();
+			String postpuppid = offerdata.get("Post Purchase Upsell to").replaceAll("\\s+", "");
 			if(postpuppid.matches("^[A-Z0-9]*$")) {
 				PostPU = "Yes";
 			}
