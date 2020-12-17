@@ -13,6 +13,7 @@ public class MerchandisingUtilities {
 	
 	DBUtilities db_obj = new DBUtilities();
 	BuyflowUtilities bf_obj = new BuyflowUtilities();
+	CartLanguageUtilities lang_obj = new CartLanguageUtilities();
 	
 	public HashMap<String, String> generateExpectedSourceCodeData(HashMap<String, String> sourcecodedata) throws ClassNotFoundException, SQLException {
 		LinkedHashMap<String, String> expectedsourcecodedata = new LinkedHashMap<String, String>();
@@ -36,17 +37,55 @@ public class MerchandisingUtilities {
 		expectedofferdata.put("Product PPID", offerdata.get("PPID").trim());
 		expectedofferdata.put("Product Name", offerdata.get("Product Name").trim());
 		
+		String shade = "No Shade";
 		if(offerdata.get("Shade if any") != null) {
+			shade = offerdata.get("Shade if any").trim();
 			expectedofferdata.put("Shade", offerdata.get("Shade if any").trim());
 		}
+		expectedofferdata.put("Shade", shade);
+		
 		expectedofferdata.put("Size", offerdata.get("Size").trim());
-		expectedofferdata.put("One-time Price", offerdata.get("Acq One Time price (PJLA3BR)").trim());
-		if(offerdata.get("Subscribe and Save price (PJLA3BS)") != null) {
-			expectedofferdata.put("Subscribe and Save Price", offerdata.get("Subscribe and Save price (PJLA3BS)").trim());
+		
+		String pagepattern = "product-";
+		if(category.equalsIgnoreCase("Product")) {
+			
+			pagepattern = pagepattern + "onetime";
+			if(!(shade.equalsIgnoreCase("No Shade"))) {
+				pagepattern = pagepattern + "-" + shade;
+			}			
+			
+			expectedofferdata.put("PagePattern", pagepattern);
+			expectedofferdata.put("Price", offerdata.get("Acq One Time price").trim());
+			expectedofferdata.put("Renewal Plan Id", "No Renewal Plan Id");
+			expectedofferdata.put("Cart Language", "No Cart Language");
+			expectedofferdata.put("Supplemental Cart Language", "No Supplemental Cart Language");
+			expectedofferdata.put("Continuity Pricing", "No Continuity Pricing");
+			expectedofferdata.put("Continuity Shipping", "No Continuity Shipping");
+			expectedofferdata.put("Price Book Id", offerdata.get("Acq One Time Price Book ID").trim());
+		}
+		else if(category.equalsIgnoreCase("SubscribeandSave")) {
+			
+			pagepattern = pagepattern + "subscribe";
+			if(!(shade.equalsIgnoreCase("No Shade"))) {
+				pagepattern = pagepattern + "-" + shade;
+			}			
+			
+			expectedofferdata.put("PagePattern", pagepattern);
+			if(offerdata.get("Subscribe and Save price") != null) {
+				expectedofferdata.put("Price", offerdata.get("Subscribe and Save price").trim());
+			}
+			expectedofferdata.put("Renewal Plan Id", offerdata.get("Renewal Plan ID").trim());
+			expectedofferdata.put("Cart Language", offerdata.get("Cart Language").trim());
+			expectedofferdata.put("Supplemental Cart Language", offerdata.get("Supplementary Cart Language").trim());
+			
+			String[] lang_price_arr = lang_obj.parse_cart_language(offerdata.get("Cart Language").trim());			
+			String cart_lang_price = lang_price_arr[1];
+			String cart_lang_shipping = lang_price_arr[2];	
+			expectedofferdata.put("Continuity Pricing", cart_lang_price);
+			expectedofferdata.put("Continuity Shipping", cart_lang_shipping);
+			
+			expectedofferdata.put("Price Book Id", offerdata.get("Subscribe and Save Price Book ID").trim());
 		}		
-		expectedofferdata.put("Renewal Plan ID", offerdata.get("Renewal Plan ID").trim());
-		expectedofferdata.put("Cart Language", offerdata.get("Cart Language").trim());
-		expectedofferdata.put("Supplemental Cart Language", offerdata.get("Supplementary Cart Language").trim());
 		
 		return expectedofferdata;
 	}

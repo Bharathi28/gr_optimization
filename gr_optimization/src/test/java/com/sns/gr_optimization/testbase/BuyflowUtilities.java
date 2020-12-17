@@ -268,7 +268,7 @@ public class BuyflowUtilities {
 //		return giftResult;
 //	}
 	
-	public List<List<String>> getLineItems(WebDriver driver, String cc, String offerpostpu) {
+	public List<List<String>> getLineItems(WebDriver driver, String cc, String offerpostpu, String brand) {
 		
 		List<List<String>> actual_lineitems = new ArrayList<List<String>>();
 		
@@ -278,9 +278,15 @@ public class BuyflowUtilities {
 			System.out.println("Lineitem " + i + " : ");
 			List<String> item = new ArrayList<String>();
 			
-			String ppid = driver.findElement(By.xpath("(//span[@class='PPID disclaimer-ppid'])[" + i + "]")).getText();
+			String ppid = "";
 			String price = null;
-			
+			if(brand.equalsIgnoreCase("JloBeauty")) {
+				ppid = driver.findElement(By.xpath("(//div[@class='item-quantity'])[" + i + "]")).getAttribute("data-id");
+			}
+			else {
+				ppid = driver.findElement(By.xpath("(//span[@class='PPID disclaimer-ppid'])[" + i + "]")).getText();
+			}
+						
 			if(offerpostpu.equalsIgnoreCase("Yes")) {
 				if(cc.equalsIgnoreCase("Paypal")) {
 					price = driver.findElement(By.xpath("(//div[contains(@class,'product-card')]//ul//li[contains(@class,'item-total')]//span[last()])[" + i + "]")).getText();
@@ -326,17 +332,6 @@ public class BuyflowUtilities {
 		}
 		
 		return actual_lineitems;
-		
-//		(//div[contains(@class,'product-card')]//span[@class='PPID disclaimer-ppid'])
-//		
-//		
-//		List<WebElement> lineitem = driver.findElements(By.xpath("//span[@class='PPID disclaimer-ppid']"));
-//		
-//		List<String> ppids = new ArrayList<String>();
-//		for(WebElement item : lineitem) {
-//			ppids.add(item.getText());
-//		}
-//		return ppids;
 	}
 	
 	public String checkAddedLineItem(WebDriver driver, String brand, String campaign, String offer, String name) throws ClassNotFoundException, SQLException, InterruptedException {
@@ -589,7 +584,7 @@ public class BuyflowUtilities {
 		String email = alpha + "-" + num + "@mailnesia.com";
 		
 		fill_form_field(driver, realm, "Email", email.toLowerCase());
-		if((brand.equalsIgnoreCase("CrepeErase"))||(brand.equalsIgnoreCase("MeaningfulBeauty"))){
+		if((brand.equalsIgnoreCase("CrepeErase")) || (brand.equalsIgnoreCase("MeaningfulBeauty")) || (brand.equalsIgnoreCase("JLoBeauty"))){
 			driver.findElement(By.xpath("(//input[contains(@class,'input-text password')])[1]")).sendKeys("Grcweb123!");
 		}
 		fill_form_field(driver, realm, "PhoneNumber", "8887878787");					
@@ -652,7 +647,9 @@ public class BuyflowUtilities {
 		
 //		if((brand.equalsIgnoreCase("Volaire")) || (brand.equalsIgnoreCase("WestmoreBeauty")) || (brand.equalsIgnoreCase("CrepeErase"))) {
 		if(realm.equalsIgnoreCase("R4")) {
-			fill_form_field(driver, realm, "CVV", "349");	
+			if(!(brand.equalsIgnoreCase("JLoBeauty"))){
+				fill_form_field(driver, realm, "CVV", "349");
+			}				
 		}
 		jse.executeScript("window.scrollBy(0,200)", 0);
 		Thread.sleep(2000);
