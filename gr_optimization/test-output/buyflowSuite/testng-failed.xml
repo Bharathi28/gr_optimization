@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite guice-stage="DEVELOPMENT" name="Failed suite [buyflowSuite]" data-provider-thread-count="5">
+  <parameter name="environment" value="QA"/>
+  <test name="buyflowTest(failed)">
+    <classes>
+      <class name="com.sns.gr_optimization.buyflow.BuyflowValidation">
+        <methods>
+          <include name="populateExcel"/>
+          <include name="getEmailId"/>
+          <include name="buyflow" invocation-numbers="0"/>
+        </methods>
+      </class> <!-- com.sns.gr_optimization.buyflow.BuyflowValidation -->
+    </classes>
+  </test> <!-- buyflowTest(failed) -->
+</suite> <!-- Failed suite [buyflowSuite] -->
