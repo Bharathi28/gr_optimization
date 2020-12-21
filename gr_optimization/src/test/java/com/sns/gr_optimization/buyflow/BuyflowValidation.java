@@ -303,18 +303,54 @@ public class BuyflowValidation {
 				expected_lineitems.add(kit_lineitem);		
 				
 				// Add Gift PPIDs to lineitem list				
-				String[] giftppidarr = expectedofferdata_kit.get("Gift PPID").split(",");				
-				for (String gift : giftppidarr) {
-					List<String> gift_lineitem = new ArrayList<String>();
-					gift_lineitem.add("Gift");
-					gift_lineitem.add(gift);
-					gift_lineitem.add("FREE");
-					gift_lineitem.add("No Cart Language");
-					gift_lineitem.add("No Continuity Pricing");
-					gift_lineitem.add("No Continuity Shipping");
-					gift_lineitem.add("No Supplemental Cart Language");
-					expected_lineitems.add(gift_lineitem);
-				}				
+				String[] giftppidarr = expectedofferdata_kit.get("Gift PPID").split(",");
+				if(!(giftppidarr[0].contains("No Gift"))) {
+					for (String gift : giftppidarr) {
+						List<String> gift_lineitem = new ArrayList<String>();
+						gift_lineitem.add("Gift");
+						gift_lineitem.add(gift);
+						gift_lineitem.add("FREE");
+						gift_lineitem.add("No Cart Language");
+						gift_lineitem.add("No Continuity Pricing");
+						gift_lineitem.add("No Continuity Shipping");
+						gift_lineitem.add("No Supplemental Cart Language");
+						expected_lineitems.add(gift_lineitem);
+					}
+				}		
+				
+				// Add PrePU Product to lineitem list
+				if(expectedofferdata_kit.get("Offer Pre-Purchase").equalsIgnoreCase("Yes")) {
+					String prepu_ppid = String.join(",", bf_obj.getPPIDfromString(brand, expectedofferdata_kit.get("PrePU Product")));
+					String[] prepuppidarr = prepu_ppid.split(",");	
+					for (String prepuprod : prepuppidarr) {
+						List<String> prepu_lineitem = new ArrayList<String>();
+						prepu_lineitem.add("PrePU");
+						prepu_lineitem.add(prepuprod);
+						prepu_lineitem.add("-");
+						prepu_lineitem.add("No Cart Language");
+						prepu_lineitem.add("No Continuity Pricing");
+						prepu_lineitem.add("No Continuity Shipping");
+						prepu_lineitem.add("No Supplemental Cart Language");
+						expected_lineitems.add(prepu_lineitem);
+					}
+				}
+				
+				// Add PostPU Product to lineitem list
+				if(expectedofferdata_kit.get("Offer Post-Purchase").equalsIgnoreCase("Yes")) {
+					String postpu_ppid = String.join(",", bf_obj.getPPIDfromString(brand, expectedofferdata_kit.get("PostPU Product")));
+					String[] postpuppidarr = postpu_ppid.split(",");	
+					for (String postpuprod : postpuppidarr) {
+						List<String> postpu_lineitem = new ArrayList<String>();
+						postpu_lineitem.add("PostPU");
+						postpu_lineitem.add(postpuprod);
+						postpu_lineitem.add("-");
+						postpu_lineitem.add("No Cart Language");
+						postpu_lineitem.add("No Continuity Pricing");
+						postpu_lineitem.add("No Continuity Shipping");
+						postpu_lineitem.add("No Supplemental Cart Language");
+						expected_lineitems.add(postpu_lineitem);
+					}
+				}
 				
 				subtotal_list.add(expectedofferdata_kit.get("Final Pricing"));
 				shipping_list.add(expectedofferdata_kit.get("Final Shipping"));
@@ -500,15 +536,17 @@ public class BuyflowValidation {
 				System.out.println("Expected item: " + expected_item);
 				System.out.println("Actual PPID: " + actual_ppid);
 				if(expected_item.contains(actual_ppid)) {
-					actual_price = actual_price.replace("$", "");
-					String price_result = bf_obj.assertPrice(actual_price, expected_item.get(2));
-					if(price_result.equalsIgnoreCase("PASS")) {
-						EntryPriceResult = "PASS";
-					}
-					else {
-						EntryPriceResult = "FAIL";
-						remarks = remarks + "Checkout Cart - " + expected_item.get(0) + " - " + expected_item.get(1) + " Price Mismatch. Expected - " + expected_item.get(2) + " , Actual - " + actual_price + " ; ";
-					}
+					if(!(expected_item.get(2).equalsIgnoreCase("-"))) {
+						actual_price = actual_price.replace("$", "");
+						String price_result = bf_obj.assertPrice(actual_price, expected_item.get(2));
+						if(price_result.equalsIgnoreCase("PASS")) {
+							EntryPriceResult = "PASS";
+						}
+						else {
+							EntryPriceResult = "FAIL";
+							remarks = remarks + "Checkout Cart - " + expected_item.get(0) + " - " + expected_item.get(1) + " Price Mismatch. Expected - " + expected_item.get(2) + " , Actual - " + actual_price + " ; ";
+						}
+					}					
 					
 					if(!(expected_item.get(3).equalsIgnoreCase("No Cart Language"))) {
 						// Scenario - 90-day order + Paypal - could not validate 90-day cart language and supplemental language because invalid zipcode could not be fill-in for Paypal

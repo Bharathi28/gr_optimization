@@ -810,6 +810,13 @@ public class BuyflowUtilities {
 		actual = actual.replace("$", "");
 		expected = expected.replace("$", "");
 		
+		if(actual.equalsIgnoreCase("FREE")) {
+			actual = "0.0";
+		}
+		if(expected.equalsIgnoreCase("FREE")) {
+			expected = "0.0";
+		}
+		
 		Double expected_price = Double.valueOf(expected);
 		Double actual_price = Double.valueOf(actual);	
 		Double diff = Math.abs(expected_price-actual_price);				

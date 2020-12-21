@@ -353,12 +353,15 @@ public class MerchandisingUtilities {
 			else {
 				// If no seperate lineitem, then no GiftPPID
 				if(giftseperatelineitem.equalsIgnoreCase("Yes")) {
-					if((expectedcampaigngifts != null) && (!(expectedcampaigngifts.equals("-")))) {
+					if((expectedcampaigngifts != null) && (!(expectedcampaigngifts.equals("-"))) && (!(expectedcampaigngifts.equals("")))) {
 						
 						giftppid = String.join(",", bf_obj.getPPIDfromString(brand, expectedcampaigngifts));
 						
 //						giftppid = bf_obj.getPPIDfromString(brand, expectedcampaigngifts).get(0);
 						expectedofferdata.put("Gift PPID", giftppid);
+					}
+					else if((expectedcampaigngifts == null) || (expectedcampaigngifts.equals("-")) || (expectedcampaigngifts.equals(""))){
+						expectedofferdata.put("Gift PPID", "No Gift");
 					}
 				}				
 			}
@@ -804,15 +807,17 @@ public class MerchandisingUtilities {
 		for(int i=0; i<columnCount; i++) {
 			String colName = merchData[0][i];
 //			System.out.println(merchData[0][i]);
-			if(colName.equalsIgnoreCase("Vanity URL")) {
-				vanityurlcolumn = i;
-			}
-			if(colName.equalsIgnoreCase("Source Code Group")) {
-				sourcecodegroupcolumn = i;
-			}
-			if(colName.equalsIgnoreCase("Source Code")) {
-				sourcecodecolumn = i;
-			}
+			if(merchData[0][i] != null) {
+				if(colName.equalsIgnoreCase("Vanity URL")) {
+					vanityurlcolumn = i;
+				}
+				if(colName.equalsIgnoreCase("Source Code Group")) {
+					sourcecodegroupcolumn = i;
+				}
+				if(colName.equalsIgnoreCase("Source Code")) {
+					sourcecodecolumn = i;
+				}
+			}			
 		}
 		
 		for(int i=0; i<merchData.length; i++) {	
@@ -837,7 +842,7 @@ public class MerchandisingUtilities {
 				break;
 			}
 		}
-//		System.out.println(sourcecodedata);
+		System.out.println(sourcecodedata);
 		return sourcecodedata;
 	}
 	
