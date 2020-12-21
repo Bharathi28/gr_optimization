@@ -182,7 +182,7 @@ public class PixelUtilities {
 				System.out.println();
 				System.out.println(event);
 									
-				int compatible = db_obj.checkBrandPixelCompatibility(brand, event);					
+				int compatible = db_obj.checkBrandPixelCompatibility(brand, event);	
 				if(compatible == 1) {
 					
 					List<String> pages = db_obj.getFiringPages(brand, campaign, "CCFlow", pixel, event, campaignpages);

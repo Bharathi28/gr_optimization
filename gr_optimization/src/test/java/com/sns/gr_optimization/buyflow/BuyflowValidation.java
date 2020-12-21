@@ -47,7 +47,7 @@ import com.sns.gr_optimization.testbase.PixelUtilities;
 import com.sns.gr_optimization.testbase.PricingUtilities;
 import com.sns.gr_optimization.testbase.SASUtilities;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
+//import io.github.bonigarcia.wdm.WebDriverManager;
 import net.lightbody.bmp.BrowserMobProxy;
 import net.lightbody.bmp.BrowserMobProxyServer;
 import net.lightbody.bmp.client.ClientUtil;
@@ -373,13 +373,13 @@ public class BuyflowValidation {
 				}
 				else {
 					String subtotal_str = bf_obj.CalculateTotalPrice(subtotal_list);
-					int subtotal_calc = Integer.parseInt(subtotal_str.replace(".0", ""));  
+					double subtotal_calc = Double.parseDouble(subtotal_str);  
 					if(subtotal_calc > 49) {
 						shipping_calc = "FREE";
 					}
 					else {
 						shipping_calc = "$4.99";
-					}
+					}  
 				}
 				
 				shipping_list.add(shipping_calc);
@@ -434,6 +434,7 @@ public class BuyflowValidation {
 		}
 		
 		campaignpages.add("ConfirmationPage");
+		System.out.println(campaignpages);
 		
 		// Fill out form
 		String email = "";
@@ -500,7 +501,8 @@ public class BuyflowValidation {
 				System.out.println("Actual PPID: " + actual_ppid);
 				if(expected_item.contains(actual_ppid)) {
 					actual_price = actual_price.replace("$", "");
-					if(actual_price.contains(expected_item.get(2))) {
+					String price_result = bf_obj.assertPrice(actual_price, expected_item.get(2));
+					if(price_result.equalsIgnoreCase("PASS")) {
 						EntryPriceResult = "PASS";
 					}
 					else {
@@ -642,8 +644,9 @@ public class BuyflowValidation {
 				
 		// Calculate Expected Checkout Price
 		String expected_subtotal = bf_obj.CalculateTotalPrice(subtotal_list);
+		String subtotal_result = bf_obj.assertPrice(checkout_subtotal, expected_subtotal);
 				
-		if(checkout_subtotal.contains(expected_subtotal)) {
+		if(subtotal_result.equalsIgnoreCase("PASS")) {
 			EntryPriceResult = "PASS";
 		}
 		else {
@@ -681,14 +684,14 @@ public class BuyflowValidation {
 				
 		// Checkout SalesTax Validation
 		String salestax = bf_obj.getSalesTax(driver, expected_subtotal, expected_shipping);
-		
-		Double expected_salestax = Double.valueOf(salestax);
-		Double actual_salestax = Double.valueOf(checkout_salestax);
-		Double diff = Math.abs(expected_salestax-actual_salestax);				
-		double roundOff = Math.floor(diff * 100.0) / 100.0;
-		int diff_value = (int)roundOff;
+		String salestax_result = bf_obj.assertPrice(checkout_salestax, salestax);
+//		Double expected_salestax = Double.valueOf(salestax);
+//		Double actual_salestax = Double.valueOf(checkout_salestax);
+//		Double diff = Math.abs(expected_salestax-actual_salestax);				
+//		double roundOff = Math.floor(diff * 100.0) / 100.0;
+//		int diff_value = (int)roundOff;
 
-		if(diff_value == 0) {
+		if(salestax_result.equalsIgnoreCase("PASS")) {
 			EntryPriceResult = "PASS";
 		}				
 		else {
@@ -704,15 +707,16 @@ public class BuyflowValidation {
 		total_list.add(expected_subtotal);
 		total_list.add(expected_shipping);
 		total_list.add(salestax);
-		String total = bf_obj.CalculateTotalPrice(total_list);
 		
-		Double expected_total = Double.valueOf(total);
-		Double actual_total = Double.valueOf(checkout_total);	
-		diff = Math.abs(expected_total-actual_total);				
-		roundOff = Math.floor(diff * 100.0) / 100.0;
-		diff_value = (int)roundOff;
+		String total = bf_obj.CalculateTotalPrice(total_list);
+		String total_result = bf_obj.assertPrice(checkout_total, total);
+//		Double expected_total = Double.valueOf(total);
+//		Double actual_total = Double.valueOf(checkout_total);	
+//		diff = Math.abs(expected_total-actual_total);				
+//		roundOff = Math.floor(diff * 100.0) / 100.0;
+//		diff_value = (int)roundOff;
 
-		if(diff_value == 0) {
+		if(total_result.equalsIgnoreCase("PASS")) {
 			EntryPriceResult = "PASS";
 		}
 		else {
@@ -881,7 +885,8 @@ public class BuyflowValidation {
 		System.out.println("Confirmation Pricing fetched : " + conf_pricing);
 		
 		// Subtotal validation
-		if(conf_subtotal.contains(expected_subtotal)) {
+		String conf_subtotal_result = bf_obj.assertPrice(conf_subtotal, expected_subtotal);
+		if(conf_subtotal_result.equalsIgnoreCase("PASS")) {
 			// If Result is already fail, then the overall EntryPrice result is fail
 			if(EntryPriceResult.equalsIgnoreCase("FAIL")) {
 				EntryPriceResult = "FAIL";
@@ -922,13 +927,14 @@ public class BuyflowValidation {
 		}		
 				
 		// Sales Tax Validation
-		expected_salestax = Double.valueOf(salestax);
-		actual_salestax = Double.valueOf(conf_salestax);				
-		diff = Math.abs(expected_salestax-actual_salestax);				
-		roundOff = Math.floor(diff * 100.0) / 100.0;
-		diff_value = (int)roundOff;
+		String conf_salestax_result = bf_obj.assertPrice(conf_salestax, salestax);
+//		expected_salestax = Double.valueOf(salestax);
+//		actual_salestax = Double.valueOf(conf_salestax);				
+//		diff = Math.abs(expected_salestax-actual_salestax);				
+//		roundOff = Math.floor(diff * 100.0) / 100.0;
+//		diff_value = (int)roundOff;
 
-		if(diff_value == 0) {
+		if(conf_salestax_result.equalsIgnoreCase("PASS")) {
 			// If Result is already fail, then the overall EntryPrice result is fail
 			if(EntryPriceResult.equalsIgnoreCase("FAIL")) {
 				EntryPriceResult = "FAIL";
@@ -943,13 +949,14 @@ public class BuyflowValidation {
 		}
 		
 		// Total Price Validation
-		expected_total = Double.valueOf(total);
-		actual_total = Double.valueOf(conf_total);
-		diff = Math.abs(expected_total-actual_total);						
-		roundOff = Math.floor(diff * 100.0) / 100.0;				
-		diff_value = (int)roundOff;
+		String conf_total_result = bf_obj.assertPrice(conf_total, total);
+//		expected_total = Double.valueOf(total);
+//		actual_total = Double.valueOf(conf_total);
+//		diff = Math.abs(expected_total-actual_total);						
+//		roundOff = Math.floor(diff * 100.0) / 100.0;				
+//		diff_value = (int)roundOff;
 
-		if(diff_value == 0) {
+		if(conf_total_result.equalsIgnoreCase("PASS")) {
 			// If Result is already fail, then the overall EntryPrice result is fail
 			if(EntryPriceResult.equalsIgnoreCase("FAIL")) {
 				EntryPriceResult = "FAIL";
@@ -1104,6 +1111,7 @@ public class BuyflowValidation {
 		output_row.add(cc);	
 		output_row.add(browser);	
 		output_row.add(remarks);
+		System.out.println("Output row : " + output_row);
 		output.add(output_row);
 		
 		driver.close();

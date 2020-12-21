@@ -245,6 +245,7 @@ public class SASUtilities {
 		jse.executeScript("window.scrollBy(0,300)", 0);
 	
 		String ppid = offerdata.get("Product PPID");
+		String pagepattern = offerdata.get("PagePattern");
 		String masterppid = ppid;
 		if(offerdata.containsKey("Master PPID")) {
 			masterppid = offerdata.get("Master PPID");
@@ -252,6 +253,11 @@ public class SASUtilities {
 		
 		while(driver.findElements(By.xpath("//div[@data-itemid='" + masterppid + "']//div[4]//h3//a")).size() == 0){
 			jse.executeScript("window.scrollBy(0,400)", 0);
+			
+			if(driver.findElements(By.xpath("//div[@data-itemid='" + ppid + "']//div[4]//h3//a")).size() != 0) {
+				masterppid = ppid;
+				break;
+			}
 		}
 		
 		WebElement product_elmt = driver.findElement(By.xpath("//div[@data-itemid='" + masterppid + "']//div[4]//h3//a"));
@@ -260,8 +266,10 @@ public class SASUtilities {
 		product_elmt.click();
 		
 		if(brand.equalsIgnoreCase("JLoBeauty")) {
-			Thread.sleep(4000);
-			driver.findElement(By.xpath("//button[@id='add-cart-modal']")).click();
+			if(!(pagepattern.contains("shade"))) {
+				Thread.sleep(4000);
+				driver.findElement(By.xpath("//button[@id='add-cart-modal']")).click();
+			}
 		}
 		Thread.sleep(1000);
 	}
@@ -272,11 +280,18 @@ public class SASUtilities {
 	
 		String ppid = offerdata.get("Product PPID");
 		
-		WebElement shade_elmt = driver.findElement(By.xpath("(//li[@data-variantid='" + ppid + "']//a//img)[2]"));
-		comm_obj.waitUntilElementAppears(driver, "(//li[@data-variantid='" + ppid + "']//a//img)[2]");
+		WebElement shade_elmt = driver.findElement(By.xpath("(//li[@data-variantid='" + ppid + "'])[3]"));
+		comm_obj.waitUntilElementAppears(driver, "(//li[@data-variantid='" + ppid + "'])[3]");
 		Thread.sleep(2000);
-		shade_elmt.click();
+		if(!(shade_elmt.getAttribute("class").contains("selected"))) {
+			shade_elmt.click();
+		}		
 		Thread.sleep(1000);	
+		
+		if(brand.equalsIgnoreCase("JLoBeauty")) {
+			Thread.sleep(4000);
+			driver.findElement(By.xpath("//button[@id='add-cart-modal']")).click();
+		}
 	}
 	
 	public void select_onetime(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {

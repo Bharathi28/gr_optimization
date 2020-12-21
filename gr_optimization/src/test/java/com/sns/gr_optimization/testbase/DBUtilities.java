@@ -136,6 +136,16 @@ public class DBUtilities {
 						pageList.add("SASPage");
 					}
 				}
+				if(value.equalsIgnoreCase("Shop")) {
+					if(campaignPageList.contains("ShopPage")) {
+						pageList.add("ShopPage");
+					}
+				}
+				if(value.equalsIgnoreCase("PDP")) {
+					if(campaignPageList.contains("PDPage")) {
+						pageList.add("PDPage");
+					}
+				}
 				if(value.equalsIgnoreCase("Checkout")) {
 					if(campaignPageList.contains("CheckoutPage")) {
 						pageList.add("CheckoutPage");
@@ -167,6 +177,7 @@ public class DBUtilities {
 					}
 				}
 			}
+			System.out.println("PageList:" + pageList);
 			return pageList;
 		}	
 		

@@ -805,4 +805,24 @@ public class BuyflowUtilities {
 		System.out.println("Total : " + total);
 		return total;
 	}
+	
+	public String assertPrice(String actual, String expected) {
+		actual = actual.replace("$", "");
+		expected = expected.replace("$", "");
+		
+		Double expected_price = Double.valueOf(expected);
+		Double actual_price = Double.valueOf(actual);	
+		Double diff = Math.abs(expected_price-actual_price);				
+		double roundOff = Math.floor(diff * 100.0) / 100.0;
+		int diff_value = (int)roundOff;
+		
+		String Result = "";
+		if(diff_value == 0) {
+			Result = "PASS";
+		}				
+		else {
+			Result = "FAIL";
+		}
+		return Result;
+	}
 }

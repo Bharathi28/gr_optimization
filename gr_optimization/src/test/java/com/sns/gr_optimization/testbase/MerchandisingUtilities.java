@@ -49,10 +49,10 @@ public class MerchandisingUtilities {
 		String pagepattern = "product-";
 		if(category.equalsIgnoreCase("Product")) {
 			
-			pagepattern = pagepattern + "onetime";
 			if(!(shade.equalsIgnoreCase("No Shade"))) {
-				pagepattern = pagepattern + "-" + shade;
+				pagepattern = pagepattern + "shade-";
 			}			
+			pagepattern = pagepattern + "onetime";
 			
 			expectedofferdata.put("PagePattern", pagepattern);
 			expectedofferdata.put("Price", offerdata.get("Acq One Time price").trim());
@@ -65,15 +65,23 @@ public class MerchandisingUtilities {
 		}
 		else if(category.equalsIgnoreCase("SubscribeandSave")) {
 			
-			pagepattern = pagepattern + "subscribe";
 			if(!(shade.equalsIgnoreCase("No Shade"))) {
-				pagepattern = pagepattern + "-" + shade;
+				pagepattern = pagepattern + "shade-";
 			}			
+			pagepattern = pagepattern + "subscribe";
 			
 			expectedofferdata.put("PagePattern", pagepattern);
-			if(offerdata.get("Subscribe and Save price") != null) {
-				expectedofferdata.put("Price", offerdata.get("Subscribe and Save price").trim());
-			}
+//			if(offerdata.get("Subscribe and Save price") != null) {
+				String one_time_price = offerdata.get("Acq One Time price").trim();
+				one_time_price = one_time_price.replace("$", "");
+				Double onetime_value = Double.valueOf(one_time_price);
+				Double subscribe_value = onetime_value * 0.85;
+				double subscribe_roundOff = Math.floor(subscribe_value * 100.0) / 100.0;
+				String SubscribeandSave_price = String.valueOf(subscribe_roundOff);
+				System.out.println(SubscribeandSave_price);
+				expectedofferdata.put("Price", SubscribeandSave_price);
+//				expectedofferdata.put("Price", offerdata.get("Subscribe and Save price").trim());
+//			}
 			expectedofferdata.put("Renewal Plan Id", offerdata.get("Renewal Plan ID").trim());
 			expectedofferdata.put("Cart Language", offerdata.get("Cart Language").trim());
 			expectedofferdata.put("Supplemental Cart Language", offerdata.get("Supplementary Cart Language").trim());
