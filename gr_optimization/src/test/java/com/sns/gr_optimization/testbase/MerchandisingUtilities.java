@@ -72,6 +72,11 @@ public class MerchandisingUtilities {
 			
 			expectedofferdata.put("PagePattern", pagepattern);
 //			if(offerdata.get("Subscribe and Save price") != null) {
+			
+			if(offerdata.get("PPID").trim().equalsIgnoreCase("JL2A0136")) {
+				expectedofferdata.put("Price", "137.0");
+			}
+			else {
 				String one_time_price = offerdata.get("Acq One Time price").trim();
 				one_time_price = one_time_price.replace("$", "");
 				Double onetime_value = Double.valueOf(one_time_price);
@@ -80,6 +85,8 @@ public class MerchandisingUtilities {
 				String SubscribeandSave_price = String.valueOf(subscribe_roundOff);
 				System.out.println(SubscribeandSave_price);
 				expectedofferdata.put("Price", SubscribeandSave_price);
+			}
+				
 //				expectedofferdata.put("Price", offerdata.get("Subscribe and Save price").trim());
 //			}
 			expectedofferdata.put("Renewal Plan Id", offerdata.get("Renewal Plan ID").trim());
@@ -130,6 +137,7 @@ public class MerchandisingUtilities {
 		// Check PostPU for current offercode
 		if(PostPU.equalsIgnoreCase("Yes")) {
 			String offerpostpu = offerdata.get("Post Purchase Upsell to").trim();
+			offerpostpu = offerpostpu.replaceAll("\\s+", "");
 			if(offerpostpu.contains(kitppid)) {
 				offerpostpu="Yes";
 			}
@@ -356,14 +364,16 @@ public class MerchandisingUtilities {
 					if((expectedcampaigngifts != null) && (!(expectedcampaigngifts.equals("-"))) && (!(expectedcampaigngifts.equals("")))) {
 						
 						giftppid = String.join(",", bf_obj.getPPIDfromString(brand, expectedcampaigngifts));
-						
-//						giftppid = bf_obj.getPPIDfromString(brand, expectedcampaigngifts).get(0);
+
 						expectedofferdata.put("Gift PPID", giftppid);
 					}
-					else if((expectedcampaigngifts == null) || (expectedcampaigngifts.equals("-")) || (expectedcampaigngifts.equals(""))){
+					else if((expectedcampaigngifts == null) || (expectedcampaigngifts.equals("-")) || (expectedcampaigngifts.equals("")) || (expectedcampaigngifts.equalsIgnoreCase("Free gift"))){
 						expectedofferdata.put("Gift PPID", "No Gift");
 					}
-				}				
+				}
+				else {
+					expectedofferdata.put("Gift PPID", "No Gift");
+				}
 			}
 		}		
 		
@@ -666,12 +676,15 @@ public class MerchandisingUtilities {
 		return expectedofferdata;
 	}
 
-	public String checkPostPU(HashMap<String, String> offerdata) {
+	public String checkPostPU(HashMap<String, String> offerdata, String brand) throws ClassNotFoundException, SQLException {
 		String PostPU;
 		if(offerdata.get("Post Purchase Upsell to") != null) {
-//			String postpuppid = offerdata.get("Post Purchase Upsell to").trim();
-			String postpuppid = offerdata.get("Post Purchase Upsell to").replaceAll("\\s+", "");
-			if(postpuppid.matches("^[A-Z0-9]*$")) {
+			String postpuppid = offerdata.get("Post Purchase Upsell to").trim();
+			System.out.println(postpuppid);
+			
+			String brandcode = db_obj.get_sourceproductlinecode(brand); 
+			
+			if(postpuppid.contains(brandcode)) {
 				PostPU = "Yes";
 			}
 			else {
@@ -680,8 +693,8 @@ public class MerchandisingUtilities {
 		}
 		else {
 			PostPU = "No";
-		}
-		
+		}		
+		System.out.println(PostPU);
 		return PostPU;
 	}
 	
@@ -739,13 +752,14 @@ public class MerchandisingUtilities {
 		String[] expectedrowNames = {"Entry PPID", "Pre-Purchase Entry PPID", "Post Purchase Upsell to"};
 		
 		for(int i=0; i<merchData.length; i++) {			
+			System.out.println(i);
 			String currentrowname = merchData[i][0];
-//			System.out.println("currentrowname : " + currentrowname);
+			System.out.println("currentrowname : " + currentrowname);
 			for(String name : expectedrowNames) {
 				if((currentrowname != null) && (currentrowname.contains(name))) {
 					for(int j=1; j<merchData[i].length; j++) {
 						String rowPPID = merchData[i][j];
-//						System.out.println("rowPPID : " + rowPPID);
+						System.out.println("rowPPID : " + rowPPID);
 			            if((rowPPID != null) && (rowPPID.contains(ppid))) {
 			            	ppidcolumn = j;
 			            	temp = 1;

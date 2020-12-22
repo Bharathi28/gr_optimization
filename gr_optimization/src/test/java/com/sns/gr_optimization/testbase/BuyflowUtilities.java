@@ -58,7 +58,7 @@ public class BuyflowUtilities {
 			query = query + include_offer;
 		}
 //		query = query + ";";
-//			System.out.println(query);
+			System.out.println(query);
 		List<Map<String, Object>> locator = DBLibrary.dbAction("fetch",query);
 		return locator;		
 	}
@@ -82,8 +82,15 @@ public class BuyflowUtilities {
 	
 	public void click_logo(WebDriver driver, String brand, String campaign) throws ClassNotFoundException, SQLException {
 		System.out.println("Clicking Logo");
-		List<Map<String, Object>> logo_locators = get_element_locator(brand, campaign, "Logo", null);
-		for(Map<String,Object> logo : logo_locators) {
+		
+		List<Map<String, Object>> locator = null;
+		
+		locator = get_element_locator(brand, campaign, "Logo", null);		
+		if(locator.size() == 0) {
+			locator = get_element_locator(brand, null, "Logo", null);
+		}
+		
+		for(Map<String,Object> logo : locator) {
 			System.out.println(logo.get("ELEMENTVALUE").toString());
 			String elementvalue = logo.get("ELEMENTVALUE").toString();
 			if(driver.findElements(By.xpath(elementvalue)).size() != 0) {
@@ -93,49 +100,9 @@ public class BuyflowUtilities {
 		}
 	}		
 
-//	public void move_to_sas(WebDriver driver, String env, String brand, String campaign, String offercode, String category) throws ClassNotFoundException, SQLException, InterruptedException {
-//		System.out.println("Moving to SAS Page...");
-////		String isProduct = db_obj.isProduct(brand, offercode);
-////		String isShopKit = db_obj.isShopKit(brand, offercode);
-//		
-//		if(brand.equalsIgnoreCase("BodyFirm-CrepeErase")) {
-//			driver.findElement(By.xpath("(//button[@class='menu-icon'])[1]")).click();
-//			Thread.sleep(1000);
-//			driver.findElement(By.xpath("//img[@alt='Crepe Erase']")).click();
-//		}
-//		else if(brand.equalsIgnoreCase("BodyFirm-SpotFade")) {
-//			driver.findElement(By.xpath("(//button[@class='menu-icon'])[1]")).click();
-//			Thread.sleep(1000);
-//			driver.findElement(By.xpath("//img[@alt='Spot Fade']")).click();
-//		}
-//		String step = "";
-//		if(brand.equalsIgnoreCase("BodyFirm")) {
-//			step = "Shop";
-//		}
-//		else {
-//			if((category.equalsIgnoreCase("Product")) || (category.equalsIgnoreCase("SubscribeandSave")) || (category.equalsIgnoreCase("ShopKit"))){
-//				step = "Shop";
-//			}
-//			else if (category.equalsIgnoreCase("Kit")) {
-//				step = "Ordernow";
-//			}
-//		}		
-//		
-////		if(offercode.contains("single")){
-////			category ="Product";
-////		}
-////		if(nav.equalsIgnoreCase("brands-nav")) {
-////			driver.findElement(By.xpath("(//button[@class='menu-icon'])[1]")).click();
-////			Thread.sleep(1000);				
-////		}
-//		
-//		click_cta(driver,env,brand,campaign,step);
-//		Thread.sleep(2000);
-//	}
-//	
 	public void move_to_checkout(WebDriver driver, String brand, String campaign, String category) throws InterruptedException, ClassNotFoundException, SQLException {
-//		System.out.println("Moving to Checkout Page...");	
-//		System.out.println(brand + campaign + category);	
+		System.out.println("Moving to Checkout Page...");	
+		System.out.println(brand + campaign + category);	
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 				
 		Thread.sleep(2000);
@@ -213,15 +180,17 @@ public class BuyflowUtilities {
 	}	
 	
 	// To check if all the gifts are present in the campaign
-	public String checkGifts(WebDriver driver, String brand, String campaign, String[] gift_arr) throws InterruptedException, ClassNotFoundException, SQLException {
+	public String checkGifts(WebDriver driver, String brand, String campaign, String campaigngifts) throws InterruptedException, ClassNotFoundException, SQLException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		
 		if(!((brand.equalsIgnoreCase("MallyBeauty")) && (campaign.equalsIgnoreCase("Core")))) {
 			jse.executeScript("window.scrollBy(0,1000)", 0);
 		}
 		Thread.sleep(2000);
+		
+		List<String> gift_list = getPPIDfromString(brand, campaigngifts);
 		String giftResult = "";
-		for(String gift : gift_arr) {
+		for(String gift : gift_list) {
 			String query = "select * from locators where brand='" + brand + "' and campaign='" + campaign + "' and step='Gift' and offer like '%" + gift + "%'";
 			List<Map<String, Object>> giftloc = DBLibrary.dbAction("fetch", query);
 			System.out.println(query);

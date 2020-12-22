@@ -33,7 +33,7 @@ public class CommonUtilities {
 			Workbook testData = new XSSFWorkbook(inputstream);
 			Sheet dataSheet = testData.getSheet(sheetName);
 			
-			int totalNoOfCols = dataSheet.getRow(0).getLastCellNum();
+//			
 			int end = 0;		
 			
 			//////////////////////////////////////
@@ -61,6 +61,7 @@ public class CommonUtilities {
 //				rowdata =  dataSheet.getRow(k).getCell(0).getStringCellValue();
 			}
 			int totalNoOfRows = k;
+			int totalNoOfCols = dataSheet.getRow(k-1).getLastCellNum();
 			
 			if(startrow == 0) {
 				totalNoOfRows = totalNoOfRows+1;

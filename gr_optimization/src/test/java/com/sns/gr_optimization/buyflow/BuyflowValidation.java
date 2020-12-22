@@ -185,7 +185,7 @@ public class BuyflowValidation {
 		String MediaIdResult = "";
 		String CreativeIdResult = "";
 		String VenueIdResult = "";
-		String PriceBookIdResult = "";
+		String PriceBookIdResult = "PASS";
 		
 		ListIterator<String> offerIterator = offerlist.listIterator();
 		ListIterator<String> categoryIterator = categorylist.listIterator();
@@ -211,13 +211,12 @@ public class BuyflowValidation {
 						
 		HashMap<String, String> sourcecodedata = null;
 		HashMap<String, String> expectedsourcecodedata = null;
-//		if(!(brand.equalsIgnoreCase("JloBeauty"))) {
-			// Read Source code details from Merchandising template for the campaign
-			sourcecodedata = merch_obj.getSourceCodeInfo(merchData, campaign);	
-			// Collect Source code details for the campaign
-			expectedsourcecodedata = merch_obj.generateExpectedSourceCodeData(sourcecodedata);
-			System.out.println(expectedsourcecodedata);
-//		}		
+
+		// Read Source code details from Merchandising template for the campaign
+		sourcecodedata = merch_obj.getSourceCodeInfo(merchData, campaign);	
+		// Collect Source code details for the campaign
+		expectedsourcecodedata = merch_obj.generateExpectedSourceCodeData(sourcecodedata);
+		System.out.println(expectedsourcecodedata);		
 		
 		// HashMap variable to collect Kit related details from Merchandising Template
 		HashMap<String, String> expectedofferdata_kit = null;
@@ -251,7 +250,7 @@ public class BuyflowValidation {
 						PPUSection = "Yes";
 					}
 				}
-//				System.out.println(PPIDcolumn + PPUSection);
+				System.out.println(PPIDcolumn + PPUSection);
 				
 				// Check if the PPID is present in the campaign
 				if(PPIDcolumn == 0) {
@@ -261,9 +260,9 @@ public class BuyflowValidation {
 	
 				// Read the entire column data
 				HashMap<String, String> kit_offerdata = merch_obj.getColumnData(merchData, PPIDcolumn, PPUSection);
-					
+				System.out.println(kit_offerdata);
 				// Check Post-purchase Upsell for the campaign
-				postpu = merch_obj.checkPostPU(kit_offerdata);
+				postpu = merch_obj.checkPostPU(kit_offerdata, brand);
 				if(((brand.equalsIgnoreCase("CrepeErase")) && (campaign.equalsIgnoreCase("order30fsh2b"))) && (PPUSection.equalsIgnoreCase("No"))) {
 					postpu = "No";
 				}
@@ -355,6 +354,7 @@ public class BuyflowValidation {
 				subtotal_list.add(expectedofferdata_kit.get("Final Pricing"));
 				shipping_list.add(expectedofferdata_kit.get("Final Shipping"));
 				renewal_plan_list.add(expectedofferdata_kit.get("Renewal Plan Id"));
+				pricebook_id_list.add(expectedsourcecodedata.get("Price Book ID"));
 				
 				// Move to SAS
 				pixel_obj.defineNewHar(proxy, brand + "SASPage");	  
@@ -363,8 +363,11 @@ public class BuyflowValidation {
 			
 				// Gift Validation
 //				if(!(expectedofferdata_kit.get("Gift Name").equalsIgnoreCase("No Gift"))) {
-					if(!(expectedofferdata_kit.get("Campaign Gifts").equalsIgnoreCase("-"))) {
-						giftResult = bf_obj.checkGifts(driver, brand, campaigncategory, giftppidarr);
+//					if(!(expectedofferdata_kit.get("Campaign Gifts").equalsIgnoreCase("-"))) {
+						String expectedcampaigngifts = expectedofferdata_kit.get("Campaign Gifts");
+//					}
+					if((expectedcampaigngifts != null) && (!(expectedcampaigngifts.equals("-"))) && (!(expectedcampaigngifts.equals("")))) {
+						giftResult = bf_obj.checkGifts(driver, brand, campaigncategory, expectedcampaigngifts);
 						remarks = remarks + giftResult;
 					}
 //				}								
@@ -437,7 +440,7 @@ public class BuyflowValidation {
 				
 				// Move to Checkout
 				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
-				bf_obj.move_to_checkout(driver, brand, campaigncategory, category);
+				bf_obj.move_to_checkout(driver, brand, campaigncategory, currentCategory);
 			}
 						
 			if(offerIterator.hasNext() && categoryIterator.hasNext()) {
@@ -788,6 +791,7 @@ public class BuyflowValidation {
 			// supplysize - 30
 			// No Fall back scenario
 			if(supplysize.equalsIgnoreCase("30")) {
+				System.out.println("Post Purchase - As per flow");
 				pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
 				bf_obj.complete_order(driver, brand, cc);
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern + ".har", driver);
@@ -966,11 +970,6 @@ public class BuyflowValidation {
 				
 		// Sales Tax Validation
 		String conf_salestax_result = bf_obj.assertPrice(conf_salestax, salestax);
-//		expected_salestax = Double.valueOf(salestax);
-//		actual_salestax = Double.valueOf(conf_salestax);				
-//		diff = Math.abs(expected_salestax-actual_salestax);				
-//		roundOff = Math.floor(diff * 100.0) / 100.0;
-//		diff_value = (int)roundOff;
 
 		if(conf_salestax_result.equalsIgnoreCase("PASS")) {
 			// If Result is already fail, then the overall EntryPrice result is fail
@@ -988,11 +987,6 @@ public class BuyflowValidation {
 		
 		// Total Price Validation
 		String conf_total_result = bf_obj.assertPrice(conf_total, total);
-//		expected_total = Double.valueOf(total);
-//		actual_total = Double.valueOf(conf_total);
-//		diff = Math.abs(expected_total-actual_total);						
-//		roundOff = Math.floor(diff * 100.0) / 100.0;				
-//		diff_value = (int)roundOff;
 
 		if(conf_total_result.equalsIgnoreCase("PASS")) {
 			// If Result is already fail, then the overall EntryPrice result is fail
@@ -1083,9 +1077,7 @@ public class BuyflowValidation {
 					InstallmentPlanResult = "";
 				}
 			}
-		}
-						
-		
+		}		
 		
 		// Media ID Validation
 		String actualmediaid = comm_obj.getFromVariableMap(driver, "mediaId");				
@@ -1118,6 +1110,63 @@ public class BuyflowValidation {
 		}
 		
 //		// Price Book Id Validation
+		String actualpricebookid = comm_obj.getFromVariableMap(driver, "pricebookId");
+		System.out.println("Actual price book id: " + actualpricebookid);
+				
+		List<String> actual_price_book_list = Arrays.asList(actualpricebookid.split("\\s*,\\s*"));
+		System.out.println("Expected price book list: " + pricebook_id_list);
+		System.out.println("Actual price book list: " + actual_price_book_list);
+				
+		// When some more Price Book Ids are expected
+		List<String> temp_pricebooklist = new ArrayList<>();
+		List<String> diff_pricebooklist = new ArrayList<>(pricebook_id_list);
+									
+		for(String id : actual_price_book_list) {									
+			for(String expected_id : pricebook_id_list) {
+				if(expected_id.contains(id)) {											
+					temp_pricebooklist.add(expected_id);
+				}
+			}				
+		}			
+		diff_pricebooklist.removeAll(temp_pricebooklist);
+		for(String id : diff_pricebooklist) {
+			PriceBookIdResult = "FAIL";			
+			remarks = remarks + "Price Book Id - " + id + " is Missing ; ";
+		}
+		
+		temp_pricebooklist.clear();
+		diff_pricebooklist.clear();
+		
+		// When Extra Price Book Ids are present
+		temp_pricebooklist = new ArrayList<>();
+		diff_pricebooklist = new ArrayList<>(actual_price_book_list);
+						
+		for(String expected_id : pricebook_id_list) {						
+			for(String actual_id : actual_price_book_list) {
+				System.out.println("Actual Id : " + actual_id);
+				System.out.println("Expected Id : " + expected_id);
+				if(actual_id.contains(expected_id)) {
+					temp_pricebooklist.add(actual_id);					
+				}
+			}				
+		}			
+		System.out.println("Diff price book id: " + diff_pricebooklist);
+		System.out.println("Temp price book id: " + temp_pricebooklist);
+		diff_pricebooklist.removeAll(temp_pricebooklist);
+		System.out.println("Diff price book id - after removal: " + diff_pricebooklist);
+		for(String id : diff_pricebooklist) {
+			if(!(id.equalsIgnoreCase("null"))) {
+				// If Result is already fail, then the overall ppid result is fail
+				if(PriceBookIdResult.equalsIgnoreCase("FAIL")) {
+					PriceBookIdResult = "FAIL";
+				}
+				else {
+					PriceBookIdResult = "PASS";
+				}
+				remarks = remarks + "Additional Price Book Id - " + id + " is Present ; ";
+			}			
+		}			
+		
 //		String actualpricebookid = comm_obj.getFromVariableMap(driver, "pricebookId");				
 //		if(!(expectedofferdata.get("Price Book ID").contains(actualpricebookid))) {
 //			PriceBookIdResult = "FAIL";
@@ -1144,7 +1193,7 @@ public class BuyflowValidation {
 		output_row.add(actualmediaid + " - " + MediaIdResult);
 		output_row.add(actualcreativeid + " - " + CreativeIdResult);
 		output_row.add(actualvenueid + " - " + VenueIdResult);
-//		output_row.add(actualpricebookid + " - " + PriceBookIdResult);
+		output_row.add(actualpricebookid + " - " + PriceBookIdResult);
 		output_row.add(shipbill);	
 		output_row.add(cc);	
 		output_row.add(browser);	

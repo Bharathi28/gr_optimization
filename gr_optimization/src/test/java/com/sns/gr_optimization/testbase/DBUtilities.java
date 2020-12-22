@@ -48,6 +48,10 @@ public class DBUtilities {
 			url = url.replace("www.", "storefront:eComweb123@www.");
 			url = url.replace("com", "stg.dw4.grdev.com");
 			url = url.replace(".stg.", "."+ env.toLowerCase() +".");
+				System.out.println(url);
+			if(brand.equalsIgnoreCase("JLoBeauty")) {
+				url = url.replace("eComweb123", "Jlodev05");
+			}
 		}
 //		System.out.println(url);
 		return url;

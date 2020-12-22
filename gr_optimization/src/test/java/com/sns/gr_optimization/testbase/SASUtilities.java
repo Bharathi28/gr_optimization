@@ -62,10 +62,10 @@ public class SASUtilities {
 		System.out.println("Adding product to cart");
 		if((category.equalsIgnoreCase("Product")) || (category.equalsIgnoreCase("ShopKit")) || (category.equalsIgnoreCase("SubscribeandSave"))) {
 			if(brand.equalsIgnoreCase("JLoBeauty")) {
-				if(driver.findElements(By.xpath("//a[@class='button mini-cart-link-checkout small-12']")).size() == 0) {
+//				if(driver.findElements(By.xpath("//a[@class='button mini-cart-link-checkout small-12']")).size() == 0) {
 					Thread.sleep(3000);
 					driver.findElement(By.xpath("//button[@id='add-to-cart']")).click();
-				}
+//				}
 			}
 		}
 	}
@@ -247,23 +247,29 @@ public class SASUtilities {
 		String ppid = offerdata.get("Product PPID");
 		String pagepattern = offerdata.get("PagePattern");
 		String masterppid = ppid;
-		if(offerdata.containsKey("Master PPID")) {
-			masterppid = offerdata.get("Master PPID");
+		if(ppid.equalsIgnoreCase("JL2A0136")) {
+			driver.findElement(By.xpath("(//a[@class='button-text sd-cta'])[2]")).click();
+			Thread.sleep(1000);
 		}
-		
-		while(driver.findElements(By.xpath("//div[@data-itemid='" + masterppid + "']//div[4]//h3//a")).size() == 0){
-			jse.executeScript("window.scrollBy(0,400)", 0);
-			
-			if(driver.findElements(By.xpath("//div[@data-itemid='" + ppid + "']//div[4]//h3//a")).size() != 0) {
-				masterppid = ppid;
-				break;
+		else {
+			if(offerdata.containsKey("Master PPID")) {
+				masterppid = offerdata.get("Master PPID");
 			}
-		}
-		
-		WebElement product_elmt = driver.findElement(By.xpath("//div[@data-itemid='" + masterppid + "']//div[4]//h3//a"));
-		comm_obj.waitUntilElementAppears(driver, "//div[@data-itemid='" + masterppid + "']//div[4]//h3//a");
-		Thread.sleep(2000);
-		product_elmt.click();
+			
+			while(driver.findElements(By.xpath("//div[@data-itemid='" + masterppid + "']//div[4]//h3//a")).size() == 0){
+				jse.executeScript("window.scrollBy(0,400)", 0);
+				
+				if(driver.findElements(By.xpath("//div[@data-itemid='" + ppid + "']//div[4]//h3//a")).size() != 0) {
+					masterppid = ppid;
+					break;
+				}
+			}
+			
+			WebElement product_elmt = driver.findElement(By.xpath("//div[@data-itemid='" + masterppid + "']//div[4]//h3//a"));
+			comm_obj.waitUntilElementAppears(driver, "//div[@data-itemid='" + masterppid + "']//div[4]//h3//a");
+			Thread.sleep(2000);
+			product_elmt.click();
+		}		
 		
 		if(brand.equalsIgnoreCase("JLoBeauty")) {
 			if(!(pagepattern.contains("shade"))) {
