@@ -162,15 +162,9 @@ public class MerchandisingUtilities {
 		expectedofferdata.put("SupplySize", supplysize);
 //		System.out.println("SupplySize" + supplysize);		
 		
-//		// Gift name
-//		String giftname = getGift(PPUSection, giftppid, offerdata, brand, campaign);
-//		expectedofferdata.put("Gift Name", giftname);
-//		String giftseperatelineitem = "";
-//		if(!(giftname.equalsIgnoreCase("No Gift"))) {
 		String giftseperatelineitem = db_obj.checkgiftlineitem(brand, campaign);
 		expectedofferdata.put("GiftSeperateLineItem", giftseperatelineitem);
-//		}
-//		
+	
 		// Fragrance
 		if(offerdata.get("PagePattern").trim().contains("fragrance")) {
 			expectedofferdata.put("Fragrance", offerdata.get("Fragrance").trim());
@@ -220,15 +214,19 @@ public class MerchandisingUtilities {
 			expectedfinalpricing = expectedEntryPrice;
 			expectedfinalshipping = expectedEntryShipping;
 			// Pre-Purchase - Yes
-			if(PPUSection.equalsIgnoreCase("Yes")) {		
+			if(PPUSection.equalsIgnoreCase("Yes")) {	
+				System.out.println("Pre-Purchase Yes");
 				if(offerdata.get("Pre-Purchase Entry Promotion 1") != null) {
 					expectedcampaigngifts = offerdata.get("Pre-Purchase Entry Promotion 1").trim();
 				}					
 				if(offerdata.get("Pre-Purchase Entry Promotion 2") != null) {
 					expectedprepuproduct = offerdata.get("Pre-Purchase Entry Promotion 2").trim();
 				}
-				if(offerdata.get("Pre-Purchase Entry Renewal Plan") != null) {
-					expectedrenewalplanid = offerdata.get("Pre-Purchase Entry Renewal Plan").trim();
+				System.out.println(offerdata);
+				System.out.println("hi" + offerdata.get("Pre-Purchase Entry Renewal Plan") + "hi");
+				if(offerdata.get("Pre-Purchase Entry Renewal Plan") != null) {
+					System.out.println("hi" + offerdata.get("Pre-Purchase Entry Renewal Plan") + "hi");
+					expectedrenewalplanid = offerdata.get("Pre-Purchase Entry Renewal Plan").trim();
 				}
 				if(offerdata.get("Pre Purchase Entry Cart Language") != null) {
 					expectedcartlanguage = offerdata.get("Pre Purchase Entry Cart Language").trim();
@@ -361,7 +359,7 @@ public class MerchandisingUtilities {
 			else {
 				// If no seperate lineitem, then no GiftPPID
 				if(giftseperatelineitem.equalsIgnoreCase("Yes")) {
-					if((expectedcampaigngifts != null) && (!(expectedcampaigngifts.equals("-"))) && (!(expectedcampaigngifts.equals("")))) {
+					if((expectedcampaigngifts != null) && (!(expectedcampaigngifts.equals("-"))) && (!(expectedcampaigngifts.equals(""))) || (!(expectedcampaigngifts.equalsIgnoreCase("Free gift")))) {
 						
 						giftppid = String.join(",", bf_obj.getPPIDfromString(brand, expectedcampaigngifts));
 
@@ -856,7 +854,7 @@ public class MerchandisingUtilities {
 				break;
 			}
 		}
-		System.out.println(sourcecodedata);
+		System.out.println("Source Code Data : " + sourcecodedata);
 		return sourcecodedata;
 	}
 	

@@ -319,42 +319,51 @@ public class BuyflowValidation {
 				
 				// Add PrePU Product to lineitem list
 				if(expectedofferdata_kit.get("Offer Pre-Purchase").equalsIgnoreCase("Yes")) {
-					String prepu_ppid = String.join(",", bf_obj.getPPIDfromString(brand, expectedofferdata_kit.get("PrePU Product")));
-					String[] prepuppidarr = prepu_ppid.split(",");	
-					for (String prepuprod : prepuppidarr) {
-						List<String> prepu_lineitem = new ArrayList<String>();
-						prepu_lineitem.add("PrePU");
-						prepu_lineitem.add(prepuprod);
-						prepu_lineitem.add("-");
-						prepu_lineitem.add("No Cart Language");
-						prepu_lineitem.add("No Continuity Pricing");
-						prepu_lineitem.add("No Continuity Shipping");
-						prepu_lineitem.add("No Supplemental Cart Language");
-						expected_lineitems.add(prepu_lineitem);
-					}
+					if(!(expectedofferdata_kit.get("PrePU Product").equalsIgnoreCase("No PrePU Product"))) {
+						String prepu_ppid = String.join(",", bf_obj.getPPIDfromString(brand, expectedofferdata_kit.get("PrePU Product")));
+						String[] prepuppidarr = prepu_ppid.split(",");	
+						for (String prepuprod : prepuppidarr) {
+							List<String> prepu_lineitem = new ArrayList<String>();
+							prepu_lineitem.add("PrePU");
+							prepu_lineitem.add(prepuprod);
+							prepu_lineitem.add("-");
+							prepu_lineitem.add("No Cart Language");
+							prepu_lineitem.add("No Continuity Pricing");
+							prepu_lineitem.add("No Continuity Shipping");
+							prepu_lineitem.add("No Supplemental Cart Language");
+							expected_lineitems.add(prepu_lineitem);
+						}
+					}					
 				}
 				
 				// Add PostPU Product to lineitem list
 				if(expectedofferdata_kit.get("Offer Post-Purchase").equalsIgnoreCase("Yes")) {
-					String postpu_ppid = String.join(",", bf_obj.getPPIDfromString(brand, expectedofferdata_kit.get("PostPU Product")));
-					String[] postpuppidarr = postpu_ppid.split(",");	
-					for (String postpuprod : postpuppidarr) {
-						List<String> postpu_lineitem = new ArrayList<String>();
-						postpu_lineitem.add("PostPU");
-						postpu_lineitem.add(postpuprod);
-						postpu_lineitem.add("-");
-						postpu_lineitem.add("No Cart Language");
-						postpu_lineitem.add("No Continuity Pricing");
-						postpu_lineitem.add("No Continuity Shipping");
-						postpu_lineitem.add("No Supplemental Cart Language");
-						expected_lineitems.add(postpu_lineitem);
-					}
+					if(!(expectedofferdata_kit.get("PostPU Product").equalsIgnoreCase("No PostPU Product"))) {
+						String postpu_ppid = String.join(",", bf_obj.getPPIDfromString(brand, expectedofferdata_kit.get("PostPU Product")));
+						String[] postpuppidarr = postpu_ppid.split(",");	
+						for (String postpuprod : postpuppidarr) {
+							List<String> postpu_lineitem = new ArrayList<String>();
+							postpu_lineitem.add("PostPU");
+							postpu_lineitem.add(postpuprod);
+							postpu_lineitem.add("-");
+							postpu_lineitem.add("No Cart Language");
+							postpu_lineitem.add("No Continuity Pricing");
+							postpu_lineitem.add("No Continuity Shipping");
+							postpu_lineitem.add("No Supplemental Cart Language");
+							expected_lineitems.add(postpu_lineitem);
+						}
+					}					
 				}
 				
 				subtotal_list.add(expectedofferdata_kit.get("Final Pricing"));
 				shipping_list.add(expectedofferdata_kit.get("Final Shipping"));
 				renewal_plan_list.add(expectedofferdata_kit.get("Renewal Plan Id"));
-				pricebook_id_list.add(expectedsourcecodedata.get("Price Book ID"));
+				if(expectedsourcecodedata.get("Price Book ID") == null) {
+					pricebook_id_list.add("No expected PriceBookID");
+				}
+				else {
+					pricebook_id_list.add(expectedsourcecodedata.get("Price Book ID"));
+				}				
 				
 				// Move to SAS
 				pixel_obj.defineNewHar(proxy, brand + "SASPage");	  
@@ -615,13 +624,7 @@ public class BuyflowValidation {
 		}			
 		diff_lineitemlist.removeAll(temp_lineitemlist);
 		for(List<String> lineitem : diff_lineitemlist) {
-			// If Result is already fail, then the overall ppid result is fail
-			if(ppidResult.equalsIgnoreCase("FAIL")) {
-				ppidResult = "FAIL";
-			}
-			else {
-				ppidResult = "PASS";
-			}
+			ppidResult = "FAIL";
 			remarks = remarks + lineitem.get(0) + " is present in Checkout Cart ; ";
 		}				
 				
@@ -726,11 +729,6 @@ public class BuyflowValidation {
 		// Checkout SalesTax Validation
 		String salestax = bf_obj.getSalesTax(driver, expected_subtotal, expected_shipping);
 		String salestax_result = bf_obj.assertPrice(checkout_salestax, salestax);
-//		Double expected_salestax = Double.valueOf(salestax);
-//		Double actual_salestax = Double.valueOf(checkout_salestax);
-//		Double diff = Math.abs(expected_salestax-actual_salestax);				
-//		double roundOff = Math.floor(diff * 100.0) / 100.0;
-//		int diff_value = (int)roundOff;
 
 		if(salestax_result.equalsIgnoreCase("PASS")) {
 			EntryPriceResult = "PASS";
@@ -751,11 +749,6 @@ public class BuyflowValidation {
 		
 		String total = bf_obj.CalculateTotalPrice(total_list);
 		String total_result = bf_obj.assertPrice(checkout_total, total);
-//		Double expected_total = Double.valueOf(total);
-//		Double actual_total = Double.valueOf(checkout_total);	
-//		diff = Math.abs(expected_total-actual_total);				
-//		roundOff = Math.floor(diff * 100.0) / 100.0;
-//		diff_value = (int)roundOff;
 
 		if(total_result.equalsIgnoreCase("PASS")) {
 			EntryPriceResult = "PASS";
@@ -1038,13 +1031,7 @@ public class BuyflowValidation {
 		diff_renewlist.removeAll(temp_renewlist);
 		for(String plan : diff_renewlist) {
 			if(!(plan.equalsIgnoreCase("null"))) {
-				// If Result is already fail, then the overall ppid result is fail
-				if(RenewalPlanResult.equalsIgnoreCase("FAIL")) {
-					RenewalPlanResult = "FAIL";
-				}
-				else {
-					RenewalPlanResult = "PASS";
-				}
+				RenewalPlanResult = "FAIL";
 				remarks = remarks + "Additional Renewal Plan Id - " + plan + " is Present ; ";
 			}			
 		}	
@@ -1117,65 +1104,55 @@ public class BuyflowValidation {
 		System.out.println("Expected price book list: " + pricebook_id_list);
 		System.out.println("Actual price book list: " + actual_price_book_list);
 				
-		// When some more Price Book Ids are expected
-		List<String> temp_pricebooklist = new ArrayList<>();
-		List<String> diff_pricebooklist = new ArrayList<>(pricebook_id_list);
-									
-		for(String id : actual_price_book_list) {									
-			for(String expected_id : pricebook_id_list) {
-				if(expected_id.contains(id)) {											
-					temp_pricebooklist.add(expected_id);
-				}
-			}				
-		}			
-		diff_pricebooklist.removeAll(temp_pricebooklist);
-		for(String id : diff_pricebooklist) {
-			PriceBookIdResult = "FAIL";			
-			remarks = remarks + "Price Book Id - " + id + " is Missing ; ";
+		if(pricebook_id_list.contains("No expected PriceBookID")) {
+			PriceBookIdResult = "Could not validate";		
+			remarks = remarks + "No Expected Price Book Id in the Merchandising template ; ";
 		}
-		
-		temp_pricebooklist.clear();
-		diff_pricebooklist.clear();
-		
-		// When Extra Price Book Ids are present
-		temp_pricebooklist = new ArrayList<>();
-		diff_pricebooklist = new ArrayList<>(actual_price_book_list);
-						
-		for(String expected_id : pricebook_id_list) {						
-			for(String actual_id : actual_price_book_list) {
-				System.out.println("Actual Id : " + actual_id);
-				System.out.println("Expected Id : " + expected_id);
-				if(actual_id.contains(expected_id)) {
-					temp_pricebooklist.add(actual_id);					
-				}
-			}				
-		}			
-		System.out.println("Diff price book id: " + diff_pricebooklist);
-		System.out.println("Temp price book id: " + temp_pricebooklist);
-		diff_pricebooklist.removeAll(temp_pricebooklist);
-		System.out.println("Diff price book id - after removal: " + diff_pricebooklist);
-		for(String id : diff_pricebooklist) {
-			if(!(id.equalsIgnoreCase("null"))) {
-				// If Result is already fail, then the overall ppid result is fail
-				if(PriceBookIdResult.equalsIgnoreCase("FAIL")) {
-					PriceBookIdResult = "FAIL";
-				}
-				else {
-					PriceBookIdResult = "PASS";
-				}
-				remarks = remarks + "Additional Price Book Id - " + id + " is Present ; ";
+		else{
+			// When some more Price Book Ids are expected
+			List<String> temp_pricebooklist = new ArrayList<>();
+			List<String> diff_pricebooklist = new ArrayList<>(pricebook_id_list);
+										
+			for(String id : actual_price_book_list) {									
+				for(String expected_id : pricebook_id_list) {
+					if(expected_id.contains(id)) {											
+						temp_pricebooklist.add(expected_id);
+					}
+				}				
 			}			
-		}			
-		
-//		String actualpricebookid = comm_obj.getFromVariableMap(driver, "pricebookId");				
-//		if(!(expectedofferdata.get("Price Book ID").contains(actualpricebookid))) {
-//			PriceBookIdResult = "FAIL";
-//			remarks = remarks + "Price Book Id does not match, Expected - " + expectedofferdata.get("Price Book ID") + " , Actual - " + actualpricebookid + ",";
-//		}
-//		else {
-//			PriceBookIdResult = "PASS";
-//		}
-		
+			diff_pricebooklist.removeAll(temp_pricebooklist);
+			for(String id : diff_pricebooklist) {
+				PriceBookIdResult = "FAIL";			
+				remarks = remarks + "Price Book Id - " + id + " is Missing ; ";
+			}
+			
+			temp_pricebooklist.clear();
+			diff_pricebooklist.clear();
+			
+			// When Extra Price Book Ids are present
+			temp_pricebooklist = new ArrayList<>();
+			diff_pricebooklist = new ArrayList<>(actual_price_book_list);
+							
+			for(String expected_id : pricebook_id_list) {						
+				for(String actual_id : actual_price_book_list) {
+					if(actual_id.contains(expected_id)) {
+						temp_pricebooklist.add(actual_id);					
+					}
+				}				
+			}			
+			System.out.println("Diff price book id: " + diff_pricebooklist);
+			System.out.println("Temp price book id: " + temp_pricebooklist);
+			diff_pricebooklist.removeAll(temp_pricebooklist);
+			System.out.println("Diff price book id - after removal: " + diff_pricebooklist);
+			for(String id : diff_pricebooklist) {
+				if(!(id.equalsIgnoreCase("null"))) {
+					PriceBookIdResult = "FAIL";
+					remarks = remarks + "Additional Price Book Id - " + id + " is Present ; ";
+				}			
+			}		
+		}
+			
+				
 		List<String> output_row = new ArrayList<String>();
 		output_row.add(env);
 		output_row.add(brand);
@@ -1202,7 +1179,7 @@ public class BuyflowValidation {
 		output.add(output_row);
 		
 		driver.close();
-//		
+	
 		if(!(pixelStr.equalsIgnoreCase("-"))) {
 			HashMap<Integer, HashMap> overallOutput = pixel_obj.validatePixels(pixelStr, pattern, brand, campaign, env, campaignpages);
 			attachmentList = pixel_obj.writePixelOutput(overallOutput, brand, campaign, attachmentList);

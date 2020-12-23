@@ -61,7 +61,15 @@ public class CommonUtilities {
 //				rowdata =  dataSheet.getRow(k).getCell(0).getStringCellValue();
 			}
 			int totalNoOfRows = k;
-			int totalNoOfCols = dataSheet.getRow(k-1).getLastCellNum();
+			int firstrow_cellcount = dataSheet.getRow(0).getLastCellNum();
+			int lastrow_cellcount = dataSheet.getRow(k-1).getLastCellNum();
+			int totalNoOfCols = 0;
+			if(firstrow_cellcount > lastrow_cellcount) {
+				totalNoOfCols = firstrow_cellcount;
+			}
+			else {
+				totalNoOfCols = lastrow_cellcount;
+			}
 			
 			if(startrow == 0) {
 				totalNoOfRows = totalNoOfRows+1;
