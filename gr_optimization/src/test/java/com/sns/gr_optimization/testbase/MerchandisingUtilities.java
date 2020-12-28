@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class MerchandisingUtilities {
 	
 	DBUtilities db_obj = new DBUtilities();
@@ -222,10 +224,7 @@ public class MerchandisingUtilities {
 				if(offerdata.get("Pre-Purchase Entry Promotion 2") != null) {
 					expectedprepuproduct = offerdata.get("Pre-Purchase Entry Promotion 2").trim();
 				}
-				System.out.println(offerdata);
-				System.out.println("hi" + offerdata.get("Pre-Purchase Entry Renewal Plan") + "hi");
 				if(offerdata.get("Pre-Purchase Entry Renewal Plan") != null) {
-					System.out.println("hi" + offerdata.get("Pre-Purchase Entry Renewal Plan") + "hi");
 					expectedrenewalplanid = offerdata.get("Pre-Purchase Entry Renewal Plan").trim();
 				}
 				if(offerdata.get("Pre Purchase Entry Cart Language") != null) {
@@ -359,10 +358,9 @@ public class MerchandisingUtilities {
 			else {
 				// If no seperate lineitem, then no GiftPPID
 				if(giftseperatelineitem.equalsIgnoreCase("Yes")) {
-					if((expectedcampaigngifts != null) && (!(expectedcampaigngifts.equals("-"))) && (!(expectedcampaigngifts.equals(""))) || (!(expectedcampaigngifts.equalsIgnoreCase("Free gift")))) {
-						
+					System.out.println("Expected Campaign Gifts : " + expectedcampaigngifts);
+					if((expectedcampaigngifts != null) && (!(expectedcampaigngifts.equals("-"))) && (!(expectedcampaigngifts.equals(""))) && (!(expectedcampaigngifts.equalsIgnoreCase("Free gift")))) {
 						giftppid = String.join(",", bf_obj.getPPIDfromString(brand, expectedcampaigngifts));
-
 						expectedofferdata.put("Gift PPID", giftppid);
 					}
 					else if((expectedcampaigngifts == null) || (expectedcampaigngifts.equals("-")) || (expectedcampaigngifts.equals("")) || (expectedcampaigngifts.equalsIgnoreCase("Free gift"))){

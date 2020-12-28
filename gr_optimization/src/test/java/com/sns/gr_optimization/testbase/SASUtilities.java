@@ -306,14 +306,15 @@ public class SASUtilities {
 	
 		String ppid = offerdata.get("Product PPID");
 		
-		if(brand.equalsIgnoreCase("JLoBeauty")) {
-			if((ppid.equalsIgnoreCase("JL1A0036")) || (ppid.equalsIgnoreCase("JL1A0037")) || (ppid.equalsIgnoreCase("JL1A0035"))) {
-				ppid = "JL1A0034";
-			}
-		}	
-		
+//		if(brand.equalsIgnoreCase("JLoBeauty")) {
+//			if((ppid.equalsIgnoreCase("JL1A0036")) || (ppid.equalsIgnoreCase("JL1A0037")) || (ppid.equalsIgnoreCase("JL1A0034"))) {
+//				ppid = "JL1A0035";
+//			}
+//		}	
+		//input[@name='dwopt_JL1A0034_entryKit']/../../..//label[contains(@for,'entryKit-one-pay')]
 		Thread.sleep(1000);
-		driver.findElement(By.xpath("//input[@id='dwopt_" + ppid + "_entryKit-one-pay']")).click();
+//		driver.findElement(By.xpath("//input[@id='dwopt_" + ppid + "_entryKit-one-pay']")).click();
+		driver.findElement(By.xpath("//input[@name='dwopt_" + ppid + "_entryKit']/../../..//label[contains(@for,'entryKit-one-pay')]")).click();
 		Thread.sleep(1000);
 	}
 	
@@ -323,14 +324,14 @@ public class SASUtilities {
 	
 		String ppid = offerdata.get("Product PPID");
 		
-		if(brand.equalsIgnoreCase("JLoBeauty")) {
-			if((ppid.equalsIgnoreCase("JL1A0036")) || (ppid.equalsIgnoreCase("JL1A0037")) || (ppid.equalsIgnoreCase("JL1A0035"))) {
-				ppid = "JL1A0034";
-			}
-		}	
-		
+//		if(brand.equalsIgnoreCase("JLoBeauty")) {
+//			if((ppid.equalsIgnoreCase("JL1A0036")) || (ppid.equalsIgnoreCase("JL1A0037")) || (ppid.equalsIgnoreCase("JL1A0034"))) {
+//				ppid = "JL1A0035";
+//			}
+//		}		
+		//input[@name='dwopt_JL1A0034_entryKit']/../../..//label[contains(@for,'entryKit-auto-renew')]
 		Thread.sleep(1000);
-		driver.findElement(By.xpath("//input[@id='dwopt_" + ppid + "_entryKit-auto-renew']")).click();
+		driver.findElement(By.xpath("//input[@name='dwopt_" + ppid + "_entryKit']/../../..//label[contains(@for,'entryKit-auto-renew')]")).click();
 		Thread.sleep(1000);
 	}
 }
