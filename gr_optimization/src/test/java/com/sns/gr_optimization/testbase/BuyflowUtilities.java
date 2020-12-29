@@ -58,7 +58,7 @@ public class BuyflowUtilities {
 			query = query + include_offer;
 		}
 //		query = query + ";";
-//			System.out.println(query);
+			System.out.println(query);
 		List<Map<String, Object>> locator = DBLibrary.dbAction("fetch",query);
 		return locator;		
 	}
@@ -81,7 +81,7 @@ public class BuyflowUtilities {
 	}
 	
 	public void click_logo(WebDriver driver, String brand, String campaign) throws ClassNotFoundException, SQLException {
-//		System.out.println("Clicking Logo");
+		System.out.println("Clicking Logo");
 		
 		List<Map<String, Object>> locator = null;
 		
@@ -89,9 +89,9 @@ public class BuyflowUtilities {
 		if(locator.size() == 0) {
 			locator = get_element_locator(brand, null, "Logo", null);
 		}
-		
+		System.out.println(locator.size());
 		for(Map<String,Object> logo : locator) {
-//			System.out.println(logo.get("ELEMENTVALUE").toString());
+			System.out.println(logo.get("ELEMENTVALUE").toString());
 			String elementvalue = logo.get("ELEMENTVALUE").toString();
 			if(driver.findElements(By.xpath(elementvalue)).size() != 0) {
 				driver.findElement(By.xpath(elementvalue)).click();

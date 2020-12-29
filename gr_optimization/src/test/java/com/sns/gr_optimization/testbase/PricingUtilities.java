@@ -89,7 +89,7 @@ public class PricingUtilities {
 	}
 	
 	public String fetch_pricing (WebDriver driver, String brand, String campaign, String pricing) throws ClassNotFoundException, SQLException {
-		System.out.println("Fetching price : " + pricing);
+//		System.out.println("Fetching price : " + pricing);
 		String realm = DBUtilities.get_realm(brand);	
 		List<Map<String, Object>> locator = null;
 		
@@ -113,7 +113,7 @@ public class PricingUtilities {
 		for(Map<String,Object> loc : locator) {
 			String elementvalue = loc.get("ELEMENTVALUE").toString();
 											
-			System.out.println("pricing: " + elementvalue);
+//			System.out.println("pricing: " + elementvalue);
 			if(driver.findElements(By.xpath(elementvalue)).size() != 0) {
 				text = driver.findElement(By.xpath(elementvalue)).getText();
  				break;
