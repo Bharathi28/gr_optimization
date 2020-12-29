@@ -85,7 +85,7 @@ public class MerchandisingUtilities {
 				Double subscribe_value = onetime_value * 0.85;
 				double subscribe_roundOff = Math.floor(subscribe_value * 100.0) / 100.0;
 				String SubscribeandSave_price = String.valueOf(subscribe_roundOff);
-				System.out.println(SubscribeandSave_price);
+//				System.out.println(SubscribeandSave_price);
 				expectedofferdata.put("Price", SubscribeandSave_price);
 			}
 				
@@ -217,7 +217,7 @@ public class MerchandisingUtilities {
 			expectedfinalshipping = expectedEntryShipping;
 			// Pre-Purchase - Yes
 			if(PPUSection.equalsIgnoreCase("Yes")) {	
-				System.out.println("Pre-Purchase Yes");
+//				System.out.println("Pre-Purchase Yes");
 				if(offerdata.get("Pre-Purchase Entry Promotion 1") != null) {
 					expectedcampaigngifts = offerdata.get("Pre-Purchase Entry Promotion 1").trim();
 				}					
@@ -358,7 +358,7 @@ public class MerchandisingUtilities {
 			else {
 				// If no seperate lineitem, then no GiftPPID
 				if(giftseperatelineitem.equalsIgnoreCase("Yes")) {
-					System.out.println("Expected Campaign Gifts : " + expectedcampaigngifts);
+//					System.out.println("Expected Campaign Gifts : " + expectedcampaigngifts);
 					if((expectedcampaigngifts != null) && (!(expectedcampaigngifts.equals("-"))) && (!(expectedcampaigngifts.equals(""))) && (!(expectedcampaigngifts.equalsIgnoreCase("Free gift")))) {
 						giftppid = String.join(",", bf_obj.getPPIDfromString(brand, expectedcampaigngifts));
 						expectedofferdata.put("Gift PPID", giftppid);
@@ -676,7 +676,7 @@ public class MerchandisingUtilities {
 		String PostPU;
 		if(offerdata.get("Post Purchase Upsell to") != null) {
 			String postpuppid = offerdata.get("Post Purchase Upsell to").trim();
-			System.out.println(postpuppid);
+//			System.out.println(postpuppid);
 			
 			String brandcode = db_obj.get_sourceproductlinecode(brand); 
 			
@@ -690,7 +690,7 @@ public class MerchandisingUtilities {
 		else {
 			PostPU = "No";
 		}		
-		System.out.println(PostPU);
+//		System.out.println(PostPU);
 		return PostPU;
 	}
 	
@@ -748,14 +748,14 @@ public class MerchandisingUtilities {
 		String[] expectedrowNames = {"Entry PPID", "Pre-Purchase Entry PPID", "Post Purchase Upsell to"};
 		
 		for(int i=0; i<merchData.length; i++) {			
-			System.out.println(i);
+//			System.out.println(i);
 			String currentrowname = merchData[i][0];
-			System.out.println("currentrowname : " + currentrowname);
+//			System.out.println("currentrowname : " + currentrowname);
 			for(String name : expectedrowNames) {
 				if((currentrowname != null) && (currentrowname.contains(name))) {
 					for(int j=1; j<merchData[i].length; j++) {
 						String rowPPID = merchData[i][j];
-						System.out.println("rowPPID : " + rowPPID);
+//						System.out.println("rowPPID : " + rowPPID);
 			            if((rowPPID != null) && (rowPPID.contains(ppid))) {
 			            	ppidcolumn = j;
 			            	temp = 1;
@@ -852,7 +852,7 @@ public class MerchandisingUtilities {
 				break;
 			}
 		}
-		System.out.println("Source Code Data : " + sourcecodedata);
+//		System.out.println("Source Code Data : " + sourcecodedata);
 		return sourcecodedata;
 	}
 	
@@ -864,7 +864,7 @@ public class MerchandisingUtilities {
 			if(merchData[i][0] != null) {
 				if(merchData[i][0].equalsIgnoreCase("Kit")) {		
 					while(!(merchData[i][0].equalsIgnoreCase("Entry Kit"))) {
-						System.out.println(merchData[i][0]);
+//						System.out.println(merchData[i][0]);
 						i++;
 						offerdata.put(merchData[i][0].trim(), merchData[i][column]);
 					}
@@ -915,7 +915,7 @@ public class MerchandisingUtilities {
 				ppidcolumn = i;
 			}
 		}
-		System.out.println("ppidcolumn:" + ppidcolumn);
+//		System.out.println("ppidcolumn:" + ppidcolumn);
 		
 		for(int i=0; i<catalogData.length; i++) {	
 			if(catalogData[i][0] != null) {
@@ -934,7 +934,7 @@ public class MerchandisingUtilities {
 				break;
 			}
 		}
-		System.out.println(productdata);
+//		System.out.println(productdata);
 		return productdata;
 	}
 	
@@ -952,7 +952,7 @@ public class MerchandisingUtilities {
 		for(int i=1; i<catalogData.length-1; i++) {	
 			ppidlist.add(catalogData[i][ppidcolumn]);
 		}
-		System.out.println(ppidlist);
+//		System.out.println(ppidlist);
 		
 		
 		List<String> randsingles = new ArrayList<String>();
@@ -961,7 +961,7 @@ public class MerchandisingUtilities {
 			randsingles.add(ppidlist.get(rand.nextInt(ppidlist.size())));
 		}
 		
-		System.out.println("Chosen single : " + randsingles);
+//		System.out.println("Chosen single : " + randsingles);
 		return randsingles;
 	}
 }

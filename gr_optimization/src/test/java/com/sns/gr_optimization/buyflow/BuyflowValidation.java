@@ -71,7 +71,7 @@ public class BuyflowValidation {
 	static List<String> attachmentList = new ArrayList<String>();
 	
 	List<List<String>> output = new ArrayList<List<String>>();
-	String sendReportTo = "manibharathi@searchnscore.com";
+	String sendReportTo = "";
 //	String env = "";
 //	String env = System.getProperty("Environment");
 	
@@ -80,8 +80,8 @@ public class BuyflowValidation {
 	public void getEmailId() {
 //	public void getEmailId(String environment) {
 //		env = environment;
-//		System.out.println("Enter Email id : ");
-//		sendReportTo = in.next();
+		System.out.println("Enter Email id : ");
+		sendReportTo = in.next();
 	}
 	
 	@DataProvider(name="buyflowInput", parallel=true)
@@ -128,7 +128,7 @@ public class BuyflowValidation {
 		String[][] merchData = null;		
 		
 		List<String> category_list = Arrays.asList(category.split(","));
-		System.out.println(category_list);
+//		System.out.println(category_list);
 		
 		// Read Web Catalog
 		if((category_list.contains("Product")) || (category_list.contains("SubscribeandSave"))) {
@@ -168,8 +168,8 @@ public class BuyflowValidation {
 				categorylist.add(category_array[i]);
 			}
 		}
-		System.out.println(offerlist);
-		System.out.println(categorylist);
+//		System.out.println(offerlist);
+//		System.out.println(categorylist);
 		
 		// Intialize result variables
 		String remarks = "";
@@ -216,7 +216,7 @@ public class BuyflowValidation {
 		sourcecodedata = merch_obj.getSourceCodeInfo(merchData, campaign);	
 		// Collect Source code details for the campaign
 		expectedsourcecodedata = merch_obj.generateExpectedSourceCodeData(sourcecodedata);
-		System.out.println(expectedsourcecodedata);		
+//		System.out.println(expectedsourcecodedata);		
 		
 		// HashMap variable to collect Kit related details from Merchandising Template
 		HashMap<String, String> expectedofferdata_kit = null;
@@ -250,7 +250,7 @@ public class BuyflowValidation {
 						PPUSection = "Yes";
 					}
 				}
-				System.out.println(PPIDcolumn + PPUSection);
+//				System.out.println(PPIDcolumn + PPUSection);
 				
 				// Check if the PPID is present in the campaign
 				if(PPIDcolumn == 0) {
@@ -260,7 +260,7 @@ public class BuyflowValidation {
 	
 				// Read the entire column data
 				HashMap<String, String> kit_offerdata = merch_obj.getColumnData(merchData, PPIDcolumn, PPUSection);
-				System.out.println(kit_offerdata);
+//				System.out.println(kit_offerdata);
 				// Check Post-purchase Upsell for the campaign
 				postpu = merch_obj.checkPostPU(kit_offerdata, brand);
 				if(((brand.equalsIgnoreCase("CrepeErase")) && (campaign.equalsIgnoreCase("order30fsh2b"))) && (PPUSection.equalsIgnoreCase("No"))) {
@@ -281,7 +281,7 @@ public class BuyflowValidation {
 				// Collect current Offer related details from Merchandising Input file
 				if(!(brand.equalsIgnoreCase("JloBeauty"))) {
 					expectedofferdata_kit = merch_obj.generateExpectedOfferDataForKit(kit_offerdata, PPUSection, postpu, ppid, giftppid, brand, campaigncategory);
-					System.out.println("Expected Offerdata - Kit : " + expectedofferdata_kit);
+//					System.out.println("Expected Offerdata - Kit : " + expectedofferdata_kit);
 				}
 								
 				// Add Kit PPID to lineitem list
@@ -395,7 +395,7 @@ public class BuyflowValidation {
 				
 				// Collect current Offer related details from Merchandising Input file
 				expectedofferdata_product = merch_obj.generateExpectedOfferDataForProduct(product_offerdata, ppid, brand, campaigncategory, currentCategory);
-				System.out.println("Expected Offerdata - Product : " + expectedofferdata_product);
+//				System.out.println("Expected Offerdata - Product : " + expectedofferdata_product);
 				
 				// Add Product PPID to lineitem list
 				List<String> product_lineitem = new ArrayList<String>();
@@ -476,7 +476,7 @@ public class BuyflowValidation {
 		}
 		
 		campaignpages.add("ConfirmationPage");
-		System.out.println(campaignpages);
+//		System.out.println(campaignpages);
 		
 		// Fill out form
 		String email = "";
@@ -537,7 +537,7 @@ public class BuyflowValidation {
 			diff_lineitemlist = new ArrayList<>(expected_lineitems);
 						
 			for(List<String> actual_item : actual_lineitems) {
-				System.out.println("Actual item: " + actual_item);
+//				System.out.println("Actual item: " + actual_item);
 				String actual_ppid = actual_item.get(0);
 				String actual_price = actual_item.get(1);
 				String actual_cart_language = actual_item.get(2);
@@ -545,8 +545,8 @@ public class BuyflowValidation {
 				String actual_continuity_shipping = actual_item.get(4);
 					
 				for(List<String> expected_item : expected_lineitems) {
-					System.out.println("Expected item: " + expected_item);
-					System.out.println("Actual PPID: " + actual_ppid);					
+//					System.out.println("Expected item: " + expected_item);
+//					System.out.println("Actual PPID: " + actual_ppid);					
 					
 					if(expected_item.contains(actual_ppid)) {
 						if(!(expected_item.get(2).equalsIgnoreCase("-"))) {
@@ -609,7 +609,7 @@ public class BuyflowValidation {
 			}
 			
 			// When Extra lineitems are present
-			System.out.println("Extra lineitems check");
+//			System.out.println("Extra lineitems check");
 			temp_lineitemlist.clear();
 			temp_lineitemlist = new ArrayList<>();
 			diff_lineitemlist = new ArrayList<>(actual_lineitems);
@@ -623,10 +623,10 @@ public class BuyflowValidation {
 					}				
 				}				
 			}			
-			System.out.println(temp_lineitemlist);
-			System.out.println(diff_lineitemlist);
+//			System.out.println(temp_lineitemlist);
+//			System.out.println(diff_lineitemlist);
 			diff_lineitemlist.removeAll(temp_lineitemlist);
-			System.out.println(diff_lineitemlist);
+//			System.out.println(diff_lineitemlist);
 			for(List<String> lineitem : diff_lineitemlist) {
 				ppidResult = "FAIL";
 				remarks = remarks + lineitem.get(0) + " is present in Checkout Cart ; ";
@@ -638,10 +638,10 @@ public class BuyflowValidation {
 		if((category_list.contains("Kit")) || (category_list.contains("SubscribeandSave"))) {
 //			if((!(cc.equalsIgnoreCase("Paypal"))) && (!(supplysize.equalsIgnoreCase("90"))) && (!(offer_postpurchase.equalsIgnoreCase("Yes")))) {
 				String actual_suppl_cart_lang = lang_obj.getsupplementalcartlanguage(driver);
-				System.out.println("Actual Supplemental cart language : " + actual_suppl_cart_lang);
+//				System.out.println("Actual Supplemental cart language : " + actual_suppl_cart_lang);
 				for(List<String> expected_item : expected_lineitems) {
 					String exp_suppl_cart_lang = expected_item.get(6);
-					System.out.println("Expected Supplemental cart language : " + exp_suppl_cart_lang);
+//					System.out.println("Expected Supplemental cart language : " + exp_suppl_cart_lang);
 					
 					if(exp_suppl_cart_lang.equalsIgnoreCase("No Supplemental Cart Language")) {
 						continue;
@@ -667,7 +667,7 @@ public class BuyflowValidation {
 		}	}	
 				
 		// Validate Checkout pricing		
-		System.out.println("Validating Checkout Pricing");
+//		System.out.println("Validating Checkout Pricing");
 		// Get Actual Checkout Price
 		String checkout_subtotal = "";
 		String checkout_shipping = "";
@@ -789,7 +789,7 @@ public class BuyflowValidation {
 			// supplysize - 30
 			// No Fall back scenario
 			if(supplysize.equalsIgnoreCase("30")) {
-				System.out.println("Post Purchase - As per flow");
+//				System.out.println("Post Purchase - As per flow");
 				pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
 				bf_obj.complete_order(driver, brand, cc);
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern + ".har", driver);
@@ -834,10 +834,10 @@ public class BuyflowValidation {
 				}
 			}				
 		}			
-		System.out.println("Diff lineitem :" + diff_lineitemlist);
-		System.out.println("Temp lineitem :" + temp_lineitemlist);
+//		System.out.println("Diff lineitem :" + diff_lineitemlist);
+//		System.out.println("Temp lineitem :" + temp_lineitemlist);
 		diff_lineitemlist.removeAll(temp_lineitemlist);
-		System.out.println("Diff lineitem - After Removal :" + diff_lineitemlist);
+//		System.out.println("Diff lineitem - After Removal :" + diff_lineitemlist);
 		for(List<String> lineitem : diff_lineitemlist) {
 			// If Result is already fail, then the overall ppid result is fail
 			if(ppidResult.equalsIgnoreCase("FAIL")) {
@@ -1183,7 +1183,7 @@ public class BuyflowValidation {
 		output_row.add(cc);	
 		output_row.add(browser);	
 		output_row.add(remarks);
-		System.out.println("Output row : " + output_row);
+//		System.out.println("Output row : " + output_row);
 		output.add(output_row);
 		
 		driver.close();
