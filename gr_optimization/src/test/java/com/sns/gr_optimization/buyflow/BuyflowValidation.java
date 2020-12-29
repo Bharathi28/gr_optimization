@@ -223,6 +223,7 @@ public class BuyflowValidation {
 		HashMap<String, String> expectedofferdata_product = null;
 		
 		List<String> subtotal_list = new ArrayList<String>();
+		List<String> subtotal_list_forshippingcalc = new ArrayList<String>();
 		List<String> shipping_list = new ArrayList<String>();
 		List<String> renewal_plan_list = new ArrayList<String>();
 		List<String> pricebook_id_list = new ArrayList<String>();
@@ -409,12 +410,17 @@ public class BuyflowValidation {
 				expected_lineitems.add(product_lineitem);
 				
 				subtotal_list.add(expectedofferdata_product.get("Price"));
+				
+				if(currentCategory.equalsIgnoreCase("Product")) {
+					subtotal_list_forshippingcalc.add(expectedofferdata_product.get("Price"));
+				}				
+				
 				String shipping_calc = "";
 				if((category_list.contains("Kit")) || (currentCategory.equalsIgnoreCase("SubscribeandSave"))){
 					shipping_calc = "FREE";
 				}
 				else {
-					String subtotal_str = bf_obj.CalculateTotalPrice(subtotal_list);
+					String subtotal_str = bf_obj.CalculateTotalPrice(subtotal_list_forshippingcalc);
 					double subtotal_calc = Double.parseDouble(subtotal_str);  
 					if(subtotal_calc > 49) {
 						shipping_calc = "FREE";
@@ -531,7 +537,10 @@ public class BuyflowValidation {
 		List<List<String>> diff_lineitemlist = new ArrayList<>();
 		
 		// Scenario - 90-day order + Paypal - could not validate 90-day cart language and supplemental language because invalid zipcode could not be fill-in for Paypal
-		if((!(cc.equalsIgnoreCase("Paypal"))) && (!(supplysize.equalsIgnoreCase("90"))) && (!(offer_postpurchase.equalsIgnoreCase("Yes")))) {
+//		if((!(cc.equalsIgnoreCase("Paypal"))) && (!(supplysize.equalsIgnoreCase("90"))) && (!(offer_postpurchase.equalsIgnoreCase("Yes")))) {
+		if(!((cc.equalsIgnoreCase("Paypal")) && (supplysize.equalsIgnoreCase("90")) && (offer_postpurchase.equalsIgnoreCase("Yes")))){
+			
+//		}
 			// When some more lineitems are expected
 			temp_lineitemlist = new ArrayList<>();
 			diff_lineitemlist = new ArrayList<>(expected_lineitems);
