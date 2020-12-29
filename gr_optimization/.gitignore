@@ -1,5 +1,6 @@
 /target/
-test-output/
+/test-output/
+Run Output/
 *.png
 *.har
 *.log
