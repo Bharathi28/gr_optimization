@@ -96,12 +96,12 @@ public class BuyflowValidation {
 		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver.exe");
 		
 		// start the proxy
-//	    BrowserMobProxy proxy = new BrowserMobProxyServer();
-//	    proxy.setTrustAllServers(true);
-//	    proxy.start(0);
+	    BrowserMobProxy proxy = new BrowserMobProxyServer();
+	    proxy.setTrustAllServers(true);
+	    proxy.start(0);
 
 	    // get the Selenium proxy object
-//	    Proxy seleniumProxy = ClientUtil.createSeleniumProxy(proxy);	    
+	    Proxy seleniumProxy = ClientUtil.createSeleniumProxy(proxy);	    
 	    
 	    ChromeOptions options = new ChromeOptions();
 	    options.addArguments("--ignore-certificate-errors");
@@ -112,7 +112,7 @@ public class BuyflowValidation {
 	    // configure it as a desired capability
 	    DesiredCapabilities capabilities = new DesiredCapabilities();
 	    capabilities.setCapability(ChromeOptions.CAPABILITY, options);
-//	    capabilities.setCapability(CapabilityType.PROXY, seleniumProxy);
+	    capabilities.setCapability(CapabilityType.PROXY, seleniumProxy);
 	    capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
 	    capabilities.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);		
 		
@@ -195,7 +195,7 @@ public class BuyflowValidation {
 		driver.manage().window().maximize();
 		
 		// enable more detailed HAR capture, if desired (see CaptureType for the complete list)
-//	    proxy.enableHarCaptureTypes(CaptureType.REQUEST_CONTENT, CaptureType.RESPONSE_CONTENT);
+	    proxy.enableHarCaptureTypes(CaptureType.REQUEST_CONTENT, CaptureType.RESPONSE_CONTENT);
 		
 		String url = db_obj.getUrl(brand, campaign, env);
 		url = pixel_obj.generateURL(url, pixelStr, brand);
@@ -204,11 +204,11 @@ public class BuyflowValidation {
 		String pattern = pixel_obj.getPattern(url, pixelStr);
 		
 		// HomePage
-//		pixel_obj.defineNewHar(proxy, brand + "HomePage");		
+		pixel_obj.defineNewHar(proxy, brand + "HomePage");		
 		System.out.println(url);
 		driver.get(url);
 		driver.manage().timeouts().implicitlyWait(6, TimeUnit.SECONDS);	
-//		pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_homepage_" + pattern +".har", driver);
+		pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_homepage_" + pattern +".har", driver);
 						
 		HashMap<String, String> sourcecodedata = null;
 		HashMap<String, String> expectedsourcecodedata = null;
@@ -362,9 +362,9 @@ public class BuyflowValidation {
 				}				
 				
 				// Move to SAS
-//				pixel_obj.defineNewHar(proxy, brand + "SASPage");	  
+				pixel_obj.defineNewHar(proxy, brand + "SASPage");	  
 				bf_obj.click_cta(driver, brand, campaign, "Ordernow");
-//				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver);
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver);
 			
 				// Gift Validation
 //				if(!(expectedofferdata_kit.get("Gift Name").equalsIgnoreCase("No Gift"))) {
@@ -381,7 +381,7 @@ public class BuyflowValidation {
 				sas_obj.select_offer(driver, expectedofferdata_kit, currentCategory);
 				
 				// Move to Checkout
-//				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
+				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
 				bf_obj.move_to_checkout(driver, brand, campaigncategory, category);
 			}
 			else if((currentCategory.equalsIgnoreCase("Product")) || (currentCategory.equalsIgnoreCase("SubscribeandSave"))) {
@@ -439,17 +439,17 @@ public class BuyflowValidation {
 				pricebook_id_list.add(expectedofferdata_product.get("Price Book Id"));
 				
 				// Move to Shop
-//				pixel_obj.defineNewHar(proxy, brand + "ShopPage");	  
+				pixel_obj.defineNewHar(proxy, brand + "ShopPage");	  
 				bf_obj.click_cta(driver, brand, campaign, "Shop");
-//				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_shoppage_" + pattern +".har", driver);
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_shoppage_" + pattern +".har", driver);
 			
 				// Select offer			
-//				pixel_obj.defineNewHar(proxy, brand + "PDPage");	
+				pixel_obj.defineNewHar(proxy, brand + "PDPage");	
 				sas_obj.select_offer(driver, expectedofferdata_product, currentCategory);
-//				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_pdpage_" + pattern +".har", driver);
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_pdpage_" + pattern +".har", driver);
 				
 				// Move to Checkout
-//				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
+				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
 				bf_obj.move_to_checkout(driver, brand, campaigncategory, currentCategory);
 			}
 						
@@ -501,18 +501,18 @@ public class BuyflowValidation {
 		else {
 			if((categorylist.contains("Kit")) && (expectedofferdata_kit.get("Offer Post-Purchase").equalsIgnoreCase("Yes"))) {
 				email = bf_obj.fill_out_form(driver, brand, campaigncategory, "VISA", "same", "90");
-//				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver);
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver);
 						
-//				pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
+				pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
 				bf_obj.complete_order(driver, brand, "VISA");
-//				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern +".har", driver);
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern +".har", driver);
 						
 				bf_obj.upsell_confirmation(driver, brand, campaigncategory, expectedofferdata_kit.get("Offer Post-Purchase"));
 			}
 			else {
 				email = bf_obj.fill_out_form(driver, brand, campaigncategory, cc, shipbill, "30");
 				System.out.println("Email : " + email);
-//				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver);
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver);
 			}	
 		}	
 		
@@ -789,10 +789,10 @@ public class BuyflowValidation {
 		
 		// No Post Purchase Upsell page
 		if(postpu.equalsIgnoreCase("No")) {
-//			pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");
+			pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");
         	// Navigate to Confirmation Page	        
         	bf_obj.complete_order(driver, brand, cc);          
-//            pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver);
+            pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver);
 		}
 		// Post Purchase Upsell page is present
 		else {
@@ -800,16 +800,16 @@ public class BuyflowValidation {
 			// No Fall back scenario
 			if(supplysize.equalsIgnoreCase("30")) {
 //				System.out.println("Post Purchase - As per flow");
-//				pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
+				pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
 				bf_obj.complete_order(driver, brand, cc);
-//				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern + ".har", driver);
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern + ".har", driver);
 			}
 			// supplysize - 90
 			// After Fall back scenario - control navigates to Confirmation page
 			else if(supplysize.equalsIgnoreCase("90")) {
-//				pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");	        
+				pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");	        
 	        	bf_obj.complete_order(driver, brand, cc);          
-//	            pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver);
+	            pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver);
 			}					
 		}			
 		Thread.sleep(3000);
@@ -821,9 +821,9 @@ public class BuyflowValidation {
 		// For 30-day order or Paypal order - Select Upsell Confirmation
 		if(postpu.equalsIgnoreCase("Yes")) {
 			if((supplysize.equalsIgnoreCase("30")) || (cc.equalsIgnoreCase("Paypal"))) {
-//				pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");
+				pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");
 				bf_obj.upsell_confirmation(driver, brand, campaigncategory, expectedofferdata_kit.get("Offer Post-Purchase"));
-//				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver);
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver);
 			}
 		}								
 		
