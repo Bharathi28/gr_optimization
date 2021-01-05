@@ -204,7 +204,8 @@ public class BuyflowValidation {
 		String pattern = pixel_obj.getPattern(url, pixelStr);
 		
 		// HomePage
-		pixel_obj.defineNewHar(proxy, brand + "HomePage");				
+		pixel_obj.defineNewHar(proxy, brand + "HomePage");		
+		System.out.println(url);
 		driver.get(url);
 		driver.manage().timeouts().implicitlyWait(6, TimeUnit.SECONDS);	
 		pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_homepage_" + pattern +".har", driver);
