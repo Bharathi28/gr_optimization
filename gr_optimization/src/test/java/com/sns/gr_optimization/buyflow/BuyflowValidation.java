@@ -71,7 +71,7 @@ public class BuyflowValidation {
 	static List<String> attachmentList = new ArrayList<String>();
 	
 	List<List<String>> output = new ArrayList<List<String>>();
-	String sendReportTo = "";
+	String sendReportTo = "manibharathi@searchnscore.com";
 //	String env = "";
 //	String env = System.getProperty("Environment");
 	
@@ -80,8 +80,8 @@ public class BuyflowValidation {
 	public void getEmailId() {
 //	public void getEmailId(String environment) {
 //		env = environment;
-		System.out.println("Enter Email id : ");
-		sendReportTo = in.next();
+//		System.out.println("Enter Email id : ");
+//		sendReportTo = in.next();
 	}
 	
 	@DataProvider(name="buyflowInput", parallel=true)
