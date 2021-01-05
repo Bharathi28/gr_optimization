@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.apache.commons.lang.RandomStringUtils;
+//import org.apache.commons.lang.RandomStringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -550,8 +550,8 @@ public class BuyflowUtilities {
 	}	
 	
 	public String ccPayment(WebDriver driver, JavascriptExecutor jse, String realm, String brand, String campaign, String cc, String shipbill, String supply) throws ClassNotFoundException, SQLException, InterruptedException {
-		String alpha = RandomStringUtils.randomAlphabetic(9);
-		String num = RandomStringUtils.randomNumeric(4);
+		String alpha = org.apache.commons.lang3.RandomStringUtils.randomAlphabetic(9);
+		String num = org.apache.commons.lang3.RandomStringUtils.randomNumeric(4);
 		String email = alpha + "-" + num + "@mailnesia.com";
 		
 		fill_form_field(driver, realm, "Email", email.toLowerCase());
