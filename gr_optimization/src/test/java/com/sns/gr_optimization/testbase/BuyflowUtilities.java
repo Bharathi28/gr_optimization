@@ -58,7 +58,7 @@ public class BuyflowUtilities {
 			query = query + include_offer;
 		}
 //		query = query + ";";
-			System.out.println(query);
+//			System.out.println(query);
 		List<Map<String, Object>> locator = DBLibrary.dbAction("fetch",query);
 		return locator;		
 	}
@@ -89,9 +89,9 @@ public class BuyflowUtilities {
 		if(locator.size() == 0) {
 			locator = get_element_locator(brand, null, "Logo", null);
 		}
-		System.out.println(locator.size());
+//		System.out.println(locator.size());
 		for(Map<String,Object> logo : locator) {
-			System.out.println(logo.get("ELEMENTVALUE").toString());
+//			System.out.println(logo.get("ELEMENTVALUE").toString());
 			String elementvalue = logo.get("ELEMENTVALUE").toString();
 			if(driver.findElements(By.xpath(elementvalue)).size() != 0) {
 				driver.findElement(By.xpath(elementvalue)).click();
@@ -614,7 +614,7 @@ public class BuyflowUtilities {
 			fill_form_field(driver, realm, "CardNumber", getCCNumber(cc));
 		}		
 		fill_form_field(driver, realm, "Month", "12");
-		fill_form_field(driver, realm, "Year", "2020");	
+		fill_form_field(driver, realm, "Year", "2024");	
 		
 //		if((brand.equalsIgnoreCase("Volaire")) || (brand.equalsIgnoreCase("WestmoreBeauty")) || (brand.equalsIgnoreCase("CrepeErase"))) {
 		if(realm.equalsIgnoreCase("R4")) {
