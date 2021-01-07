@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-//import org.apache.commons.lang.RandomStringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -540,7 +539,19 @@ public class BuyflowUtilities {
 //						System.out.println("while - email empty");
 						break;
 					}
-				}	
+				}
+				if(driver.findElements(By.xpath("//div[@id='loginSection']//div//div[2]//a")).size() != 0) {
+					System.out.println("3 - else if in while");
+					driver.findElement(By.xpath("//div[@id='loginSection']//div//div[2]//a")).click();
+					Thread.sleep(2000);
+					email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
+				}
+				else if(driver.findElements(By.xpath("//button[text()='Log In']")).size() != 0) {
+					System.out.println("4 - else if in while");
+					driver.findElement(By.xpath("//button[text()='Log In']")).click();
+					Thread.sleep(2000);
+					email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
+				}
 			}							
 		}
 		else {

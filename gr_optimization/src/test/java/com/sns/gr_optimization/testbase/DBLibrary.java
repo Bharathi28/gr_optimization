@@ -28,11 +28,18 @@ public class DBLibrary {
 //			
 //			return connection;
 			
-			String driver = "org.apache.derby.jdbc.EmbeddedDriver";
-		    String connectionURL = "jdbc:derby:groptimizeddb;";
-		    Class.forName(driver);
-            connection = DriverManager.getConnection(connectionURL);
-
+//			String driver = "org.apache.derby.jdbc.EmbeddedDriver";
+//		    String connectionURL = "jdbc:derby:groptimizeddb;";
+//		    Class.forName(driver);
+//            connection = DriverManager.getConnection(connectionURL);
+//
+//            return connection;
+			
+			// db parameters
+            String url = "jdbc:sqlite:groptimizeddb.db";
+            Class.forName("org.sqlite.JDBC");
+            // create a connection to the database
+            connection = DriverManager.getConnection(url);
             return connection;
 		}
 	}

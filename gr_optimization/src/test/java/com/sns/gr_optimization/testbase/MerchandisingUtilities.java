@@ -177,6 +177,11 @@ public class MerchandisingUtilities {
 			expectedofferdata.put("KitShade", offerdata.get("KitShade").trim());
 		}
 		
+		//GiftShade
+		if(offerdata.get("PagePattern").trim().contains("giftshade")) {
+			expectedofferdata.put("GiftShade", offerdata.get("GiftShade").trim());
+		}
+		
 		// 30 day PPID, Entry Pricing and Shipping
 		String ppid30day = "";
 		String expectedEntryPrice = "";

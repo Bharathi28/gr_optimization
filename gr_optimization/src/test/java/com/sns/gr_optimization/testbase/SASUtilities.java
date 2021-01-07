@@ -40,6 +40,9 @@ public class SASUtilities {
 	    	case "kitshade":
 	    		select_kitshade(driver, brand, campaign, offerdata);
 	    		break; 
+	    	case "giftshade":
+	    		select_giftshade(driver, brand, campaign, offerdata);
+	    		break; 
 	    	case "product":
 	    		select_product(driver, brand, campaign, offerdata);
 	    		break;
@@ -225,6 +228,33 @@ public class SASUtilities {
 			locator = bf_obj.get_element_locator(brand, campaign, "KitShade", kitshade + " " + kitname);		
 			if(locator.size() == 0) {
 				locator = bf_obj.get_element_locator(brand, null, "KitShade", kitshade + " " + kitname);
+			}
+			
+			String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
+			String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();
+			
+			if(!(elementvalue.equalsIgnoreCase("n/a"))) {
+				WebElement shade_elmt = comm_obj.find_webelement(driver, elementlocator, elementvalue);
+				comm_obj.waitUntilElementAppears(driver, elementvalue);
+				Thread.sleep(2000);
+				shade_elmt.click();
+				Thread.sleep(1000);
+			}			
+		}
+	}
+	
+	public void select_giftshade(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
+		JavascriptExecutor jse = (JavascriptExecutor) driver;
+		jse.executeScript("window.scrollBy(0,300)", 0);
+		
+		String giftshade = offerdata.get("GiftShade");
+		
+		if(!(giftshade.equalsIgnoreCase("No"))) {
+			List<Map<String, Object>> locator = null;
+			
+			locator = bf_obj.get_element_locator(brand, campaign, "GiftShade", giftshade);		
+			if(locator.size() == 0) {
+				locator = bf_obj.get_element_locator(brand, null, "GiftShade", giftshade);
 			}
 			
 			String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
