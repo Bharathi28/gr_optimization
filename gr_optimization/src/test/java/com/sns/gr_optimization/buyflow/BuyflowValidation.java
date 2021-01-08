@@ -95,6 +95,20 @@ public class BuyflowValidation {
 	public void buyflow(String env, String brand, String campaign, String category, String kitppid, String giftppid, String shipbill, String cc, String browser, String pixelStr) throws IOException, ClassNotFoundException, SQLException, InterruptedException {	
 		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver.exe");
 		
+		// Create Required Directories
+		File newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Harfiles");
+		newDirectory.mkdir();
+		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles", brand);
+		newDirectory.mkdir();
+		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Pixel Output");
+		newDirectory.mkdir();
+		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Run Output");
+		newDirectory.mkdir();
+		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Screenshots");
+		newDirectory.mkdir();
+		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Screenshots", brand);
+		newDirectory.mkdir();
+		
 		// start the proxy
 	    BrowserMobProxy proxy = new BrowserMobProxyServer();
 	    proxy.setTrustAllServers(true);
