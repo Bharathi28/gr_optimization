@@ -145,7 +145,7 @@ public class BuyflowValidation {
 //		System.out.println(category_list);
 		
 		// Read Web Catalog
-		if((category_list.contains("Product")) || (category_list.contains("SubscribeandSave"))) {
+		if((category_list.contains("Product")) || (category_list.contains("SubscribeandSave")) || (category_list.contains("ShopKit"))) {
 			catalogData = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/Merchandising Input/" + brand + "/Web Catalog.xlsx", "Acq", 0);
 		}
 		
@@ -398,7 +398,7 @@ public class BuyflowValidation {
 				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
 				bf_obj.move_to_checkout(driver, brand, campaigncategory, category);
 			}
-			else if((currentCategory.equalsIgnoreCase("Product")) || (currentCategory.equalsIgnoreCase("SubscribeandSave"))) {
+			else if((currentCategory.equalsIgnoreCase("Product")) || (currentCategory.equalsIgnoreCase("SubscribeandSave")) || (currentCategory.equalsIgnoreCase("ShopKit"))) {
 				// Get the product data from Web Catalog
 				HashMap<String, String> product_offerdata = merch_obj.getProdRowfromCatalog(catalogData, ppid);
 //				System.out.println(product_offerdata);
@@ -441,7 +441,12 @@ public class BuyflowValidation {
 						shipping_calc = "FREE";
 					}
 					else {
-						shipping_calc = "$4.99";
+						if(brand.equalsIgnoreCase("JLoBeauty")) {
+							shipping_calc = "$4.99";
+						}
+						else {
+							shipping_calc = "$5.99";
+						}						
 					}  
 				}
 				

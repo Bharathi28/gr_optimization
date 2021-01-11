@@ -25,6 +25,7 @@ public class MerchandisingUtilities {
 		expectedsourcecodedata.put("Venue ID", sourcecodedata.get("Venue ID"));
 		expectedsourcecodedata.put("Price Book ID", sourcecodedata.get("Price Book ID"));
 		
+		System.out.println(expectedsourcecodedata);
 		return expectedsourcecodedata;
 	}
 	
@@ -46,7 +47,9 @@ public class MerchandisingUtilities {
 		}
 		expectedofferdata.put("Shade", shade);
 		
-		expectedofferdata.put("Size", offerdata.get("Size").trim());
+		if(offerdata.get("Size") != null) {
+			expectedofferdata.put("Size", offerdata.get("Size").trim());
+		}		
 		
 		String pagepattern = "product-";
 		if(category.equalsIgnoreCase("Product")) {
@@ -73,24 +76,28 @@ public class MerchandisingUtilities {
 			pagepattern = pagepattern + "subscribe";
 			
 			expectedofferdata.put("PagePattern", pagepattern);
-//			if(offerdata.get("Subscribe and Save price") != null) {
 			
-			if(offerdata.get("PPID").trim().equalsIgnoreCase("JL2A0136")) {
-				expectedofferdata.put("Price", "137.0");
+			if(brand.equalsIgnoreCase("JLoBeauty")) {
+				if(offerdata.get("PPID").trim().equalsIgnoreCase("JL2A0136")) {
+					expectedofferdata.put("Price", "137.0");
+				}
+				else {
+					String one_time_price = offerdata.get("Acq One Time price").trim();
+					one_time_price = one_time_price.replace("$", "");
+					Double onetime_value = Double.valueOf(one_time_price);
+					Double subscribe_value = onetime_value * 0.85;
+					double subscribe_roundOff = Math.floor(subscribe_value * 100.0) / 100.0;
+					String SubscribeandSave_price = String.valueOf(subscribe_roundOff);
+//					System.out.println(SubscribeandSave_price);
+					expectedofferdata.put("Price", SubscribeandSave_price);
+				}
 			}
 			else {
-				String one_time_price = offerdata.get("Acq One Time price").trim();
-				one_time_price = one_time_price.replace("$", "");
-				Double onetime_value = Double.valueOf(one_time_price);
-				Double subscribe_value = onetime_value * 0.85;
-				double subscribe_roundOff = Math.floor(subscribe_value * 100.0) / 100.0;
-				String SubscribeandSave_price = String.valueOf(subscribe_roundOff);
-//				System.out.println(SubscribeandSave_price);
-				expectedofferdata.put("Price", SubscribeandSave_price);
-			}
-				
-//				expectedofferdata.put("Price", offerdata.get("Subscribe and Save price").trim());
-//			}
+				if(offerdata.get("Subscribe and Save price") != null) {
+					expectedofferdata.put("Price", offerdata.get("Subscribe and Save price").trim());
+				}
+			}			
+					
 			expectedofferdata.put("Renewal Plan Id", offerdata.get("Renewal Plan ID").trim());
 			expectedofferdata.put("Cart Language", offerdata.get("Cart Language").trim());
 			expectedofferdata.put("Supplemental Cart Language", offerdata.get("Supplementary Cart Language").trim());
@@ -103,6 +110,24 @@ public class MerchandisingUtilities {
 			
 			expectedofferdata.put("Price Book Id", offerdata.get("Subscribe and Save Price Book ID").trim());
 		}		
+		else if(category.equalsIgnoreCase("ShopKit")) {
+			if(!(shade.equalsIgnoreCase("No Shade"))) {
+				pagepattern = pagepattern + "shade";
+			}	
+			expectedofferdata.put("PagePattern", pagepattern);
+			expectedofferdata.put("Price", offerdata.get("Acq One Time price").trim());
+			expectedofferdata.put("Renewal Plan Id", offerdata.get("Renewal Plan ID").trim());
+			expectedofferdata.put("Cart Language", offerdata.get("Cart Language").trim());
+			expectedofferdata.put("Supplemental Cart Language", offerdata.get("Supplementary Cart Language").trim());
+
+			String[] lang_price_arr = lang_obj.parse_cart_language(offerdata.get("Cart Language").trim());			
+			String cart_lang_price = lang_price_arr[1];
+			String cart_lang_shipping = lang_price_arr[2];	
+			expectedofferdata.put("Continuity Pricing", cart_lang_price);
+			expectedofferdata.put("Continuity Shipping", cart_lang_shipping);
+			
+			expectedofferdata.put("Price Book Id", offerdata.get("Acq One Time Price Book ID").trim());
+		}
 		
 		return expectedofferdata;
 	}
@@ -843,6 +868,7 @@ public class MerchandisingUtilities {
 
 				sourcecodegroupinrow = sourcecodegroupinrow.replaceAll("[^a-zA-Z0-9$]+", "");
 				sourcecodeinrow = sourcecodeinrow.replaceAll("[^a-zA-Z0-9$]+", "");
+				vanityurlinrow = vanityurlinrow.replaceAll("[^a-zA-Z0-9$]+", "");
 				sourcecodegroup = sourcecodegroup.replaceAll("[^a-zA-Z0-9$]+", "");
 				if((sourcecodegroupinrow.toLowerCase().contains(sourcecodegroup.toLowerCase())) || (sourcecodeinrow.toLowerCase().contains(sourcecodegroup.toLowerCase())) || (vanityurlinrow.toLowerCase().contains(sourcecodegroup.toLowerCase()))) {
 					for(int j=0; j<columnCount; j++) {
@@ -857,7 +883,7 @@ public class MerchandisingUtilities {
 				break;
 			}
 		}
-//		System.out.println("Source Code Data : " + sourcecodedata);
+		System.out.println("Source Code Data : " + sourcecodedata);
 		return sourcecodedata;
 	}
 	

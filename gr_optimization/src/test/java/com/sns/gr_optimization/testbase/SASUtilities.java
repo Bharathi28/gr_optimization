@@ -9,6 +9,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
 
 public class SASUtilities {
 	
@@ -64,12 +65,12 @@ public class SASUtilities {
 		Thread.sleep(2000);
 		System.out.println("Adding product to cart");
 		if((category.equalsIgnoreCase("Product")) || (category.equalsIgnoreCase("ShopKit")) || (category.equalsIgnoreCase("SubscribeandSave"))) {
-			if(brand.equalsIgnoreCase("JLoBeauty")) {
+//			if(brand.equalsIgnoreCase("JLoBeauty")) {
 //				if(driver.findElements(By.xpath("//a[@class='button mini-cart-link-checkout small-12']")).size() == 0) {
 					Thread.sleep(3000);
 					driver.findElement(By.xpath("//button[@id='add-to-cart']")).click();
 //				}
-			}
+//			}
 		}
 	}
 	
@@ -286,17 +287,35 @@ public class SASUtilities {
 				masterppid = offerdata.get("Master PPID");
 			}
 			
-			while(driver.findElements(By.xpath("//div[@data-itemid='" + masterppid + "']//div[4]//h3//a")).size() == 0){
+			String master_xpath = "";
+			String ppid_xpath = "";
+			if(brand.equalsIgnoreCase("JLoBeauty")) {
+				master_xpath = "//div[@data-itemid='" + masterppid + "']//div[4]//h3//a";
+				ppid_xpath = "//div[@data-itemid='" + ppid + "']//div[4]//h3//a";
+			}
+			else {
+				master_xpath = "//div[@data-itemid='" + masterppid + "']//div//div//h4//a";
+				ppid_xpath = "//div[@data-itemid='" + ppid + "']//div//div//h4//a";
+			}			
+			
+			while(driver.findElements(By.xpath(master_xpath)).size() == 0){
 				jse.executeScript("window.scrollBy(0,400)", 0);
 				
-				if(driver.findElements(By.xpath("//div[@data-itemid='" + ppid + "']//div[4]//h3//a")).size() != 0) {
+				if(driver.findElements(By.xpath(ppid_xpath)).size() != 0) {
 					masterppid = ppid;
 					break;
 				}
 			}
 			
-			WebElement product_elmt = driver.findElement(By.xpath("//div[@data-itemid='" + masterppid + "']//div[4]//h3//a"));
-			comm_obj.waitUntilElementAppears(driver, "//div[@data-itemid='" + masterppid + "']//div[4]//h3//a");
+			if(brand.equalsIgnoreCase("JLoBeauty")) {
+				master_xpath = "//div[@data-itemid='" + masterppid + "']//div[4]//h3//a";
+			}
+			else {
+				master_xpath = "//div[@data-itemid='" + masterppid + "']//div//div//h4//a";
+			}
+			
+			WebElement product_elmt = driver.findElement(By.xpath(master_xpath));
+			comm_obj.waitUntilElementAppears(driver, master_xpath);
 			Thread.sleep(2000);
 			product_elmt.click();
 		}		
@@ -312,17 +331,25 @@ public class SASUtilities {
 	
 	public void select_shade(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
-		jse.executeScript("window.scrollBy(0,300)", 0);
+//		jse.executeScript("window.scrollBy(0,300)", 0);
 	
 		String ppid = offerdata.get("Product PPID");
 		
-		WebElement shade_elmt = driver.findElement(By.xpath("(//li[@data-variantid='" + ppid + "'])[3]"));
-		comm_obj.waitUntilElementAppears(driver, "(//li[@data-variantid='" + ppid + "'])[3]");
-		Thread.sleep(2000);
-		if(!(shade_elmt.getAttribute("class").contains("selected"))) {
-			shade_elmt.click();
-		}		
-		Thread.sleep(1000);	
+		if(brand.equalsIgnoreCase("CrepeErase")) {
+			Select sel_element = new Select(driver.findElement(By.xpath("//ul[@class='variations-section clearfix']//li//div[3]//select")));
+			sel_element.selectByVisibleText(offerdata.get("Shade").toString());
+		}
+		else {
+			WebElement shade_elmt = driver.findElement(By.xpath("(//li[@data-variantid='" + ppid + "'])[3]"));
+			comm_obj.waitUntilElementAppears(driver, "(//li[@data-variantid='" + ppid + "'])[3]");
+			Thread.sleep(2000);
+			if(!(shade_elmt.getAttribute("class").contains("selected"))) {
+				shade_elmt.click();
+			}		
+			Thread.sleep(1000);	
+		}
+		
+		
 		
 		if(brand.equalsIgnoreCase("JLoBeauty")) {
 			Thread.sleep(4000);
@@ -336,16 +363,11 @@ public class SASUtilities {
 	
 		String ppid = offerdata.get("Product PPID");
 		
-//		if(brand.equalsIgnoreCase("JLoBeauty")) {
-//			if((ppid.equalsIgnoreCase("JL1A0036")) || (ppid.equalsIgnoreCase("JL1A0037")) || (ppid.equalsIgnoreCase("JL1A0034"))) {
-//				ppid = "JL1A0035";
-//			}
-//		}	
-		//input[@name='dwopt_JL1A0034_entryKit']/../../..//label[contains(@for,'entryKit-one-pay')]
 		Thread.sleep(1000);
-//		driver.findElement(By.xpath("//input[@id='dwopt_" + ppid + "_entryKit-one-pay']")).click();
-		driver.findElement(By.xpath("//input[@name='dwopt_" + ppid + "_entryKit']/../../..//label[contains(@for,'entryKit-one-pay')]")).click();
-		Thread.sleep(1000);
+		if(!(driver.findElement(By.xpath("//input[@name='dwopt_" + ppid + "_entryKit']/..")).getAttribute("class").contains("hide"))){
+			driver.findElement(By.xpath("//input[@name='dwopt_" + ppid + "_entryKit']/../../..//label[contains(@for,'entryKit-one-pay')]")).click();
+			Thread.sleep(1000);
+		}		
 	}
 	
 	public void select_subscribe(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
