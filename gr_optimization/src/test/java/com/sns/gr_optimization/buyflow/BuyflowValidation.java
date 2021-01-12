@@ -3,6 +3,8 @@ package com.sns.gr_optimization.buyflow;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -94,6 +96,8 @@ public class BuyflowValidation {
 	@Test(dataProvider="buyflowInput")
 	public void buyflow(String env, String brand, String campaign, String category, String kitppid, String giftppid, String shipbill, String cc, String browser, String pixelStr) throws IOException, ClassNotFoundException, SQLException, InterruptedException {	
 		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver.exe");
+//		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver");
+//		System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver");
 		
 		// Create Required Directories
 		File newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Harfiles");
@@ -115,13 +119,21 @@ public class BuyflowValidation {
 	    proxy.start(0);
 
 	    // get the Selenium proxy object
-	    Proxy seleniumProxy = ClientUtil.createSeleniumProxy(proxy);	    
+	    Proxy seleniumProxy = ClientUtil.createSeleniumProxy(proxy);	  
 	    
+	    try {
+	           String hostIp = Inet4Address.getLocalHost().getHostAddress();
+	           seleniumProxy.setHttpProxy(hostIp + ":" + proxy.getPort());
+	           seleniumProxy.setSslProxy(hostIp + ":" + proxy.getPort());
+	       } catch (UnknownHostException e) {
+	           e.printStackTrace();
+	       }
 	    ChromeOptions options = new ChromeOptions();
 	    options.addArguments("--ignore-certificate-errors");
 	    options.addArguments("--disable-backgrounding-occluded-windows");
 //	    options.addArguments("--no-sandbox");
 //	    options.addArguments("--disable-dev-shm-usage");
+	    
 	    
 	    // configure it as a desired capability
 	    DesiredCapabilities capabilities = new DesiredCapabilities();
@@ -129,6 +141,8 @@ public class BuyflowValidation {
 	    capabilities.setCapability(CapabilityType.PROXY, seleniumProxy);
 	    capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
 	    capabilities.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);		
+	    
+	    
 		
 		// Get Source Code Information - Campaign Category
 		String campaigncategory = db_obj.checkcampaigncategory(brand, campaign);
