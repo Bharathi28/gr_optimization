@@ -95,8 +95,8 @@ public class BuyflowValidation {
 	
 	@Test(dataProvider="buyflowInput")
 	public void buyflow(String env, String brand, String campaign, String category, String kitppid, String giftppid, String shipbill, String cc, String browser, String pixelStr) throws IOException, ClassNotFoundException, SQLException, InterruptedException {	
-		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver.exe");
-//		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver");
+//		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver.exe");
+		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver");
 //		System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver");
 		
 		// Create Required Directories
@@ -123,6 +123,7 @@ public class BuyflowValidation {
 	    
 	    try {
 	           String hostIp = Inet4Address.getLocalHost().getHostAddress();
+	           System.out.println(hostIp);
 	           seleniumProxy.setHttpProxy(hostIp + ":" + proxy.getPort());
 	           seleniumProxy.setSslProxy(hostIp + ":" + proxy.getPort());
 	       } catch (UnknownHostException e) {
@@ -138,6 +139,8 @@ public class BuyflowValidation {
 	    // configure it as a desired capability
 	    DesiredCapabilities capabilities = new DesiredCapabilities();
 	    capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+	    
+//	    Proxy seleniumProxy = getSeleniumProxy(getProxyServer());
 	    capabilities.setCapability(CapabilityType.PROXY, seleniumProxy);
 	    capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
 	    capabilities.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);		
