@@ -25,7 +25,7 @@ public class MerchandisingUtilities {
 		expectedsourcecodedata.put("Venue ID", sourcecodedata.get("Venue ID"));
 		expectedsourcecodedata.put("Price Book ID", sourcecodedata.get("Price Book ID"));
 		
-		System.out.println(expectedsourcecodedata);
+//		System.out.println(expectedsourcecodedata);
 		return expectedsourcecodedata;
 	}
 	
@@ -883,7 +883,7 @@ public class MerchandisingUtilities {
 				break;
 			}
 		}
-		System.out.println("Source Code Data : " + sourcecodedata);
+//		System.out.println("Source Code Data : " + sourcecodedata);
 		return sourcecodedata;
 	}
 	

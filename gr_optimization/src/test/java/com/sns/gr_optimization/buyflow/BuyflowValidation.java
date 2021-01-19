@@ -1,32 +1,25 @@
 package com.sns.gr_optimization.buyflow;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.CapabilityType;
@@ -34,14 +27,13 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
-import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
-import com.sns.gr_optimization.setup.BaseTest;
+import com.browserup.bup.BrowserUpProxy;
+import com.browserup.bup.BrowserUpProxyServer;
 import com.sns.gr_optimization.testbase.BuyflowUtilities;
 import com.sns.gr_optimization.testbase.CartLanguageUtilities;
 import com.sns.gr_optimization.testbase.CommonUtilities;
-import com.sns.gr_optimization.testbase.DBLibrary;
 import com.sns.gr_optimization.testbase.DBUtilities;
 import com.sns.gr_optimization.testbase.MailUtilities;
 import com.sns.gr_optimization.testbase.MerchandisingUtilities;
@@ -49,7 +41,6 @@ import com.sns.gr_optimization.testbase.PixelUtilities;
 import com.sns.gr_optimization.testbase.PricingUtilities;
 import com.sns.gr_optimization.testbase.SASUtilities;
 
-//import io.github.bonigarcia.wdm.WebDriverManager;
 import net.lightbody.bmp.BrowserMobProxy;
 import net.lightbody.bmp.BrowserMobProxyServer;
 import net.lightbody.bmp.client.ClientUtil;
@@ -82,8 +73,8 @@ public class BuyflowValidation {
 	public void getEmailId() {
 //	public void getEmailId(String environment) {
 //		env = environment;
-//		System.out.println("Enter Email id : ");
-//		sendReportTo = in.next();
+		System.out.println("Enter Email id : ");
+		sendReportTo = in.next();
 	}
 	
 	@DataProvider(name="buyflowInput", parallel=true)
@@ -95,8 +86,8 @@ public class BuyflowValidation {
 	
 	@Test(dataProvider="buyflowInput")
 	public void buyflow(String env, String brand, String campaign, String category, String kitppid, String giftppid, String shipbill, String cc, String browser, String pixelStr) throws IOException, ClassNotFoundException, SQLException, InterruptedException {	
-//		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver.exe");
-		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver");
+		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver.exe");
+//		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver");
 //		System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver");
 		
 		// Create Required Directories
@@ -115,37 +106,51 @@ public class BuyflowValidation {
 		
 		// start the proxy
 	    BrowserMobProxy proxy = new BrowserMobProxyServer();
+
 	    proxy.setTrustAllServers(true);
 	    proxy.start(0);
 
 	    // get the Selenium proxy object
-	    Proxy seleniumProxy = ClientUtil.createSeleniumProxy(proxy);	  
-	    
-	    try {
-	           String hostIp = Inet4Address.getLocalHost().getHostAddress();
-	           System.out.println(hostIp);
-	           seleniumProxy.setHttpProxy(hostIp + ":" + proxy.getPort());
-	           seleniumProxy.setSslProxy(hostIp + ":" + proxy.getPort());
-	       } catch (UnknownHostException e) {
-	           e.printStackTrace();
-	       }
+	    Proxy seleniumProxy = ClientUtil.createSeleniumProxy(proxy);	
+//	    InetAddress connectableAddress = ClientUtil.getConnectableAddress();
+//	    System.out.println(connectableAddress);
+//	    Proxy seleniumProxy = ClientUtil.createSeleniumProxy(proxy, connectableAddress);
+//	    try {
+//	           String hostIp = Inet4Address.getLocalHost().getHostAddress();
+////	           System.out.println(hostIp);
+////	           System.out.println(proxy.getPort());
+//	           seleniumProxy.setHttpProxy(hostIp + ":" + proxy.getPort());
+//	           seleniumProxy.setSslProxy(hostIp + ":" + proxy.getPort());
+//	       } catch (UnknownHostException e) {
+//	           e.printStackTrace();
+//	       }
 	    ChromeOptions options = new ChromeOptions();
+//	    options.setProxy(ClientUtil.createSeleniumProxy(new InetSocketAddress("192.168.0.15", 0)));
+	    options.setProxy(seleniumProxy);
+	    options.setAcceptInsecureCerts(true);
+	   
 	    options.addArguments("--ignore-certificate-errors");
 	    options.addArguments("--disable-backgrounding-occluded-windows");
 //	    options.addArguments("--no-sandbox");
-//	    options.addArguments("--disable-dev-shm-usage");
+//	    options.addArguments("--disable-dev-shm-usage");	    
+	    
+//	    ChromeOptions options = new ChromeOptions();
+//	    options.setProxy(ClientUtil.createSeleniumProxy(new InetSocketAddress("192.168.1.2", 12345)));
+//	    try {
+//	        driver = new RemoteWebDriver(new URL("http://your-hub-host:4444/wd/hub"), options);
+//	    } catch (MalformedURLException e) {
+//	        e.printStackTrace();
+//	    }
 	    
 	    
 	    // configure it as a desired capability
-	    DesiredCapabilities capabilities = new DesiredCapabilities();
-	    capabilities.setCapability(ChromeOptions.CAPABILITY, options);
-	    
-//	    Proxy seleniumProxy = getSeleniumProxy(getProxyServer());
-	    capabilities.setCapability(CapabilityType.PROXY, seleniumProxy);
-	    capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
-	    capabilities.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);		
-	    
-	    
+//	    DesiredCapabilities capabilities = new DesiredCapabilities();
+//	    
+ 
+//	    capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+
+//	    capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+//	    capabilities.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);			    
 		
 		// Get Source Code Information - Campaign Category
 		String campaigncategory = db_obj.checkcampaigncategory(brand, campaign);
@@ -222,7 +227,8 @@ public class BuyflowValidation {
 		ListIterator<String> categoryIterator = categorylist.listIterator();
 		
 		// Launch Browser
-		WebDriver driver = new ChromeDriver(capabilities);
+//		WebDriver driver = new ChromeDriver(capabilities);
+		WebDriver driver = new ChromeDriver(options);
 		driver.manage().window().maximize();
 		
 		// enable more detailed HAR capture, if desired (see CaptureType for the complete list)

@@ -20,26 +20,14 @@ public class DBUtilities {
 	
 	public String getUrl(String brand, String campaign, String env) throws ClassNotFoundException, SQLException {
 		String query = "select * from campaign_urls where brand='" + brand + "' and campaign='" + campaign + "'";
-//		System.out.println(query);
 		List<Map<String, Object>> campaigndata = DBLibrary.dbAction("fetch", query);		
 		String url = campaigndata.get(0).get("PRODURL").toString();
-//		System.out.println(url);
-		if(env.equalsIgnoreCase("qa")) {
-			if(brand.equalsIgnoreCase("JLoBeauty")) {
-				url = url.replace("www.", "storefront:Jloqa123@");
-			}
-			else {
-				url = url.replace("www.", "storefront:eComweb123@");
-			}			
+		if(env.equalsIgnoreCase("qa")) {			
+			url = url.replace("www.", "storefront:eComweb123@");		
 			url = url.replace("com", "grdev.com");
 		}
-		else if(env.equalsIgnoreCase("stg")) {
-			if(brand.equalsIgnoreCase("JLoBeauty")) {
-				url = url.replace("www.", "storefront:Jlostg123@");
-			}
-			else {
-				url = url.replace("www.", "storefront:eComweb123@www.");
-			}			
+		else if(env.equalsIgnoreCase("stg")) {			
+			url = url.replace("www.", "storefront:eComweb123@www.");		
 			url = url.replace("com", "stg.dw4.grdev.com");
 		}
 		else if(env.equalsIgnoreCase("prod")) {
@@ -48,12 +36,8 @@ public class DBUtilities {
 			url = url.replace("www.", "storefront:eComweb123@www.");
 			url = url.replace("com", "stg.dw4.grdev.com");
 			url = url.replace(".stg.", "."+ env.toLowerCase() +".");
-				System.out.println(url);
-			if(brand.equalsIgnoreCase("JLoBeauty")) {
-				url = url.replace("eComweb123", "Jlodev05");
-			}
+			System.out.println(url);
 		}
-//		System.out.println(url);
 		return url;
 	}
 	
@@ -196,7 +180,14 @@ public class DBUtilities {
 		public String getPixelBrandId(String brand, String event) throws ClassNotFoundException, SQLException {
 			String joinquery = "select * from brand_pixel where brand='" + brand + "' and event='" + event + "'";
 			List<Map<String, Object>> joinlist = DBLibrary.dbAction("fetch",joinquery);
-			String id = joinlist.get(0).get("PIXELBRANDID").toString();
-			return id;
+			
+			String id = " ";
+			if((joinlist.get(0).get("PIXELBRANDID") != null) && (!(joinlist.get(0).get("PIXELBRANDID").toString().equalsIgnoreCase("\\N")))){
+				id = joinlist.get(0).get("PIXELBRANDID").toString();
+			}		
+			return id;		
+			
+//			String id = joinlist.get(0).get("PIXELBRANDID").toString();
+//			return id;
 		}
 }

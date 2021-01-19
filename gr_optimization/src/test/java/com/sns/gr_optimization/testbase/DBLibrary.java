@@ -19,14 +19,14 @@ public class DBLibrary {
 			return connection;
 		}
 		else {
-//			String dbUrl = "jdbc:mysql://localhost:3306/groptimizeddb";
-//			String username = "root";
-//			String password = "rootpwd";
-//				
-//			Class.forName("com.mysql.jdbc.Driver");
-//			connection = DriverManager.getConnection(dbUrl,username,password);
-//			
-//			return connection;
+			String dbUrl = "jdbc:mysql://localhost:3306/groptimizeddb";
+			String username = "root";
+			String password = "rootpwd";
+				
+			Class.forName("com.mysql.jdbc.Driver");
+			connection = DriverManager.getConnection(dbUrl,username,password);
+			
+			return connection;
 			
 //			String driver = "org.apache.derby.jdbc.EmbeddedDriver";
 //		    String connectionURL = "jdbc:derby:groptimizeddb;";
@@ -36,11 +36,11 @@ public class DBLibrary {
 //            return connection;
 			
 			// db parameters
-            String url = "jdbc:sqlite:groptimizeddb.db";
-            Class.forName("org.sqlite.JDBC");
-            // create a connection to the database
-            connection = DriverManager.getConnection(url);
-            return connection;
+//            String url = "jdbc:sqlite:groptimizeddb.db";
+//            Class.forName("org.sqlite.JDBC");
+//            // create a connection to the database
+//            connection = DriverManager.getConnection(url);
+//            return connection;
 		}
 	}
 		
