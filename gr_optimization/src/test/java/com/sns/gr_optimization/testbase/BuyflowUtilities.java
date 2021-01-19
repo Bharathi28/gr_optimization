@@ -565,7 +565,7 @@ public class BuyflowUtilities {
 	public String ccPayment(WebDriver driver, JavascriptExecutor jse, String realm, String brand, String campaign, String cc, String shipbill, String supply) throws ClassNotFoundException, SQLException, InterruptedException {
 		String alpha = org.apache.commons.lang3.RandomStringUtils.randomAlphabetic(9);
 		String num = org.apache.commons.lang3.RandomStringUtils.randomNumeric(4);
-		String email = alpha + "-" + num + "@mailnesia.com";
+		String email = alpha + "-" + num + "@yopmail.com";
 		
 		fill_form_field(driver, realm, "Email", email.toLowerCase());
 		if((brand.equalsIgnoreCase("CrepeErase")) || (brand.equalsIgnoreCase("MeaningfulBeauty")) || (brand.equalsIgnoreCase("JLoBeauty"))){
