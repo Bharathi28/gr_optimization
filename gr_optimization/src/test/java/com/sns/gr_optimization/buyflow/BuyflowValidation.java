@@ -419,10 +419,11 @@ public class BuyflowValidation {
 //				}								
 				
 				// Select offer				
+				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
 				sas_obj.select_offer(driver, expectedofferdata_kit, currentCategory);
 				
 				// Move to Checkout
-				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
+//				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
 				bf_obj.move_to_checkout(driver, brand, campaigncategory, category);
 			}
 			else if((currentCategory.equalsIgnoreCase("Product")) || (currentCategory.equalsIgnoreCase("SubscribeandSave")) || (currentCategory.equalsIgnoreCase("ShopKit"))) {
