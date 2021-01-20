@@ -448,7 +448,7 @@ public class PixelUtilities {
 			        				pixelTotalSize = pixelTotalSize + eventTotalSize;
 			        			}
 			        		}
-//			        		System.out.println(((row_num-1)-(pixelTotalSize-1)) + "," + (row_num-1) + ",2,2");
+			        		System.out.println(((row_num-1)-(pixelTotalSize-1)) + "," + (row_num-1) + ",2,2");
 			        		mergeAndSetBorder(((row_num-1)-(pixelTotalSize-1)), row_num, 3, resultSheet);
 			        		mergeAndSetBorder(((row_num-1)-(pixelTotalSize-1)), row_num, 2, resultSheet);
 			        		mergeAndSetBorder(((row_num-1)-(pixelTotalSize-1)), row_num, 1, resultSheet);			

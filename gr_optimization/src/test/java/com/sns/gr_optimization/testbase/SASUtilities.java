@@ -146,7 +146,7 @@ public class SASUtilities {
 	
 	public void moveto_prepu(WebDriver driver, String brand, String campaign) throws InterruptedException, ClassNotFoundException, SQLException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
-		jse.executeScript("window.scrollBy(0,400)", 0);
+		jse.executeScript("window.scrollBy(0,200)", 0);
 		
 		List<Map<String, Object>> locator = null;
 		
@@ -218,7 +218,7 @@ public class SASUtilities {
 	
 	public void select_kitshade(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
-		jse.executeScript("window.scrollBy(0,300)", 0);
+//		jse.executeScript("window.scrollBy(0,100)", 0);
 		
 		String kitname = offerdata.get("Kit Name");
 		String kitshade = offerdata.get("KitShade");
@@ -246,7 +246,7 @@ public class SASUtilities {
 	
 	public void select_giftshade(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
-		jse.executeScript("window.scrollBy(0,300)", 0);
+		jse.executeScript("window.scrollBy(0,100)", 0);
 		
 		String giftshade = offerdata.get("GiftShade");
 		
@@ -264,7 +264,7 @@ public class SASUtilities {
 			if(!(elementvalue.equalsIgnoreCase("n/a"))) {
 				WebElement shade_elmt = comm_obj.find_webelement(driver, elementlocator, elementvalue);
 				comm_obj.waitUntilElementAppears(driver, elementvalue);
-				Thread.sleep(2000);
+				Thread.sleep(3000);
 				shade_elmt.click();
 				Thread.sleep(1000);
 			}			
@@ -273,7 +273,7 @@ public class SASUtilities {
 	
 	public void select_product(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
-		jse.executeScript("window.scrollBy(0,300)", 0);
+		jse.executeScript("window.scrollBy(0,100)", 0);
 	
 		String ppid = offerdata.get("Product PPID");
 		String pagepattern = offerdata.get("PagePattern");
@@ -359,7 +359,7 @@ public class SASUtilities {
 	
 	public void select_onetime(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
-		jse.executeScript("window.scrollBy(0,300)", 0);
+		jse.executeScript("window.scrollBy(0,100)", 0);
 	
 		String ppid = offerdata.get("Product PPID");
 		
@@ -372,7 +372,7 @@ public class SASUtilities {
 	
 	public void select_subscribe(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
-		jse.executeScript("window.scrollBy(0,300)", 0);
+		jse.executeScript("window.scrollBy(0,100)", 0);
 	
 		String ppid = offerdata.get("Product PPID");
 		

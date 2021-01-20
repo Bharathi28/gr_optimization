@@ -73,8 +73,8 @@ public class BuyflowValidation {
 	public void getEmailId() {
 //	public void getEmailId(String environment) {
 //		env = environment;
-		System.out.println("Enter Email id : ");
-		sendReportTo = in.next();
+//		System.out.println("Enter Email id : ");
+//		sendReportTo = in.next();
 	}
 	
 	@DataProvider(name="buyflowInput", parallel=true)
@@ -172,10 +172,8 @@ public class BuyflowValidation {
 		}
 		
 		// Read Merchandising Input
-//		if(category_list.contains("Kit")) {
-//		if(!(brand.equalsIgnoreCase("JLoBeauty"))) {
-			merchData = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/Merchandising Input/" + brand + "/" + campaigncategory + ".xlsx", "Active Campaign", 0);
-//		}
+		merchData = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/Merchandising Input/" + brand + "/" + campaigncategory + ".xlsx", "Active Campaign", 0);
+
 		///////////////////////////////////////////////////////////////
 		
 		// Given offer and category
@@ -320,7 +318,7 @@ public class BuyflowValidation {
 				// Collect current Offer related details from Merchandising Input file
 				if(!(brand.equalsIgnoreCase("JloBeauty"))) {
 					expectedofferdata_kit = merch_obj.generateExpectedOfferDataForKit(kit_offerdata, PPUSection, postpu, ppid, giftppid, brand, campaigncategory);
-//					System.out.println("Expected Offerdata - Kit : " + expectedofferdata_kit);
+					System.out.println("Expected Offerdata - Kit : " + expectedofferdata_kit);
 				}
 								
 				// Add Kit PPID to lineitem list
@@ -331,7 +329,13 @@ public class BuyflowValidation {
 				kit_lineitem.add(expectedofferdata_kit.get("Cart Language"));
 				kit_lineitem.add(expectedofferdata_kit.get("Continuity Pricing"));
 				kit_lineitem.add(expectedofferdata_kit.get("Continuity Shipping"));
-				kit_lineitem.add(expectedofferdata_kit.get("Supplemental Cart Language"));
+				
+				if(expectedofferdata_kit.get("Supplemental Cart Language") == null) {
+					kit_lineitem.add("No expected Supplemental Cart Language");
+				}
+				else {
+					kit_lineitem.add(expectedofferdata_kit.get("Supplemental Cart Language"));
+				}		
 				expected_lineitems.add(kit_lineitem);		
 				
 				// Add Gift PPIDs to lineitem list				
@@ -426,6 +430,8 @@ public class BuyflowValidation {
 				HashMap<String, String> product_offerdata = merch_obj.getProdRowfromCatalog(catalogData, ppid);
 //				System.out.println(product_offerdata);
 				
+				List<String> catalogPriceBookIDs = merch_obj.getCatalogPriceBookIDs(catalogData);
+				
 				// Check if the PPID is present in the campaign
 				if(product_offerdata.size() == 0) {
 					remarks = remarks + ppid + " doesn't exist in the Shop page of " + brand + " - " + campaigncategory;
@@ -433,8 +439,8 @@ public class BuyflowValidation {
 				}
 				
 				// Collect current Offer related details from Merchandising Input file
-				expectedofferdata_product = merch_obj.generateExpectedOfferDataForProduct(product_offerdata, ppid, brand, campaigncategory, currentCategory);
-//				System.out.println("Expected Offerdata - Product : " + expectedofferdata_product);
+				expectedofferdata_product = merch_obj.generateExpectedOfferDataForProduct(product_offerdata, ppid, brand, campaigncategory, currentCategory, catalogPriceBookIDs);
+				System.out.println("Expected Offerdata - Product : " + expectedofferdata_product);
 				
 				// Add Product PPID to lineitem list
 				List<String> product_lineitem = new ArrayList<String>();
@@ -685,38 +691,46 @@ public class BuyflowValidation {
 			}		
 					
 				
-		// Supplemental Cart Language Validation
+		// Supplemental Cart Language Validation			
+			
 		// Scenario - 90-day order + Paypal - could not validate 90-day cart language and supplemental language because invalid zipcode could not be fill-in for Paypal
 		if((category_list.contains("Kit")) || (category_list.contains("SubscribeandSave"))) {
 //			if((!(cc.equalsIgnoreCase("Paypal"))) && (!(supplysize.equalsIgnoreCase("90"))) && (!(offer_postpurchase.equalsIgnoreCase("Yes")))) {
+			
 				String actual_suppl_cart_lang = lang_obj.getsupplementalcartlanguage(driver);
-//				System.out.println("Actual Supplemental cart language : " + actual_suppl_cart_lang);
+				System.out.println("Actual Supplemental cart language : " + actual_suppl_cart_lang);
 				for(List<String> expected_item : expected_lineitems) {
 					String exp_suppl_cart_lang = expected_item.get(6);
-//					System.out.println("Expected Supplemental cart language : " + exp_suppl_cart_lang);
+					System.out.println("Expected Supplemental cart language : " + exp_suppl_cart_lang);
 					
 					if(exp_suppl_cart_lang.equalsIgnoreCase("No Supplemental Cart Language")) {
 						continue;
 					}
-					
-					//Remove whitespace
-					String expsuppcartlang = exp_suppl_cart_lang.replaceAll("\\s+", "");
-					String actsuppcartlang = actual_suppl_cart_lang.replaceAll("\\s+", "");
-					
-					// Remove special characters
-					expsuppcartlang = expsuppcartlang.replaceAll("[^a-zA-Z0-9$]+", "");
-					actsuppcartlang = actsuppcartlang.replaceAll("[^a-zA-Z0-9$]+", "");
-					
-					if(actsuppcartlang.toLowerCase().contains(expsuppcartlang.toLowerCase())) {
-						SuppCartLanguageResult = "PASS";
+						
+					if(exp_suppl_cart_lang.contains("No expected Supplemental Cart Language")) {
+						SuppCartLanguageResult = "Could not validate";		
+						remarks = remarks + "No Expected Supplemental Cart Language in the Merchandising template ; ";
 					}
-					else {
-						SuppCartLanguageResult = "FAIL";
-						remarks = remarks + "Checkout - " + expected_item.get(0) + " - " + expected_item.get(1) + " Supplemental Cart Language Mismatch. Expected - " + exp_suppl_cart_lang + " ; ";
+					else{
+						//Remove whitespace
+						String expsuppcartlang = exp_suppl_cart_lang.replaceAll("\\s+", "");
+						String actsuppcartlang = actual_suppl_cart_lang.replaceAll("\\s+", "");
+							
+						// Remove special characters
+						expsuppcartlang = expsuppcartlang.replaceAll("[^a-zA-Z0-9$]+", "");
+						actsuppcartlang = actsuppcartlang.replaceAll("[^a-zA-Z0-9$]+", "");
+							
+						if(actsuppcartlang.toLowerCase().contains(expsuppcartlang.toLowerCase())) {
+							SuppCartLanguageResult = "PASS";
+						}
+						else {
+							SuppCartLanguageResult = "FAIL";
+							remarks = remarks + "Checkout - " + expected_item.get(0) + " - " + expected_item.get(1) + " Supplemental Cart Language Mismatch. Expected - " + exp_suppl_cart_lang + " , Actual - " + actual_suppl_cart_lang + " ; ";
+						}
 					}
-				}	
-//			}
-		}	}	
+				}					
+			}
+		}		
 				
 		// Validate Checkout pricing		
 //		System.out.println("Validating Checkout Pricing");
@@ -841,7 +855,6 @@ public class BuyflowValidation {
 			// supplysize - 30
 			// No Fall back scenario
 			if(supplysize.equalsIgnoreCase("30")) {
-//				System.out.println("Post Purchase - As per flow");
 				pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
 				bf_obj.complete_order(driver, brand, cc);
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern + ".har", driver);
@@ -928,7 +941,7 @@ public class BuyflowValidation {
 		
 		if(category_list.contains("Kit")) {
 			// Validate PrepU Product
-			if(!(expectedofferdata_kit.get("PrePU Product").equalsIgnoreCase("No PrePU Product"))) {
+			if(!(expectedofferdata_kit.get("PrePU Product").equalsIgnoreCase("No PrePU Product"))){
 				String expectedprepuppid = bf_obj.getPPIDfromString(brand, expectedofferdata_kit.get("PrePU Product")).get(0);
 				if(conf_offercode.contains(expectedprepuppid)){
 					// If Result is already fail, then the overall ppid result is fail

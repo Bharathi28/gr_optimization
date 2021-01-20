@@ -29,7 +29,7 @@ public class MerchandisingUtilities {
 		return expectedsourcecodedata;
 	}
 	
-	public HashMap<String, String> generateExpectedOfferDataForProduct(HashMap<String, String> offerdata, String kitppid, String brand, String campaign, String category) throws ClassNotFoundException, SQLException {
+	public HashMap<String, String> generateExpectedOfferDataForProduct(HashMap<String, String> offerdata, String kitppid, String brand, String campaign, String category, List<String> CatalogPriceBookIDs) throws ClassNotFoundException, SQLException {
 		LinkedHashMap<String, String> expectedofferdata = new LinkedHashMap<String, String>();
 		
 		expectedofferdata.put("Brand", brand);
@@ -66,7 +66,7 @@ public class MerchandisingUtilities {
 			expectedofferdata.put("Supplemental Cart Language", "No Supplemental Cart Language");
 			expectedofferdata.put("Continuity Pricing", "No Continuity Pricing");
 			expectedofferdata.put("Continuity Shipping", "No Continuity Shipping");
-			expectedofferdata.put("Price Book Id", offerdata.get("Acq One Time Price Book ID").trim());
+			expectedofferdata.put("Price Book Id", CatalogPriceBookIDs.get(0));
 		}
 		else if(category.equalsIgnoreCase("SubscribeandSave")) {
 			
@@ -77,26 +77,26 @@ public class MerchandisingUtilities {
 			
 			expectedofferdata.put("PagePattern", pagepattern);
 			
-			if(brand.equalsIgnoreCase("JLoBeauty")) {
-				if(offerdata.get("PPID").trim().equalsIgnoreCase("JL2A0136")) {
-					expectedofferdata.put("Price", "137.0");
-				}
-				else {
-					String one_time_price = offerdata.get("Acq One Time price").trim();
-					one_time_price = one_time_price.replace("$", "");
-					Double onetime_value = Double.valueOf(one_time_price);
-					Double subscribe_value = onetime_value * 0.85;
-					double subscribe_roundOff = Math.floor(subscribe_value * 100.0) / 100.0;
-					String SubscribeandSave_price = String.valueOf(subscribe_roundOff);
-//					System.out.println(SubscribeandSave_price);
-					expectedofferdata.put("Price", SubscribeandSave_price);
-				}
-			}
-			else {
+//			if(brand.equalsIgnoreCase("JLoBeauty")) {
+//				if(offerdata.get("PPID").trim().equalsIgnoreCase("JL2A0136")) {
+//					expectedofferdata.put("Price", "137.0");
+//				}
+//				else {
+//					String one_time_price = offerdata.get("Acq One Time price").trim();
+//					one_time_price = one_time_price.replace("$", "");
+//					Double onetime_value = Double.valueOf(one_time_price);
+//					Double subscribe_value = onetime_value * 0.85;
+//					double subscribe_roundOff = Math.floor(subscribe_value * 100.0) / 100.0;
+//					String SubscribeandSave_price = String.valueOf(subscribe_roundOff);
+////					System.out.println(SubscribeandSave_price);
+//					expectedofferdata.put("Price", SubscribeandSave_price);
+//				}
+//			}
+//			else {
 				if(offerdata.get("Subscribe and Save price") != null) {
 					expectedofferdata.put("Price", offerdata.get("Subscribe and Save price").trim());
 				}
-			}			
+//			}			
 					
 			expectedofferdata.put("Renewal Plan Id", offerdata.get("Renewal Plan ID").trim());
 			expectedofferdata.put("Cart Language", offerdata.get("Cart Language").trim());
@@ -108,7 +108,7 @@ public class MerchandisingUtilities {
 			expectedofferdata.put("Continuity Pricing", cart_lang_price);
 			expectedofferdata.put("Continuity Shipping", cart_lang_shipping);
 			
-			expectedofferdata.put("Price Book Id", offerdata.get("Subscribe and Save Price Book ID").trim());
+			expectedofferdata.put("Price Book Id", CatalogPriceBookIDs.get(1));
 		}		
 		else if(category.equalsIgnoreCase("ShopKit")) {
 			if(!(shade.equalsIgnoreCase("No Shade"))) {
@@ -126,10 +126,21 @@ public class MerchandisingUtilities {
 			expectedofferdata.put("Continuity Pricing", cart_lang_price);
 			expectedofferdata.put("Continuity Shipping", cart_lang_shipping);
 			
-			expectedofferdata.put("Price Book Id", offerdata.get("Acq One Time Price Book ID").trim());
+			expectedofferdata.put("Price Book Id", CatalogPriceBookIDs.get(0));
 		}
 		
 		return expectedofferdata;
+	}
+	
+	public String getValueFromCellIfExists(HashMap<String, String> offerdata, String key) {
+		String value = null;
+		if(StringUtils.isNotBlank(offerdata.get(key))) {
+			value = offerdata.get(key).trim();
+		}
+//		if((offerdata.get(key) != null) && (!(offerdata.get(key).equals("-"))) && (!(offerdata.get(key).equals(""))) && (!(offerdata.get(key).equals(" "))) && (!(offerdata.get(key).trim().isEmpty()))) {
+//			value = offerdata.get(key).trim();
+//		}
+		return value;
 	}
 	
 	public HashMap<String, String> generateExpectedOfferDataForKit(HashMap<String, String> offerdata, String PPUSection, String PostPU, String kitppid, String giftppid, String brand, String campaign) throws ClassNotFoundException, SQLException {
@@ -337,9 +348,14 @@ public class MerchandisingUtilities {
 			if(offerdata.get("Post Purchase Upsell Promotion 1") != null) {
 				expectedcampaigngifts = offerdata.get("Post Purchase Upsell Promotion 1").trim();
 			}			
-			if(offerdata.get("Post Purchase Upsell Promotion 2") != null) {
-				expectedprepuproduct = offerdata.get("Post Purchase Upsell Promotion 2").trim();
+//			expectedprepuproduct = getValueFromCellIfExists(offerdata, "Post Purchase Upsell Promotion 2");
+//			System.out.println("Expected PrePU Product:" + expectedprepuproduct);
+			if(PPUSection.equalsIgnoreCase("Yes")) {
+				if(offerdata.get("Post Purchase Upsell Promotion 2") != null) {
+					expectedprepuproduct = offerdata.get("Post Purchase Upsell Promotion 2").trim();
+				}
 			}
+			
 			if(offerdata.get("Post Purchase Upsell Promotion 3") != null) {
 				expectedpostpuproduct = offerdata.get("Post Purchase Upsell Promotion 3").trim();
 			}
@@ -414,290 +430,6 @@ public class MerchandisingUtilities {
 		expectedofferdata.put("Final Shipping", expectedfinalshipping);
 		expectedofferdata.put("Continuity Pricing", continuitypricing);	
 		expectedofferdata.put("Continuity Shipping", continuityshipping);
-		
-		return expectedofferdata;
-	}
-	
-	
-	
-	public HashMap<String, String> generateExpectedOfferData(HashMap<String, String> offerdata, HashMap<String, String> sourcecodedata, String PPUSection, String PostPU, String kitppid, String giftppid, String brand, String campaign) throws ClassNotFoundException, SQLException {
-		LinkedHashMap<String, String> expectedofferdata = new LinkedHashMap<String, String>();
-				
-		expectedofferdata.put("Brand", brand);
-		expectedofferdata.put("Campaign", campaign);
-		expectedofferdata.put("PagePattern", offerdata.get("PagePattern").trim());		
-		
-		// Check PrePU for current offercode
-		// No gift for MeaningfulBeauty - one-shot campaign
-		// And GiftPPID will carry Pre-Purchase value
-		String offerprepu = "";
-		if((brand.equalsIgnoreCase("MeaningfulBeauty")) && (campaign.equalsIgnoreCase("os"))) {
-			if(giftppid.equalsIgnoreCase("Yes")) {
-				offerprepu="Yes";
-			}
-			else {
-				offerprepu="No";
-			}
-		}
-		else {
-			if(PPUSection.equalsIgnoreCase("Yes")) {
-				offerprepu="Yes";
-			}
-			else {
-				offerprepu="No";
-			}	
-		}		
-		expectedofferdata.put("Offer Pre-Purchase", offerprepu);
-		
-		// Check PostPU for current offercode
-		if(PostPU.equalsIgnoreCase("Yes")) {
-			String offerpostpu = offerdata.get("Post Purchase Upsell to").trim();
-			if(offerpostpu.contains(kitppid)) {
-				offerpostpu="Yes";
-			}
-			else {
-				offerpostpu="No";
-			}
-			expectedofferdata.put("Offer Post-Purchase", offerpostpu);
-		}		
-		else {
-			expectedofferdata.put("Offer Post-Purchase", "No");
-		}
-		
-		// Kit ppid
-		expectedofferdata.put("Kit PPID", kitppid);
-		
-		// Kit name
-		String kitname = offerdata.get("Actual Kit Name (as in site)").trim();
-		expectedofferdata.put("Kit Name", kitname);
-		
-		// Check Supplysize of PPID
-		String supplysize = checkSupplySize(kitppid, offerdata);
-		expectedofferdata.put("SupplySize", supplysize);
-//		System.out.println("SupplySize" + supplysize);		
-		
-		// Gift name
-		String giftname = getGift(PPUSection, giftppid, offerdata, brand, campaign);
-		expectedofferdata.put("Gift Name", giftname);
-		String giftseperatelineitem = "";
-		if(!(giftname.equalsIgnoreCase("No Gift"))) {
-			giftseperatelineitem = db_obj.checkgiftlineitem(brand, campaign);
-			expectedofferdata.put("GiftSeperateLineItem", giftseperatelineitem);
-		}
-		
-		// Fragrance
-		if(offerdata.get("PagePattern").trim().contains("fragrance")) {
-			expectedofferdata.put("Fragrance", offerdata.get("Fragrance").trim());
-		}
-		
-		//KitShade
-		if(offerdata.get("PagePattern").trim().contains("kitshade")) {
-			expectedofferdata.put("KitShade", offerdata.get("KitShade").trim());
-		}
-		
-		// 30 day PPID, Entry Pricing and Shipping
-		String ppid30day = "";
-		String expectedEntryPrice = "";
-		String expectedEntryShipping = "";
-		if(PPUSection.equalsIgnoreCase("Yes")) {
-			ppid30day = offerdata.get("Pre-Purchase Entry PPID").trim();
-			expectedEntryPrice = offerdata.get("Pre-Purchase Entry Pricing").trim();
-			expectedEntryShipping = offerdata.get("Pre-Purchase Entry Shipping").trim();		
-		}
-		else {
-			ppid30day = offerdata.get("Entry PPID").trim();
-			expectedEntryPrice = offerdata.get("Entry Pricing").trim();
-			expectedEntryShipping = offerdata.get("Entry Shipping").trim();
-		}					
-		expectedofferdata.put("30 day PPID", ppid30day);
-		
-		expectedEntryPrice = expectedEntryPrice.replace("$", "");
-		expectedofferdata.put("Entry Pricing", expectedEntryPrice);
-		
-		expectedEntryShipping = expectedEntryShipping.replace("$", "");
-		expectedofferdata.put("Entry Shipping", expectedEntryShipping);		
-		
-		String expectedcampaigngifts = "";
-		String expectedrenewalplanid = "No Renewal Plan";
-		String expectedinstallmentplanid = "No Installment Plan";
-		String expectedcartlanguage = "No Cart Language";
-		String expectedsuppcartlanguage = "No Supplemental Cart Language";
-		String expectedfinalpricing = "";
-		String expectedfinalshipping = "";
-		String expectedprepuproduct = "No PrePU Product";
-		String expectedpostpuproduct = "No PostPU Product";
-		String continuitypricing = "";
-		String continuityshipping = "";
-		
-		// Post-Purchase - No
-		if(supplysize.equalsIgnoreCase("30")) {
-			expectedfinalpricing = expectedEntryPrice;
-			expectedfinalshipping = expectedEntryShipping;
-			// Pre-Purchase - Yes
-			if(PPUSection.equalsIgnoreCase("Yes")) {		
-				if(!(giftname.equalsIgnoreCase("No Gift"))) {
-					expectedcampaigngifts = offerdata.get("Pre-Purchase Entry Promotion 1").trim();
-				}					
-				if(offerdata.get("Pre-Purchase Entry Promotion 2") != null) {
-					expectedprepuproduct = offerdata.get("Pre-Purchase Entry Promotion 2").trim();
-				}
-				if(offerdata.get("Pre-Purchase Entry Renewal Plan") != null) {
-					expectedrenewalplanid = offerdata.get("Pre-Purchase Entry Renewal Plan").trim();
-				}
-				if(offerdata.get("Pre Purchase Entry Cart Language") != null) {
-					expectedcartlanguage = offerdata.get("Pre Purchase Entry Cart Language").trim();
-				}				
-				
-				if(offerdata.get("Pre Purchase Entry Supplemental Cart Language") != null) {
-					expectedsuppcartlanguage = offerdata.get("Pre Purchase Entry Supplemental Cart Language").trim();
-				}				
-				
-				// Continuity Pricing and Shipping
-				if(offerdata.get("Pre Purchase Continuity Pricing (product)") != null) {
-					continuitypricing = offerdata.get("Pre Purchase Continuity Pricing (product)").trim();	
-					continuitypricing = continuitypricing.replace("$", "");
-				}
-				else if(offerdata.get("Continuity Pricing (product)") != null) {
-					continuitypricing = offerdata.get("Continuity Pricing (product)").trim();	
-					continuitypricing = continuitypricing.replace("$", "");
-				}
-				else {
-					continuitypricing = "No Continuity";
-				}
-				
-				if(offerdata.get("Pre Purchase Continuity Shipping") != null) {
-					continuityshipping = offerdata.get("Pre Purchase Continuity Shipping").trim();
-					continuityshipping = continuityshipping.replace("$", "");
-				}	
-				else if(offerdata.get("Continuity Shipping") != null) {
-					continuityshipping = offerdata.get("Continuity Shipping").trim();	
-					continuityshipping = continuityshipping.replace("$", "");
-				}
-				else {
-					continuityshipping = "No Continuity";
-				}
-			}
-			// Pre-Purchase - No
-			else {
-				if(!(giftname.equalsIgnoreCase("No Gift"))) {
-					expectedcampaigngifts = offerdata.get("Entry Promotion 1").trim();
-				}				
-				if(offerdata.get("Entry Cart Language") != null) {
-					expectedcartlanguage = offerdata.get("Entry Cart Language").trim();
-				}
-				if(offerdata.get("Entry Supplemental Cart Language") != null) {
-					expectedsuppcartlanguage = offerdata.get("Entry Supplemental Cart Language").trim();
-				}
-				if(offerdata.get("Entry Renewal Plan") != null) {
-					expectedrenewalplanid = offerdata.get("Entry Renewal Plan").trim();
-				}				
-								
-				// Continuity Pricing and Shipping
-				if(offerdata.get("Entry Continuity Pricing (product)") != null) {
-					continuitypricing = offerdata.get("Entry Continuity Pricing (product)").trim();	
-					continuitypricing = continuitypricing.replace("$", "");
-				}
-				else if(offerdata.get("Continuity Pricing (product)") != null) {
-					continuitypricing = offerdata.get("Continuity Pricing (product)").trim();	
-					continuitypricing = continuitypricing.replace("$", "");
-				}
-				else {
-					continuitypricing = "No Continuity";
-				}
-				
-				if(offerdata.get("Entry Continuity Shipping") != null) {
-					continuityshipping = offerdata.get("Entry Continuity Shipping").trim();
-					continuityshipping = continuityshipping.replace("$", "");
-				}	
-				else if(offerdata.get("Continuity Shipping") != null) {
-					continuityshipping = offerdata.get("Continuity Shipping").trim();	
-					continuityshipping = continuityshipping.replace("$", "");
-				}
-				else {
-					continuityshipping = "No Continuity";
-				}
-			}					
-		}
-		// Post-Purchase - Yes
-		else {
-			expectedfinalpricing = offerdata.get("Post Purchase Upsell Pricing").trim();	
-			expectedfinalshipping = offerdata.get("Post Purchase Upsell Shipping").trim();	
-			if(!(giftname.equalsIgnoreCase("No Gift"))) {
-				expectedcampaigngifts = offerdata.get("Post Purchase Upsell Promotion 1").trim();
-			}			
-			if(offerdata.get("Post Purchase Upsell Promotion 2") != null) {
-				expectedprepuproduct = offerdata.get("Post Purchase Upsell Promotion 2").trim();
-			}
-			if(offerdata.get("Post Purchase Upsell Promotion 3") != null) {
-				expectedpostpuproduct = offerdata.get("Post Purchase Upsell Promotion 3").trim();
-			}
-			if(offerdata.get("Post Purchase Cart Language") != null) {
-				expectedcartlanguage = offerdata.get("Post Purchase Cart Language").trim();
-			}
-			if(offerdata.get("Post Purchase Supplemental Cart Language") != null) {
-				expectedsuppcartlanguage = offerdata.get("Post Purchase Supplemental Cart Language").trim();
-			}
-			if(offerdata.get("Post Purchase Renewal Plan") != null) {
-				expectedrenewalplanid = offerdata.get("Post Purchase Renewal Plan").trim();
-			}
-			if(offerdata.get("Post Purchase Upsell Payment Plan (Installment)") != null) {
-				expectedinstallmentplanid = offerdata.get("Post Purchase Upsell Payment Plan (Installment)").trim();
-			}
-			
-			// Continuity Pricing and Shipping
-			if(offerdata.get("Continuity Pricing (product)") != null) {
-				continuitypricing = offerdata.get("Continuity Pricing (product)").trim();	
-				continuitypricing = continuitypricing.replace("$", "");
-			}
-			else {
-				continuitypricing = "No Continuity";
-			}
-					
-			if(offerdata.get("Continuity Shipping") != null) {
-				continuityshipping = offerdata.get("Continuity Shipping").trim();
-				continuityshipping = continuityshipping.replace("$", "");
-			}		
-			else {
-				continuityshipping = "No Continuity";
-			}
-		}		
-		expectedfinalpricing = expectedfinalpricing.replace("$", "");
-		expectedfinalshipping = expectedfinalshipping.replace("$", "");
-		
-		// Gift ppid
-		// No gift for MeaningfulBeauty - one-shot campaign
-		// And GiftPPID will carry Pre-Purchase value
-		if(!(campaign.equalsIgnoreCase("os"))) {
-			if(!(giftppid.equalsIgnoreCase("-"))) {
-				expectedofferdata.put("Gift PPID", giftppid);
-			}		
-			else {
-				// If no seperate lineitem, then no GiftPPID
-				if(giftseperatelineitem.equalsIgnoreCase("Yes")) {
-					if((expectedcampaigngifts != null) && (!(expectedcampaigngifts.equals("-")))) {
-						giftppid = bf_obj.getPPIDfromString(brand, expectedcampaigngifts).get(0);
-						expectedofferdata.put("Gift PPID", giftppid);
-					}
-				}				
-			}
-		}		
-		
-		expectedofferdata.put("Campaign Gifts", expectedcampaigngifts);
-		expectedofferdata.put("PrePU Product", expectedprepuproduct);
-		expectedofferdata.put("PostPU Product", expectedpostpuproduct);
-		expectedofferdata.put("Cart Language", expectedcartlanguage);
-		expectedofferdata.put("Supplemental Cart Language", expectedsuppcartlanguage);
-		expectedofferdata.put("Renewal Plan Id", expectedrenewalplanid);
-		expectedofferdata.put("Installment Plan Id", expectedinstallmentplanid);
-		expectedofferdata.put("Final Pricing", expectedfinalpricing);
-		expectedofferdata.put("Final Shipping", expectedfinalshipping);
-		expectedofferdata.put("Continuity Pricing", continuitypricing);	
-		expectedofferdata.put("Continuity Shipping", continuityshipping);
-		
-		expectedofferdata.put("Media ID", sourcecodedata.get("Media ID"));
-		expectedofferdata.put("Creative ID", sourcecodedata.get("Creative ID"));
-		expectedofferdata.put("Venue ID", sourcecodedata.get("Venue ID"));
-		expectedofferdata.put("Price Book ID", sourcecodedata.get("Price Book ID"));
 		
 		return expectedofferdata;
 	}
@@ -936,6 +668,29 @@ public class MerchandisingUtilities {
 		return offerdata;
 	}
 	
+	public List<String> getCatalogPriceBookIDs(String[][] catalogData) {
+		List<String> PriceBookIDList = new ArrayList<String>();
+		for(int i=0; i<catalogData[0].length; i++) {
+			String colName = catalogData[0][i];
+			if(colName.contains("Acq One Time price")) {
+				colName = colName.replaceAll("Acq One Time price", "");
+				colName = colName.replaceAll("\\s+", "");				
+				colName = colName.replaceAll("[^a-zA-Z0-9$]+", "");
+				
+				PriceBookIDList.add(colName);
+			}
+			if(colName.contains("Subscribe and Save price")) {
+				colName = colName.replaceAll("Subscribe and Save price", "");
+				colName = colName.replaceAll("\\s+", "");				
+				colName = colName.replaceAll("[^a-zA-Z0-9$]+", "");
+				
+				PriceBookIDList.add(colName);
+			}			
+		}
+		System.out.println(PriceBookIDList);
+		return PriceBookIDList;
+	}
+	
 	public HashMap<String, String> getProdRowfromCatalog(String[][] catalogData, String ppid) {
 		LinkedHashMap<String, String> productdata = new LinkedHashMap<String, String>();
 		
@@ -955,7 +710,15 @@ public class MerchandisingUtilities {
 				if(ppidinrow.equalsIgnoreCase(ppid)) {
 					for(int j=0; j<catalogData[0].length; j++) {
 						if(catalogData[0][j] != null) {
-							productdata.put(catalogData[0][j].trim(), catalogData[i][j]);
+							if(catalogData[0][j].contains("Acq One Time price")) {
+								productdata.put("Acq One Time price", catalogData[i][j]);
+							}
+							else if(catalogData[0][j].contains("Subscribe and Save price")) {
+								productdata.put("Subscribe and Save price", catalogData[i][j]);
+							}
+							else {
+								productdata.put(catalogData[0][j].trim(), catalogData[i][j]);
+							}							
 						}
 					}
 					break;
@@ -965,7 +728,7 @@ public class MerchandisingUtilities {
 				break;
 			}
 		}
-//		System.out.println(productdata);
+		System.out.println("Product Data:" + productdata);
 		return productdata;
 	}
 	

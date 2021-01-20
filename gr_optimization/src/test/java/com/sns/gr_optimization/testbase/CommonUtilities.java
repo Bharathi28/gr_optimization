@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -50,6 +51,7 @@ public class CommonUtilities {
 					}
 				}
 				String cellType = dataSheet.getRow(k).getCell(0).getCellTypeEnum().toString();
+				
 				if(cellType.equalsIgnoreCase("STRING")) {
 					rowdata =  dataSheet.getRow(k).getCell(0).getStringCellValue();
 				}
@@ -95,16 +97,41 @@ public class CommonUtilities {
 						}
 					}
 					String cellType = dataSheet.getRow(i).getCell(j).getCellTypeEnum().toString();
-					
+//					System.out.println(cellType);
+					Cell currentcell = dataSheet.getRow(i).getCell(j);
 					if(cellType.equalsIgnoreCase("STRING")) {
-						arrayExcelData[startarray][j] = dataSheet.getRow(i).getCell(j).toString();
+						arrayExcelData[startarray][j] = currentcell.toString();
 						if(arrayExcelData[startarray][j].equalsIgnoreCase("End")) {
 							end = 1;
 							break;
 						}
 					}
 					else if(cellType.equalsIgnoreCase("NUMERIC")) {
-						Double value = dataSheet.getRow(i).getCell(j).getNumericCellValue();
+						Double value = currentcell.getNumericCellValue();
+						arrayExcelData[startarray][j] = Double.toString(value);
+					}
+					else if(cellType.equalsIgnoreCase("FORMULA")) {
+						FormulaEvaluator evaluator = testData.getCreationHelper().createFormulaEvaluator(); 
+//						System.out.println("2 : " + evaluator.evaluate(currentcell));
+//						System.out.println("3 : " + evaluator.evaluateFormulaCellEnum(currentcell));
+//						System.out.println("4 : " + currentcell.getNumericCellValue());
+						switch (evaluator.evaluateFormulaCellEnum(currentcell)) {
+				        case BOOLEAN:
+				        	boolean boolvalue = currentcell.getBooleanCellValue();  
+				        	String strvalue = String.valueOf(boolvalue);  
+				            arrayExcelData[startarray][j] = strvalue;
+				            break;
+				        case NUMERIC:
+				        	Double value = currentcell.getNumericCellValue();
+							arrayExcelData[startarray][j] = Double.toString(value);
+				            break;
+				        case STRING:
+				        	arrayExcelData[startarray][j] = currentcell.toString();
+				            break;
+				    }
+						
+						evaluator.evaluate(currentcell);
+						Double value = currentcell.getNumericCellValue();
 						arrayExcelData[startarray][j] = Double.toString(value);
 					}
 //					System.out.println(arrayExcelData[startarray][j]);

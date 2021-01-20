@@ -182,7 +182,7 @@ public class BuyflowUtilities {
 	public String checkGifts(WebDriver driver, String brand, String campaign, String campaigngifts) throws InterruptedException, ClassNotFoundException, SQLException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		
-		if(!((brand.equalsIgnoreCase("MallyBeauty")) && (campaign.equalsIgnoreCase("Core")))) {
+		if(!((brand.equalsIgnoreCase("MallyBeauty")))) {
 			jse.executeScript("window.scrollBy(0,1000)", 0);
 		}
 		Thread.sleep(2000);
