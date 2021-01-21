@@ -265,22 +265,24 @@ public class MerchandisingUtilities {
 				if(offerdata.get("Pre-Purchase Entry Promotion 2") != null) {
 					expectedprepuproduct = offerdata.get("Pre-Purchase Entry Promotion 2").trim();
 				}
-				if(offerdata.get("Pre-Purchase Entry Renewal Plan") != null) {
-					expectedrenewalplanid = offerdata.get("Pre-Purchase Entry Renewal Plan").trim();
-				}
-				if(offerdata.get("Pre Purchase Entry Cart Language") != null) {
-					expectedcartlanguage = offerdata.get("Pre Purchase Entry Cart Language").trim();
-				}							
-				if(offerdata.get("Pre Purchase Entry Supplemental Cart Language") != null) {
-					expectedsuppcartlanguage = offerdata.get("Pre Purchase Entry Supplemental Cart Language").trim();
-				}				
+				
+//				if(!(offerdata.get("Pre-Purchase Entry Renewal Plan").equalsIgnoreCase("-"))) {
+					expectedrenewalplanid = offerdata.get("Pre-Purchase Entry Renewal Plan");
+//				}				
+				
+//				if(!(offerdata.get("Pre Purchase Entry Cart Language").equalsIgnoreCase("-"))) {
+					expectedcartlanguage = offerdata.get("Pre Purchase Entry Cart Language");
+//				}							
+//				if(!(offerdata.get("Pre Purchase Entry Supplemental Cart Language").equalsIgnoreCase("-"))) {
+					expectedsuppcartlanguage = offerdata.get("Pre Purchase Entry Supplemental Cart Language");
+//				}			
 				
 				// Continuity Pricing and Shipping
-				if(offerdata.get("Pre Purchase Continuity Pricing (product)") != null) {
+				if((offerdata.get("Pre Purchase Continuity Pricing (product)") != null) && (!(offerdata.get("Pre Purchase Continuity Pricing (product)").equalsIgnoreCase("-")))) {
 					continuitypricing = offerdata.get("Pre Purchase Continuity Pricing (product)").trim();	
 					continuitypricing = continuitypricing.replace("$", "");
 				}
-				else if(offerdata.get("Continuity Pricing (product)") != null) {
+				else if((offerdata.get("Continuity Pricing (product)") != null) && (!(offerdata.get("Continuity Pricing (product)").equalsIgnoreCase("-")))) {
 					continuitypricing = offerdata.get("Continuity Pricing (product)").trim();	
 					continuitypricing = continuitypricing.replace("$", "");
 				}
@@ -288,11 +290,11 @@ public class MerchandisingUtilities {
 					continuitypricing = "No Continuity";
 				}
 				
-				if(offerdata.get("Pre Purchase Continuity Shipping") != null) {
+				if((offerdata.get("Pre Purchase Continuity Shipping") != null) && (!(offerdata.get("Pre Purchase Continuity Shipping").equalsIgnoreCase("-")))) {
 					continuityshipping = offerdata.get("Pre Purchase Continuity Shipping").trim();
 					continuityshipping = continuityshipping.replace("$", "");
 				}	
-				else if(offerdata.get("Continuity Shipping") != null) {
+				else if((offerdata.get("Continuity Shipping") != null) && (!(offerdata.get("Continuity Shipping").equalsIgnoreCase("-")))) {
 					continuityshipping = offerdata.get("Continuity Shipping").trim();	
 					continuityshipping = continuityshipping.replace("$", "");
 				}
@@ -305,22 +307,24 @@ public class MerchandisingUtilities {
 				if(offerdata.get("Entry Promotion 1") != null) {
 					expectedcampaigngifts = offerdata.get("Entry Promotion 1").trim();
 				}				
-				if(offerdata.get("Entry Cart Language") != null) {
-					expectedcartlanguage = offerdata.get("Entry Cart Language").trim();
-				}
-				if(offerdata.get("Entry Supplemental Cart Language") != null) {
-					expectedsuppcartlanguage = offerdata.get("Entry Supplemental Cart Language").trim();
-				}
-				if(offerdata.get("Entry Renewal Plan") != null) {
-					expectedrenewalplanid = offerdata.get("Entry Renewal Plan").trim();
-				}				
+//				if(!(offerdata.get("Entry Cart Language").equalsIgnoreCase("-"))) {
+					expectedcartlanguage = offerdata.get("Entry Cart Language");
+//				}
+				
+//				if(!(offerdata.get("Entry Supplemental Cart Language").equalsIgnoreCase("-"))) {
+					expectedsuppcartlanguage = offerdata.get("Entry Supplemental Cart Language");
+//				}				
+				
+//				if(!(offerdata.get("Entry Renewal Plan").equalsIgnoreCase("-"))) {
+					expectedrenewalplanid = offerdata.get("Entry Renewal Plan");
+//				}												
 								
 				// Continuity Pricing and Shipping
-				if(offerdata.get("Entry Continuity Pricing (product)") != null) {
+				if((offerdata.get("Entry Continuity Pricing (product)") != null) && (!(offerdata.get("Entry Continuity Pricing (product)").equalsIgnoreCase("-")))) {
 					continuitypricing = offerdata.get("Entry Continuity Pricing (product)").trim();	
 					continuitypricing = continuitypricing.replace("$", "");
 				}
-				else if(offerdata.get("Continuity Pricing (product)") != null) {
+				else if((offerdata.get("Continuity Pricing (product)") != null) && (!(offerdata.get("Continuity Pricing (product)").equalsIgnoreCase("-")))) {
 					continuitypricing = offerdata.get("Continuity Pricing (product)").trim();	
 					continuitypricing = continuitypricing.replace("$", "");
 				}
@@ -328,11 +332,11 @@ public class MerchandisingUtilities {
 					continuitypricing = "No Continuity";
 				}
 				
-				if(offerdata.get("Entry Continuity Shipping") != null) {
+				if((offerdata.get("Entry Continuity Shipping") != null) && (!(offerdata.get("Entry Continuity Shipping").equalsIgnoreCase("-")))) {
 					continuityshipping = offerdata.get("Entry Continuity Shipping").trim();
 					continuityshipping = continuityshipping.replace("$", "");
 				}	
-				else if(offerdata.get("Continuity Shipping") != null) {
+				else if((offerdata.get("Continuity Shipping") != null) && (!(offerdata.get("Continuity Shipping").equalsIgnoreCase("-")))) {
 					continuityshipping = offerdata.get("Continuity Shipping").trim();	
 					continuityshipping = continuityshipping.replace("$", "");
 				}
@@ -359,21 +363,24 @@ public class MerchandisingUtilities {
 			if(offerdata.get("Post Purchase Upsell Promotion 3") != null) {
 				expectedpostpuproduct = offerdata.get("Post Purchase Upsell Promotion 3").trim();
 			}
-			if(offerdata.get("Post Purchase Cart Language") != null) {
-				expectedcartlanguage = offerdata.get("Post Purchase Cart Language").trim();
-			}
-			if(offerdata.get("Post Purchase Supplemental Cart Language") != null) {
-				expectedsuppcartlanguage = offerdata.get("Post Purchase Supplemental Cart Language").trim();
-			}
-			if(offerdata.get("Post Purchase Renewal Plan") != null) {
-				expectedrenewalplanid = offerdata.get("Post Purchase Renewal Plan").trim();
-			}
+//			if(!(offerdata.get("Post Purchase Cart Language").equalsIgnoreCase("-"))) {
+				expectedcartlanguage = offerdata.get("Post Purchase Cart Language");
+//			}
+			
+//			if(!(offerdata.get("Post Purchase Supplemental Cart Language").equalsIgnoreCase("-"))) {
+				expectedsuppcartlanguage = offerdata.get("Post Purchase Supplemental Cart Language");
+//			}			
+			
+//			if(!(offerdata.get("Post Purchase Renewal Plan").equalsIgnoreCase("-"))) {
+				expectedrenewalplanid = offerdata.get("Post Purchase Renewal Plan");
+//			}			
+			
 			if(offerdata.get("Post Purchase Upsell Payment Plan (Installment)") != null) {
 				expectedinstallmentplanid = offerdata.get("Post Purchase Upsell Payment Plan (Installment)").trim();
 			}
 			
 			// Continuity Pricing and Shipping
-			if(offerdata.get("Continuity Pricing (product)") != null) {
+			if((offerdata.get("Continuity Pricing (product)") != null) && (!(offerdata.get("Continuity Pricing (product)").equalsIgnoreCase("-")))) {
 				continuitypricing = offerdata.get("Continuity Pricing (product)").trim();	
 				continuitypricing = continuitypricing.replace("$", "");
 			}
@@ -381,7 +388,7 @@ public class MerchandisingUtilities {
 				continuitypricing = "No Continuity";
 			}
 					
-			if(offerdata.get("Continuity Shipping") != null) {
+			if((offerdata.get("Continuity Shipping") != null) && (!(offerdata.get("Continuity Shipping").equalsIgnoreCase("-")))) {
 				continuityshipping = offerdata.get("Continuity Shipping").trim();
 				continuityshipping = continuityshipping.replace("$", "");
 			}		

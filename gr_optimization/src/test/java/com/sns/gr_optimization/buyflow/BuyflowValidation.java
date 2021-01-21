@@ -326,12 +326,25 @@ public class BuyflowValidation {
 				kit_lineitem.add("Kit");
 				kit_lineitem.add(expectedofferdata_kit.get("Kit PPID"));			
 				kit_lineitem.add(expectedofferdata_kit.get("Entry Pricing"));
-				kit_lineitem.add(expectedofferdata_kit.get("Cart Language"));
+				
+				if(expectedofferdata_kit.get("Cart Language") == null) {
+					kit_lineitem.add("No expected Cart Language");
+				}
+				else if(expectedofferdata_kit.get("Cart Language").equalsIgnoreCase("-")) {
+					kit_lineitem.add("No Cart Language");
+				}
+				else {
+					kit_lineitem.add(expectedofferdata_kit.get("Cart Language"));
+				}	
+
 				kit_lineitem.add(expectedofferdata_kit.get("Continuity Pricing"));
-				kit_lineitem.add(expectedofferdata_kit.get("Continuity Shipping"));
+				kit_lineitem.add(expectedofferdata_kit.get("Continuity Shipping"));				
 				
 				if(expectedofferdata_kit.get("Supplemental Cart Language") == null) {
 					kit_lineitem.add("No expected Supplemental Cart Language");
+				}
+				else if(expectedofferdata_kit.get("Supplemental Cart Language").equalsIgnoreCase("-")) {
+					kit_lineitem.add("No Supplemental Cart Language");
 				}
 				else {
 					kit_lineitem.add(expectedofferdata_kit.get("Supplemental Cart Language"));
@@ -394,7 +407,18 @@ public class BuyflowValidation {
 				
 				subtotal_list.add(expectedofferdata_kit.get("Final Pricing"));
 				shipping_list.add(expectedofferdata_kit.get("Final Shipping"));
-				renewal_plan_list.add(expectedofferdata_kit.get("Renewal Plan Id"));
+//				renewal_plan_list.add(expectedofferdata_kit.get("Renewal Plan Id"));
+				
+				if(expectedofferdata_kit.get("Renewal Plan Id") == null) {
+					renewal_plan_list.add("No expected RenewalPlanID");
+				}
+				else if(expectedofferdata_kit.get("Renewal Plan Id").equalsIgnoreCase("-")) {
+					renewal_plan_list.add("No Renewal Plan");
+				}
+				else {
+					renewal_plan_list.add(expectedofferdata_kit.get("Renewal Plan Id"));
+				}
+				
 				if(expectedsourcecodedata.get("Price Book ID") == null) {
 					pricebook_id_list.add("No expected PriceBookID");
 				}
@@ -698,8 +722,7 @@ public class BuyflowValidation {
 		if((category_list.contains("Kit")) || (category_list.contains("SubscribeandSave"))) {
 //			if((!(cc.equalsIgnoreCase("Paypal"))) && (!(supplysize.equalsIgnoreCase("90"))) && (!(offer_postpurchase.equalsIgnoreCase("Yes")))) {
 			
-				String actual_suppl_cart_lang = lang_obj.getsupplementalcartlanguage(driver);
-				System.out.println("Actual Supplemental cart language : " + actual_suppl_cart_lang);
+				
 				for(List<String> expected_item : expected_lineitems) {
 					String exp_suppl_cart_lang = expected_item.get(6);
 					System.out.println("Expected Supplemental cart language : " + exp_suppl_cart_lang);
@@ -707,6 +730,9 @@ public class BuyflowValidation {
 					if(exp_suppl_cart_lang.equalsIgnoreCase("No Supplemental Cart Language")) {
 						continue;
 					}
+					
+					String actual_suppl_cart_lang = lang_obj.getsupplementalcartlanguage(driver);
+					System.out.println("Actual Supplemental cart language : " + actual_suppl_cart_lang);
 						
 					if(exp_suppl_cart_lang.contains("No expected Supplemental Cart Language")) {
 						SuppCartLanguageResult = "Could not validate";		
@@ -1074,41 +1100,50 @@ public class BuyflowValidation {
 		
 		List<String> actual_renewal_plan_list = Arrays.asList(actualrenewalplanid.split("\\s*,\\s*"));
 		
-		// When some more lineitems are expected
-		List<String> temp_renewlist = new ArrayList<>();
-		List<String> diff_renewlist = new ArrayList<>(renewal_plan_list);
-							
-		for(String plan : actual_renewal_plan_list) {									
-			for(String expected_plan : renewal_plan_list) {
-				if(expected_plan.contains(plan)) {											
-					temp_renewlist.add(expected_plan);
-				}
-			}				
-		}			
-		diff_renewlist.removeAll(temp_renewlist);
-		for(String plan : diff_renewlist) {
-			RenewalPlanResult = "FAIL";			
-			remarks = remarks + "Renewal Plan Id - " + plan + " is Missing ; ";
+		if(renewal_plan_list.contains("No expected RenewalPlanID")) {
+			RenewalPlanResult = "Could not validate";		
+			remarks = remarks + "No Expected Renewal Plan Id in the Merchandising template ; ";
 		}
-				
-		// When Extra lineitems are present
-		temp_renewlist = new ArrayList<>();
-		diff_renewlist = new ArrayList<>(actual_renewal_plan_list);
-				
-		for(String expected_plan : renewal_plan_list) {						
-			for(String actual_plan : actual_renewal_plan_list) {
-				if(actual_plan.contains(expected_plan)) {
-					temp_renewlist.add(actual_plan);					
-				}
-			}				
-		}			
-		diff_renewlist.removeAll(temp_renewlist);
-		for(String plan : diff_renewlist) {
-			if(!(plan.equalsIgnoreCase("null"))) {
-				RenewalPlanResult = "FAIL";
-				remarks = remarks + "Additional Renewal Plan Id - " + plan + " is Present ; ";
+		else{			
+			// When some more lineitems are expected
+			List<String> temp_renewlist = new ArrayList<>();
+			List<String> diff_renewlist = new ArrayList<>(renewal_plan_list);
+								
+			for(String plan : actual_renewal_plan_list) {									
+				for(String expected_plan : renewal_plan_list) {
+					if(expected_plan.contains(plan)) {											
+						temp_renewlist.add(expected_plan);
+					}
+				}				
 			}			
-		}	
+			diff_renewlist.removeAll(temp_renewlist);
+			for(String plan : diff_renewlist) {				
+				if(!(plan.equalsIgnoreCase("No Renewal Plan"))) {
+					RenewalPlanResult = "FAIL";		
+					remarks = remarks + "Renewal Plan Id - " + plan + " is Missing ; ";
+				}				
+			}
+					
+			// When Extra lineitems are present
+			temp_renewlist = new ArrayList<>();
+			diff_renewlist = new ArrayList<>(actual_renewal_plan_list);
+					
+			for(String expected_plan : renewal_plan_list) {						
+				for(String actual_plan : actual_renewal_plan_list) {
+					if(actual_plan.contains(expected_plan)) {
+						temp_renewlist.add(actual_plan);					
+					}
+				}				
+			}			
+			diff_renewlist.removeAll(temp_renewlist);
+			for(String plan : diff_renewlist) {
+				if(!(plan.equalsIgnoreCase("null"))) {
+					RenewalPlanResult = "FAIL";
+					remarks = remarks + "Additional Renewal Plan Id - " + plan + " is Present ; ";
+				}			
+			}
+		}
+					
 			
 //			System.out.println("Expected Renewal Plan Id : " + expectedofferdata.get("Renewal Plan Id"));	
 //			System.out.println("Actual Renewal Plan Id : " + actualrenewalplanid);
@@ -1224,8 +1259,7 @@ public class BuyflowValidation {
 					remarks = remarks + "Additional Price Book Id - " + id + " is Present ; ";
 				}			
 			}		
-		}
-			
+		}			
 				
 		List<String> output_row = new ArrayList<String>();
 		output_row.add(env);

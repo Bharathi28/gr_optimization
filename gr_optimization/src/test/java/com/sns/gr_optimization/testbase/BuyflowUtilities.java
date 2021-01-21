@@ -57,7 +57,7 @@ public class BuyflowUtilities {
 			query = query + include_offer;
 		}
 //		query = query + ";";
-//			System.out.println(query);
+			System.out.println(query);
 		List<Map<String, Object>> locator = DBLibrary.dbAction("fetch",query);
 		return locator;		
 	}
@@ -167,10 +167,12 @@ public class BuyflowUtilities {
 				if(str.contains(",")) {
 					String[] arr = str.split(",");
 					for(String a : arr) {
+						a = a.replaceAll("[^a-zA-Z0-9$]+", "");
 						gift_list.add(a);
 					}
 				}
 				else {
+					str = str.replaceAll("[^a-zA-Z0-9$]+", "");
 					gift_list.add(str);
 				}				
 			}
@@ -182,7 +184,7 @@ public class BuyflowUtilities {
 	public String checkGifts(WebDriver driver, String brand, String campaign, String campaigngifts) throws InterruptedException, ClassNotFoundException, SQLException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		
-		if(!((brand.equalsIgnoreCase("MallyBeauty")))) {
+		if((!(brand.equalsIgnoreCase("MallyBeauty")))  && (!(brand.equalsIgnoreCase("DrDenese")))){
 			jse.executeScript("window.scrollBy(0,1000)", 0);
 		}
 		Thread.sleep(2000);
@@ -192,14 +194,17 @@ public class BuyflowUtilities {
 		for(String gift : gift_list) {
 			String query = "select * from locators where brand='" + brand + "' and campaign='" + campaign + "' and step='Gift' and offer like '%" + gift + "%'";
 			List<Map<String, Object>> giftloc = DBLibrary.dbAction("fetch", query);
-//			System.out.println(query);
+			System.out.println(query);
 			Thread.sleep(4000);
-			if(driver.findElements(By.xpath(giftloc.get(0).get("ELEMENTVALUE").toString())).size() != 0) {
-				
-			}
-			else {
-				giftResult = giftResult + giftloc.get(0).get("OFFER").toString() + " is not present on SAS";
-			}
+			
+			if(!(giftloc.get(0).get("ELEMENTVALUE").toString().equalsIgnoreCase("n/a"))) {
+				if(driver.findElements(By.xpath(giftloc.get(0).get("ELEMENTVALUE").toString())).size() != 0) {
+					
+				}
+				else {
+					giftResult = giftResult + giftloc.get(0).get("OFFER").toString() + " is not present on SAS";
+				}
+			}			
 		}
 		jse.executeScript("window.scrollBy(0,0)", 0);
 		Thread.sleep(2000);
