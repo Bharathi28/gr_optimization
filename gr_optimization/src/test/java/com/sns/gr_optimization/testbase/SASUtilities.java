@@ -276,46 +276,35 @@ public class SASUtilities {
 		jse.executeScript("window.scrollBy(0,100)", 0);
 	
 		String ppid = offerdata.get("Product PPID");
+		String name = offerdata.get("Product Name");
 		String pagepattern = offerdata.get("PagePattern");
-		String masterppid = ppid;
+
 		if(ppid.equalsIgnoreCase("JL2A0136")) {
 			driver.findElement(By.xpath("(//a[@class='button-text sd-cta'])[2]")).click();
 			Thread.sleep(1000);
 		}
 		else {
-			if(offerdata.containsKey("Master PPID")) {
-				masterppid = offerdata.get("Master PPID");
-			}
-			
-			String master_xpath = "";
-			String ppid_xpath = "";
+			String xpath = "";
 			if(brand.equalsIgnoreCase("JLoBeauty")) {
-				master_xpath = "//div[@data-itemid='" + masterppid + "']//div[4]//h3//a";
-				ppid_xpath = "//div[@data-itemid='" + ppid + "']//div[4]//h3//a";
+				xpath = "(//h3[contains(@class,'product-name')]//a[contains(text(),'" + name + "')])[1]";
 			}
-			else {
-				master_xpath = "//div[@data-itemid='" + masterppid + "']//div//div//h4//a";
-				ppid_xpath = "//div[@data-itemid='" + ppid + "']//div//div//h4//a";
-			}			
+			else if(brand.equalsIgnoreCase("CrepeErase")){
+				xpath = "//h4[contains(@class,'product-name')]//a[contains(text(),'" + name +"')]";
+			}	
+			else {				
+				xpath = "//h3[contains(@class,'product-name')]//a[contains(text(),'" + name + "')]";
+			}
 			
-			while(driver.findElements(By.xpath(master_xpath)).size() == 0){
+			while(driver.findElements(By.xpath(xpath)).size() == 0){
 				jse.executeScript("window.scrollBy(0,400)", 0);
 				
-				if(driver.findElements(By.xpath(ppid_xpath)).size() != 0) {
-					masterppid = ppid;
+				if(driver.findElements(By.xpath(xpath)).size() != 0) {
 					break;
 				}
 			}
-			
-			if(brand.equalsIgnoreCase("JLoBeauty")) {
-				master_xpath = "//div[@data-itemid='" + masterppid + "']//div[4]//h3//a";
-			}
-			else {
-				master_xpath = "//div[@data-itemid='" + masterppid + "']//div//div//h4//a";
-			}
-			
-			WebElement product_elmt = driver.findElement(By.xpath(master_xpath));
-			comm_obj.waitUntilElementAppears(driver, master_xpath);
+						
+			WebElement product_elmt = driver.findElement(By.xpath(xpath));
+			comm_obj.waitUntilElementAppears(driver, xpath);
 			Thread.sleep(2000);
 			product_elmt.click();
 		}		
@@ -340,16 +329,21 @@ public class SASUtilities {
 			sel_element.selectByVisibleText(offerdata.get("Shade").toString());
 		}
 		else {
-			WebElement shade_elmt = driver.findElement(By.xpath("(//li[@data-variantid='" + ppid + "'])[3]"));
-			comm_obj.waitUntilElementAppears(driver, "(//li[@data-variantid='" + ppid + "'])[3]");
+			String xpath = "";
+			if((brand.equalsIgnoreCase("Smileactives")) || (brand.equalsIgnoreCase("WestmoreBeauty")) || (brand.equalsIgnoreCase("MallyBeauty"))){
+				xpath = "//li[@data-variantid='" + ppid + "']";
+			}
+			else {
+				xpath = "(//li[@data-variantid='" + ppid + "'])[3]";
+			}
+			WebElement shade_elmt = driver.findElement(By.xpath(xpath));
+			comm_obj.waitUntilElementAppears(driver, xpath);
 			Thread.sleep(2000);
 			if(!(shade_elmt.getAttribute("class").contains("selected"))) {
 				shade_elmt.click();
 			}		
 			Thread.sleep(1000);	
-		}
-		
-		
+		}		
 		
 		if(brand.equalsIgnoreCase("JLoBeauty")) {
 			Thread.sleep(4000);
@@ -376,12 +370,6 @@ public class SASUtilities {
 	
 		String ppid = offerdata.get("Product PPID");
 		
-//		if(brand.equalsIgnoreCase("JLoBeauty")) {
-//			if((ppid.equalsIgnoreCase("JL1A0036")) || (ppid.equalsIgnoreCase("JL1A0037")) || (ppid.equalsIgnoreCase("JL1A0034"))) {
-//				ppid = "JL1A0035";
-//			}
-//		}		
-		//input[@name='dwopt_JL1A0034_entryKit']/../../..//label[contains(@for,'entryKit-auto-renew')]
 		Thread.sleep(1000);
 		driver.findElement(By.xpath("//input[@name='dwopt_" + ppid + "_entryKit']/../../..//label[contains(@for,'entryKit-auto-renew')]")).click();
 		Thread.sleep(1000);

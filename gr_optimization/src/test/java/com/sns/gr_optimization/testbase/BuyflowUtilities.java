@@ -752,6 +752,7 @@ public class BuyflowUtilities {
 		Double percent_value = Double.valueOf(salestaxpercent);
 				
 		Double salestax_value = ((subtotal_value + shipping_value)*percent_value)/100;
+		System.out.println("SalesTax value: " + salestax_value);
 		double salextax_roundOff = Math.floor(salestax_value * 100.0) / 100.0;
 				
 		String salestax = String.valueOf(salextax_roundOff);		

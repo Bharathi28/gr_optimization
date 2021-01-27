@@ -29,74 +29,77 @@ public class MerchandisingUtilities {
 		return expectedsourcecodedata;
 	}
 	
-	public HashMap<String, String> generateExpectedOfferDataForProduct(HashMap<String, String> offerdata, String kitppid, String brand, String campaign, String category, List<String> CatalogPriceBookIDs) throws ClassNotFoundException, SQLException {
+	public HashMap<String, String> generateExpectedOfferDataForProduct(HashMap<String, String> offerdata, String kitppid, String PostPU, String brand, String campaign, String category, List<String> CatalogPriceBookIDs) throws ClassNotFoundException, SQLException {
 		LinkedHashMap<String, String> expectedofferdata = new LinkedHashMap<String, String>();
 		
 		expectedofferdata.put("Brand", brand);
 		expectedofferdata.put("Campaign", campaign);
+		
+//		// Check PostPU for current offercode
+//		if(PostPU.equalsIgnoreCase("Yes")) {
+//			String offerpostpu = offerdata.get("90 Day PPID").trim();
+//			offerpostpu = offerpostpu.replaceAll("\\s+", "");
+//			if(offerpostpu.contains(kitppid)) {
+//				expectedofferdata.put("Offer Post-Purchase", "Yes");	
+//				expectedofferdata.put("SupplySize", "90");
+//			}
+//			else {
+//				expectedofferdata.put("Offer Post-Purchase", "No");	
+//				expectedofferdata.put("SupplySize", "30");
+//			}					
+//		}		
+//		else {
+//			expectedofferdata.put("Offer Post-Purchase", "No");
+//			expectedofferdata.put("SupplySize", "30");
+//		}		
+		
 		if(offerdata.get("Master Product") != null) {
 			expectedofferdata.put("Master PPID", offerdata.get("Master Product").trim());
 		}		
+		
 		expectedofferdata.put("Product PPID", offerdata.get("PPID").trim());
+		if(offerdata.get("90 Day PPID") != null) {
+			if(kitppid.equalsIgnoreCase(offerdata.get("90 Day PPID").strip())) {
+				expectedofferdata.put("Product PPID", offerdata.get("90 Day PPID").trim());
+			}
+			else {
+				expectedofferdata.put("Product PPID", offerdata.get("PPID").trim());
+			}
+		}		
+		
 		expectedofferdata.put("Product Name", offerdata.get("Product Name").trim());
 		
 		String shade = "No Shade";
 		if(offerdata.get("Shade if any") != null) {
 			shade = offerdata.get("Shade if any").trim();
-			expectedofferdata.put("Shade", offerdata.get("Shade if any").trim());
+			expectedofferdata.put("Shade", shade);
 		}
-		expectedofferdata.put("Shade", shade);
+//		expectedofferdata.put("Shade", shade);
 		
 		if(offerdata.get("Size") != null) {
 			expectedofferdata.put("Size", offerdata.get("Size").trim());
 		}		
 		
-		String pagepattern = "product-";
+
 		if(category.equalsIgnoreCase("Product")) {
-			
-			if(!(shade.equalsIgnoreCase("No Shade"))) {
-				pagepattern = pagepattern + "shade-";
-			}			
-			pagepattern = pagepattern + "onetime";
-			
-			expectedofferdata.put("PagePattern", pagepattern);
+			expectedofferdata.put("PagePattern", offerdata.get("PagePattern").trim());
+
 			expectedofferdata.put("Price", offerdata.get("Acq One Time price").trim());
 			expectedofferdata.put("Renewal Plan Id", "No Renewal Plan Id");
 			expectedofferdata.put("Cart Language", "No Cart Language");
 			expectedofferdata.put("Supplemental Cart Language", "No Supplemental Cart Language");
 			expectedofferdata.put("Continuity Pricing", "No Continuity Pricing");
 			expectedofferdata.put("Continuity Shipping", "No Continuity Shipping");
-			expectedofferdata.put("Price Book Id", CatalogPriceBookIDs.get(0));
+			expectedofferdata.put("Price Book Id", CatalogPriceBookIDs.get(1));
 		}
 		else if(category.equalsIgnoreCase("SubscribeandSave")) {
-			
-			if(!(shade.equalsIgnoreCase("No Shade"))) {
-				pagepattern = pagepattern + "shade-";
-			}			
-			pagepattern = pagepattern + "subscribe";
-			
+			String pagepattern = offerdata.get("PagePattern").trim();
+			pagepattern = pagepattern.replace("onetime", "subscribe");
 			expectedofferdata.put("PagePattern", pagepattern);
-			
-//			if(brand.equalsIgnoreCase("JLoBeauty")) {
-//				if(offerdata.get("PPID").trim().equalsIgnoreCase("JL2A0136")) {
-//					expectedofferdata.put("Price", "137.0");
-//				}
-//				else {
-//					String one_time_price = offerdata.get("Acq One Time price").trim();
-//					one_time_price = one_time_price.replace("$", "");
-//					Double onetime_value = Double.valueOf(one_time_price);
-//					Double subscribe_value = onetime_value * 0.85;
-//					double subscribe_roundOff = Math.floor(subscribe_value * 100.0) / 100.0;
-//					String SubscribeandSave_price = String.valueOf(subscribe_roundOff);
-////					System.out.println(SubscribeandSave_price);
-//					expectedofferdata.put("Price", SubscribeandSave_price);
-//				}
-//			}
-//			else {
-				if(offerdata.get("Subscribe and Save price") != null) {
-					expectedofferdata.put("Price", offerdata.get("Subscribe and Save price").trim());
-				}
-//			}			
+
+			if(offerdata.get("Subscribe and Save price") != null) {
+				expectedofferdata.put("Price", offerdata.get("Subscribe and Save price").trim());
+			}			
 					
 			expectedofferdata.put("Renewal Plan Id", offerdata.get("Renewal Plan ID").trim());
 			expectedofferdata.put("Cart Language", offerdata.get("Cart Language").trim());
@@ -108,14 +111,12 @@ public class MerchandisingUtilities {
 			expectedofferdata.put("Continuity Pricing", cart_lang_price);
 			expectedofferdata.put("Continuity Shipping", cart_lang_shipping);
 			
-			expectedofferdata.put("Price Book Id", CatalogPriceBookIDs.get(1));
+			expectedofferdata.put("Price Book Id", CatalogPriceBookIDs.get(2));
 		}		
 		else if(category.equalsIgnoreCase("ShopKit")) {
-			if(!(shade.equalsIgnoreCase("No Shade"))) {
-				pagepattern = pagepattern + "shade";
-			}	
-			expectedofferdata.put("PagePattern", pagepattern);
-			expectedofferdata.put("Price", offerdata.get("Acq One Time price").trim());
+
+			expectedofferdata.put("PagePattern", offerdata.get("PagePattern").trim());
+			expectedofferdata.put("Price", offerdata.get("Entry-Continuity Pricebook").trim());
 			expectedofferdata.put("Renewal Plan Id", offerdata.get("Renewal Plan ID").trim());
 			expectedofferdata.put("Cart Language", offerdata.get("Cart Language").trim());
 			expectedofferdata.put("Supplemental Cart Language", offerdata.get("Supplementary Cart Language").trim());
@@ -684,14 +685,24 @@ public class MerchandisingUtilities {
 				colName = colName.replaceAll("\\s+", "");				
 				colName = colName.replaceAll("[^a-zA-Z0-9$]+", "");
 				
-				PriceBookIDList.add(colName);
+//				PriceBookIDList.add(colName);
+				PriceBookIDList.add(1, colName);
 			}
 			if(colName.contains("Subscribe and Save price")) {
 				colName = colName.replaceAll("Subscribe and Save price", "");
 				colName = colName.replaceAll("\\s+", "");				
 				colName = colName.replaceAll("[^a-zA-Z0-9$]+", "");
 				
-				PriceBookIDList.add(colName);
+//				PriceBookIDList.add(colName);
+				PriceBookIDList.add(2, colName);
+			}			
+			if(colName.contains("Entry-Continuity Pricebook")) {
+				colName = colName.replaceAll("Entry-Continuity Pricebook", "");
+				colName = colName.replaceAll("\\s+", "");				
+				colName = colName.replaceAll("[^a-zA-Z0-9$]+", "");
+				
+//				PriceBookIDList.add(colName);
+				PriceBookIDList.add(0, colName);
 			}			
 		}
 		System.out.println(PriceBookIDList);
@@ -702,41 +713,75 @@ public class MerchandisingUtilities {
 		LinkedHashMap<String, String> productdata = new LinkedHashMap<String, String>();
 		
 		int ppidcolumn = 0;
+		int contppidcolumn = 0;
 		for(int i=0; i<catalogData[0].length; i++) {
 			String colName = catalogData[0][i];
-			if(colName.equalsIgnoreCase("PPID")) {
+			System.out.println(colName);
+			if((colName != null) && (colName.equalsIgnoreCase("PPID"))) {
 				ppidcolumn = i;
 			}
+//			if((colName != null) && (colName.equalsIgnoreCase("90 Day PPID"))) {
+//				contppidcolumn = i;
+//			}
 		}
-//		System.out.println("ppidcolumn:" + ppidcolumn);
+		System.out.println("ppidcolumn:" + ppidcolumn);
 		
 		for(int i=0; i<catalogData.length; i++) {	
-			if(catalogData[i][0] != null) {
-				String ppidinrow = catalogData[i][ppidcolumn].trim();
+			String ppidinrow = catalogData[i][ppidcolumn].trim();
+//			String contppidinrow = "";
+//			if(catalogData[i][contppidcolumn] != null) {
+//				contppidinrow = catalogData[i][contppidcolumn].trim();
+//			}
 				
-				if(ppidinrow.equalsIgnoreCase(ppid)) {
-					for(int j=0; j<catalogData[0].length; j++) {
-						if(catalogData[0][j] != null) {
-							if(catalogData[0][j].contains("Acq One Time price")) {
-								productdata.put("Acq One Time price", catalogData[i][j]);
-							}
-							else if(catalogData[0][j].contains("Subscribe and Save price")) {
-								productdata.put("Subscribe and Save price", catalogData[i][j]);
-							}
-							else {
-								productdata.put(catalogData[0][j].trim(), catalogData[i][j]);
-							}							
+			System.out.println("ppidinrow:" + ppidinrow);
+//			if((ppidinrow.equalsIgnoreCase(ppid)) || (contppidinrow.equalsIgnoreCase(ppid))){
+			
+			System.out.println("hi" + ppidinrow + "hi");
+			System.out.println("hi" + ppid + "hi");
+			if(ppidinrow.strip().equalsIgnoreCase(ppid.strip())){
+				for(int j=0; j<catalogData[0].length; j++) {
+					if(catalogData[0][j] != null) {
+						if(catalogData[0][j].contains("Acq One Time price")) {
+							productdata.put("Acq One Time price", catalogData[i][j]);
 						}
+						else if(catalogData[0][j].contains("Subscribe and Save price")) {
+							productdata.put("Subscribe and Save price", catalogData[i][j]);
+						}
+						else if(catalogData[0][j].contains("Entry-Continuity Pricebook")) {
+							productdata.put("Entry-Continuity Pricebook", catalogData[i][j]);
+						}
+						else {
+							productdata.put(catalogData[0][j].trim(), catalogData[i][j]);
+						}							
 					}
-					break;
 				}
-			}
-			else {
 				break;
 			}
 		}
 		System.out.println("Product Data:" + productdata);
 		return productdata;
+	}
+	
+	public String checkShopKitPostPU(HashMap<String, String> offerdata, String brand) throws ClassNotFoundException, SQLException {
+		String PostPU;
+		if(offerdata.get("90 Day PPID") != null) {
+			String postpuppid = offerdata.get("90 Day PPID").trim();
+//			System.out.println(postpuppid);
+			
+			String brandcode = db_obj.get_sourceproductlinecode(brand); 
+			
+			if(postpuppid.contains(brandcode)) {
+				PostPU = "Yes";
+			}
+			else {
+				PostPU = "No";
+			}
+		}
+		else {
+			PostPU = "No";
+		}		
+//		System.out.println(PostPU);
+		return PostPU;
 	}
 	
 	public List<String> fetch_random_singles(String[][] catalogData, int count) {

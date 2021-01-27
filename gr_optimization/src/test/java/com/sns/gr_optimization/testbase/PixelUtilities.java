@@ -52,7 +52,7 @@ public class PixelUtilities {
 			rnd = new Random().nextInt(cake_uci.length);
 			uci = cake_uci[rnd];
 		}
-		else if(pixel.equalsIgnoreCase("Linkshare")) {
+		else if(pixel.equalsIgnoreCase("LinkShare")) {
 			rnd = new Random().nextInt(linkshare_uci.length);
 			uci = linkshare_uci[rnd];
 		}
@@ -99,7 +99,7 @@ public class PixelUtilities {
 			url = url + joinChar + "hConversionEventId=AQEAAZQF2gAmdjQwMDAwMDE2OS0zYmI0LTM2ZTMtYTIyNy0yNjZlOTY2Mzk4MTjaACRlM2U1MzMxYi00ZTIxLTQ5YzgtMDAwMC0wMjFlZjNhMGJjYzPaACRmOTkyNWRkZi1lMzA0LTQ0ZjEtOTJmOC1mMTUyM2VlOTVkZjKFXOX1ZlAb6-YsLP1N4nV5ZwzJa4oaNWsQ9iHh0H1Pdg";
 		}
 		if(pixel.equalsIgnoreCase("linkshare")) {		
-			String uci = getUci("Linkshare");
+			String uci = getUci("LinkShare");
 			url = url + joinChar + "UCI=" + uci;
 		}
 		if(pixel.equalsIgnoreCase("starmobile")) {	
@@ -129,7 +129,7 @@ public class PixelUtilities {
 	    		pattern = "Cake";
 	    	}
 	    	if(pixel.toLowerCase().contains("linkshare")) {
-	    		pattern = "Linkshare";
+	    		pattern = "LinkShare";
 	    	}
 	    }
 	    else if(url.contains("hConversionEventId")) {

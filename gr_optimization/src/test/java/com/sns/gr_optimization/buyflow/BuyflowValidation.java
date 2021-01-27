@@ -29,8 +29,6 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.browserup.bup.BrowserUpProxy;
-import com.browserup.bup.BrowserUpProxyServer;
 import com.sns.gr_optimization.testbase.BuyflowUtilities;
 import com.sns.gr_optimization.testbase.CartLanguageUtilities;
 import com.sns.gr_optimization.testbase.CommonUtilities;
@@ -163,12 +161,14 @@ public class BuyflowValidation {
 		String[][] catalogData = null;
 		String[][] merchData = null;		
 		
+		String brandcode = db_obj.get_sourceproductlinecode(brand);
+		
 		List<String> category_list = Arrays.asList(category.split(","));
 //		System.out.println(category_list);
 		
 		// Read Web Catalog
 		if((category_list.contains("Product")) || (category_list.contains("SubscribeandSave")) || (category_list.contains("ShopKit"))) {
-			catalogData = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/Merchandising Input/" + brand + "/Web Catalog.xlsx", "Acq", 0);
+			catalogData = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/Merchandising Input/" + brand + "/" + brandcode + " Web Catalog.xlsx", "Acq", 0);
 		}
 		
 		// Read Merchandising Input
@@ -272,7 +272,7 @@ public class BuyflowValidation {
 		
 		while(offerIterator.hasNext() && categoryIterator.hasNext()) {
 			String ppid = offerIterator.next();			
-			String currentCategory = categoryIterator.next();
+			String currentCategory = categoryIterator.next();					
 			
 			if(currentCategory.equalsIgnoreCase("Kit")) {
 				// Get column in which the PPID is present and check if the PPID belongs to Pre-Purchase Entry Kit
@@ -429,28 +429,36 @@ public class BuyflowValidation {
 				// Move to SAS
 				pixel_obj.defineNewHar(proxy, brand + "SASPage");	  
 				bf_obj.click_cta(driver, brand, campaign, "Ordernow");
-				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver);
-			
+				
+				// DrDenese - FB - AddToCart event will fire only after selecting the kit (After clicking on "Add To cart")
+				if(!(brand.equalsIgnoreCase("DrDenese"))) {
+					pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver);
+				}				
+				
 				// Gift Validation
-//				if(!(expectedofferdata_kit.get("Gift Name").equalsIgnoreCase("No Gift"))) {
-//					if(!(expectedofferdata_kit.get("Campaign Gifts").equalsIgnoreCase("-"))) {
-						String expectedcampaigngifts = expectedofferdata_kit.get("Campaign Gifts");
-//					}
-					if((expectedcampaigngifts != null) && (!(expectedcampaigngifts.equals("-"))) && (!(expectedcampaigngifts.equals("")))) {
-						giftResult = bf_obj.checkGifts(driver, brand, campaigncategory, expectedcampaigngifts);
-						remarks = remarks + giftResult;
-					}
-//				}								
+				String expectedcampaigngifts = expectedofferdata_kit.get("Campaign Gifts");
+				if((expectedcampaigngifts != null) && (!(expectedcampaigngifts.equals("-"))) && (!(expectedcampaigngifts.equals("")))) {
+					giftResult = bf_obj.checkGifts(driver, brand, campaigncategory, expectedcampaigngifts);
+					remarks = remarks + giftResult;
+				}	
 				
 				// Select offer				
-				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
+				if(!(brand.equalsIgnoreCase("DrDenese"))) {
+					pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
+				}				
 				sas_obj.select_offer(driver, expectedofferdata_kit, currentCategory);
 				
+				if(brand.equalsIgnoreCase("DrDenese")) {
+					pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver);
+					pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
+				}
+				
 				// Move to Checkout
-//				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
 				bf_obj.move_to_checkout(driver, brand, campaigncategory, category);
 			}
 			else if((currentCategory.equalsIgnoreCase("Product")) || (currentCategory.equalsIgnoreCase("SubscribeandSave")) || (currentCategory.equalsIgnoreCase("ShopKit"))) {
+				
+				
 				// Get the product data from Web Catalog
 				HashMap<String, String> product_offerdata = merch_obj.getProdRowfromCatalog(catalogData, ppid);
 //				System.out.println(product_offerdata);
@@ -463,8 +471,11 @@ public class BuyflowValidation {
 					continue;
 				}
 				
+				// Check if Post Purchase Upsell Page exists
+				postpu = merch_obj.checkShopKitPostPU(product_offerdata, brand);
+				
 				// Collect current Offer related details from Merchandising Input file
-				expectedofferdata_product = merch_obj.generateExpectedOfferDataForProduct(product_offerdata, ppid, brand, campaigncategory, currentCategory, catalogPriceBookIDs);
+				expectedofferdata_product = merch_obj.generateExpectedOfferDataForProduct(product_offerdata, ppid, postpu, brand, campaigncategory, currentCategory, catalogPriceBookIDs);
 				System.out.println("Expected Offerdata - Product : " + expectedofferdata_product);
 				
 				// Add Product PPID to lineitem list
@@ -485,7 +496,7 @@ public class BuyflowValidation {
 				}				
 				
 				String shipping_calc = "";
-				if((category_list.contains("Kit")) || (currentCategory.equalsIgnoreCase("SubscribeandSave"))){
+				if((category_list.contains("Kit")) || (currentCategory.equalsIgnoreCase("SubscribeandSave")) || (category_list.contains("ShopKit"))){
 					shipping_calc = "FREE";
 				}
 				else {
@@ -498,14 +509,20 @@ public class BuyflowValidation {
 						if(brand.equalsIgnoreCase("JLoBeauty")) {
 							shipping_calc = "$4.99";
 						}
-						else {
+						else if(brand.equalsIgnoreCase("CrepeErase")){
 							shipping_calc = "$5.99";
-						}						
+						}	
+						else if(brand.equalsIgnoreCase("MeaningfulBeauty")){
+							shipping_calc = "$6.99";
+						}	
+						else {
+							shipping_calc = "$4.99";
+						}
 					}  
 				}
 				
 				shipping_list.add(shipping_calc);
-				if(currentCategory.equalsIgnoreCase("SubscribeandSave")) {
+				if((currentCategory.equalsIgnoreCase("SubscribeandSave")) || (currentCategory.equalsIgnoreCase("ShopKit"))) {
 					renewal_plan_list.add(expectedofferdata_product.get("Renewal Plan Id"));
 				}						
 				
@@ -558,6 +575,22 @@ public class BuyflowValidation {
 		campaignpages.add("ConfirmationPage");
 //		System.out.println(campaignpages);
 		
+		String offer_postpurchase  = "";
+		String supplysize  = "";
+		if(category_list.contains("Kit")) {
+			offer_postpurchase = expectedofferdata_kit.get("Offer Post-Purchase");
+			supplysize = expectedofferdata_kit.get("SupplySize");
+		}
+//		else if(category_list.contains("ShopKit")) {
+//			offer_postpurchase = expectedofferdata_product.get("Offer Post-Purchase");
+//			supplysize = expectedofferdata_product.get("SupplySize");
+//		}
+		// Product and Subscribe and Save - has no Post Purchase upsell
+		else {
+			offer_postpurchase = "No";
+			supplysize = "30";
+		}	
+		
 		// Fill out form
 		String email = "";
 				
@@ -572,7 +605,7 @@ public class BuyflowValidation {
 			}
 		}
 		else {
-			if((categorylist.contains("Kit")) && (expectedofferdata_kit.get("Offer Post-Purchase").equalsIgnoreCase("Yes"))) {
+			if(((categorylist.contains("Kit")) || (categorylist.contains("ShopKit"))) && (offer_postpurchase.equalsIgnoreCase("Yes"))) {
 				email = bf_obj.fill_out_form(driver, brand, campaigncategory, "VISA", "same", "90");
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver);
 						
@@ -580,7 +613,7 @@ public class BuyflowValidation {
 				bf_obj.complete_order(driver, brand, "VISA");
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern +".har", driver);
 						
-				bf_obj.upsell_confirmation(driver, brand, campaigncategory, expectedofferdata_kit.get("Offer Post-Purchase"));
+				bf_obj.upsell_confirmation(driver, brand, campaigncategory, offer_postpurchase);
 			}
 			else {
 				email = bf_obj.fill_out_form(driver, brand, campaigncategory, cc, shipbill, "30");
@@ -591,19 +624,7 @@ public class BuyflowValidation {
 		
 		// Checkout Page Validation
 		// Validate Line Items
-		List<List<String>> actual_lineitems = new ArrayList<List<String>>();
-		
-		String offer_postpurchase  = "";
-		String supplysize  = "";
-		if(category_list.contains("Kit")) {
-			offer_postpurchase = expectedofferdata_kit.get("Offer Post-Purchase");
-			supplysize = expectedofferdata_kit.get("SupplySize");
-		}
-		// Product and Subscribe and Save - has no Post Purchase upsell
-		else {
-			offer_postpurchase = "No";
-			supplysize = "30";
-		}		
+		List<List<String>> actual_lineitems = new ArrayList<List<String>>();			
 		
 		actual_lineitems = bf_obj.getLineItems(driver, cc, offer_postpurchase, brand);		
 		
@@ -719,7 +740,7 @@ public class BuyflowValidation {
 		// Supplemental Cart Language Validation			
 			
 		// Scenario - 90-day order + Paypal - could not validate 90-day cart language and supplemental language because invalid zipcode could not be fill-in for Paypal
-		if((category_list.contains("Kit")) || (category_list.contains("SubscribeandSave"))) {
+		if((category_list.contains("Kit")) || (category_list.contains("SubscribeandSave")) || (category_list.contains("ShopKit"))) {
 //			if((!(cc.equalsIgnoreCase("Paypal"))) && (!(supplysize.equalsIgnoreCase("90"))) && (!(offer_postpurchase.equalsIgnoreCase("Yes")))) {
 			
 				
@@ -1153,7 +1174,7 @@ public class BuyflowValidation {
 		if(category_list.contains("Kit")) {
 			if(!(expectedofferdata_kit.get("Installment Plan Id").equalsIgnoreCase("No Installment Plan"))) {
 				actualinstallmentplanid = comm_obj.getFromVariableMap(driver, "paymentPlanId");
-				if(expectedofferdata_kit.get("Offer Post-Purchase").equalsIgnoreCase("Yes")) {					
+				if(offer_postpurchase.equalsIgnoreCase("Yes")) {					
 					if(!(actualinstallmentplanid.contains(expectedofferdata_kit.get("Installment Plan Id")))) {
 						InstallmentPlanResult = "FAIL";
 						remarks = remarks + "Installment Plan Id does not match, Expected - " + expectedofferdata_kit.get("Installment Plan Id") + " , Actual - " + actualinstallmentplanid + ",";
