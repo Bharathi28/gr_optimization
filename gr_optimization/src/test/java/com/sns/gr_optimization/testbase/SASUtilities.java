@@ -276,7 +276,7 @@ public class SASUtilities {
 		jse.executeScript("window.scrollBy(0,100)", 0);
 	
 		String ppid = offerdata.get("Product PPID");
-		String name = offerdata.get("Product Name");
+		String name = offerdata.get("Product Name").trim();
 		String pagepattern = offerdata.get("PagePattern");
 
 		if(ppid.equalsIgnoreCase("JL2A0136")) {
@@ -289,7 +289,7 @@ public class SASUtilities {
 				xpath = "(//h3[contains(@class,'product-name')]//a[contains(text(),'" + name + "')])[1]";
 			}
 			else if(brand.equalsIgnoreCase("CrepeErase")){
-				xpath = "//h4[contains(@class,'product-name')]//a[contains(text(),'" + name +"')]";
+				xpath = "//h4[contains(@class,'product-name')]//a[contains(text(),'" + name + "')]";
 			}	
 			else {				
 				xpath = "//h3[contains(@class,'product-name')]//a[contains(text(),'" + name + "')]";

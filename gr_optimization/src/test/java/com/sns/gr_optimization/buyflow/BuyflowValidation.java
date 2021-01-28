@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Scanner;
@@ -297,7 +298,7 @@ public class BuyflowValidation {
 	
 				// Read the entire column data
 				HashMap<String, String> kit_offerdata = merch_obj.getColumnData(merchData, PPIDcolumn, PPUSection);
-//				System.out.println(kit_offerdata);
+				System.out.println(kit_offerdata);
 				// Check Post-purchase Upsell for the campaign
 				postpu = merch_obj.checkPostPU(kit_offerdata, brand);
 				if(((brand.equalsIgnoreCase("CrepeErase")) && (campaign.equalsIgnoreCase("order30fsh2b"))) && (PPUSection.equalsIgnoreCase("No"))) {
@@ -463,7 +464,7 @@ public class BuyflowValidation {
 				HashMap<String, String> product_offerdata = merch_obj.getProdRowfromCatalog(catalogData, ppid);
 //				System.out.println(product_offerdata);
 				
-				List<String> catalogPriceBookIDs = merch_obj.getCatalogPriceBookIDs(catalogData);
+				LinkedHashMap<String, String> catalogPriceBookIDs = merch_obj.getCatalogPriceBookIDs(catalogData);
 				
 				// Check if the PPID is present in the campaign
 				if(product_offerdata.size() == 0) {

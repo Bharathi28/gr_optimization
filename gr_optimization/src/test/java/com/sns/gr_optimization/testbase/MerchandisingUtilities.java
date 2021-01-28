@@ -29,7 +29,7 @@ public class MerchandisingUtilities {
 		return expectedsourcecodedata;
 	}
 	
-	public HashMap<String, String> generateExpectedOfferDataForProduct(HashMap<String, String> offerdata, String kitppid, String PostPU, String brand, String campaign, String category, List<String> CatalogPriceBookIDs) throws ClassNotFoundException, SQLException {
+	public HashMap<String, String> generateExpectedOfferDataForProduct(HashMap<String, String> offerdata, String kitppid, String PostPU, String brand, String campaign, String category, LinkedHashMap<String, String> CatalogPriceBookIDs) throws ClassNotFoundException, SQLException {
 		LinkedHashMap<String, String> expectedofferdata = new LinkedHashMap<String, String>();
 		
 		expectedofferdata.put("Brand", brand);
@@ -90,7 +90,7 @@ public class MerchandisingUtilities {
 			expectedofferdata.put("Supplemental Cart Language", "No Supplemental Cart Language");
 			expectedofferdata.put("Continuity Pricing", "No Continuity Pricing");
 			expectedofferdata.put("Continuity Shipping", "No Continuity Shipping");
-			expectedofferdata.put("Price Book Id", CatalogPriceBookIDs.get(1));
+			expectedofferdata.put("Price Book Id", CatalogPriceBookIDs.get("Acq One Time price"));
 		}
 		else if(category.equalsIgnoreCase("SubscribeandSave")) {
 			String pagepattern = offerdata.get("PagePattern").trim();
@@ -111,7 +111,7 @@ public class MerchandisingUtilities {
 			expectedofferdata.put("Continuity Pricing", cart_lang_price);
 			expectedofferdata.put("Continuity Shipping", cart_lang_shipping);
 			
-			expectedofferdata.put("Price Book Id", CatalogPriceBookIDs.get(2));
+			expectedofferdata.put("Price Book Id", CatalogPriceBookIDs.get("Subscribe and Save price"));
 		}		
 		else if(category.equalsIgnoreCase("ShopKit")) {
 
@@ -127,7 +127,7 @@ public class MerchandisingUtilities {
 			expectedofferdata.put("Continuity Pricing", cart_lang_price);
 			expectedofferdata.put("Continuity Shipping", cart_lang_shipping);
 			
-			expectedofferdata.put("Price Book Id", CatalogPriceBookIDs.get(0));
+			expectedofferdata.put("Price Book Id", CatalogPriceBookIDs.get("Entry-Continuity Pricebook"));
 		}
 		
 		return expectedofferdata;
@@ -177,6 +177,8 @@ public class MerchandisingUtilities {
 		if(PostPU.equalsIgnoreCase("Yes")) {
 			String offerpostpu = offerdata.get("Post Purchase Upsell to").trim();
 			offerpostpu = offerpostpu.replaceAll("\\s+", "");
+			System.out.println("hi" + offerpostpu + "hi");
+			System.out.println("hi" + kitppid + "hi");
 			if(offerpostpu.contains(kitppid)) {
 				offerpostpu="Yes";
 			}
@@ -460,7 +462,7 @@ public class MerchandisingUtilities {
 		else {
 			PostPU = "No";
 		}		
-//		System.out.println(PostPU);
+		System.out.println("PostPU:" + PostPU);
 		return PostPU;
 	}
 	
@@ -676,68 +678,61 @@ public class MerchandisingUtilities {
 		return offerdata;
 	}
 	
-	public List<String> getCatalogPriceBookIDs(String[][] catalogData) {
-		List<String> PriceBookIDList = new ArrayList<String>();
+	public LinkedHashMap<String, String> getCatalogPriceBookIDs(String[][] catalogData) {
+		
+		LinkedHashMap<String, String> CatalogPriceBookIDs = new LinkedHashMap<String, String>();
+
 		for(int i=0; i<catalogData[0].length; i++) {
 			String colName = catalogData[0][i];
 			if(colName.contains("Acq One Time price")) {
 				colName = colName.replaceAll("Acq One Time price", "");
 				colName = colName.replaceAll("\\s+", "");				
 				colName = colName.replaceAll("[^a-zA-Z0-9$]+", "");
-				
-//				PriceBookIDList.add(colName);
-				PriceBookIDList.add(1, colName);
+
+				CatalogPriceBookIDs.put("Acq One Time price", colName);
 			}
 			if(colName.contains("Subscribe and Save price")) {
 				colName = colName.replaceAll("Subscribe and Save price", "");
 				colName = colName.replaceAll("\\s+", "");				
 				colName = colName.replaceAll("[^a-zA-Z0-9$]+", "");
-				
-//				PriceBookIDList.add(colName);
-				PriceBookIDList.add(2, colName);
+
+				CatalogPriceBookIDs.put("Subscribe and Save price", colName);
 			}			
 			if(colName.contains("Entry-Continuity Pricebook")) {
 				colName = colName.replaceAll("Entry-Continuity Pricebook", "");
 				colName = colName.replaceAll("\\s+", "");				
 				colName = colName.replaceAll("[^a-zA-Z0-9$]+", "");
-				
-//				PriceBookIDList.add(colName);
-				PriceBookIDList.add(0, colName);
+
+				CatalogPriceBookIDs.put("Entry-Continuity Pricebook", colName);
 			}			
 		}
-		System.out.println(PriceBookIDList);
-		return PriceBookIDList;
+		return CatalogPriceBookIDs;
 	}
 	
 	public HashMap<String, String> getProdRowfromCatalog(String[][] catalogData, String ppid) {
 		LinkedHashMap<String, String> productdata = new LinkedHashMap<String, String>();
 		
 		int ppidcolumn = 0;
-		int contppidcolumn = 0;
+
 		for(int i=0; i<catalogData[0].length; i++) {
 			String colName = catalogData[0][i];
 			System.out.println(colName);
 			if((colName != null) && (colName.equalsIgnoreCase("PPID"))) {
 				ppidcolumn = i;
 			}
-//			if((colName != null) && (colName.equalsIgnoreCase("90 Day PPID"))) {
-//				contppidcolumn = i;
-//			}
+
 		}
 		System.out.println("ppidcolumn:" + ppidcolumn);
 		
 		for(int i=0; i<catalogData.length; i++) {	
-			String ppidinrow = catalogData[i][ppidcolumn].trim();
-//			String contppidinrow = "";
-//			if(catalogData[i][contppidcolumn] != null) {
-//				contppidinrow = catalogData[i][contppidcolumn].trim();
-//			}
+			String ppidinrow = catalogData[i][ppidcolumn].replaceAll("\\s+", "");
+
 				
 			System.out.println("ppidinrow:" + ppidinrow);
-//			if((ppidinrow.equalsIgnoreCase(ppid)) || (contppidinrow.equalsIgnoreCase(ppid))){
+
 			
-			System.out.println("hi" + ppidinrow + "hi");
-			System.out.println("hi" + ppid + "hi");
+			System.out.println("HI" + ppidinrow + "HI");
+			System.out.println("HI" + ppid + "HI");
 			if(ppidinrow.strip().equalsIgnoreCase(ppid.strip())){
 				for(int j=0; j<catalogData[0].length; j++) {
 					if(catalogData[0][j] != null) {
