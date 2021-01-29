@@ -59,7 +59,7 @@ public class MerchandisingUtilities {
 		
 		expectedofferdata.put("Product PPID", offerdata.get("PPID").trim());
 		if(offerdata.get("90 Day PPID") != null) {
-			if(kitppid.equalsIgnoreCase(offerdata.get("90 Day PPID").strip())) {
+			if(kitppid.equalsIgnoreCase(offerdata.get("90 Day PPID").trim())) {
 				expectedofferdata.put("Product PPID", offerdata.get("90 Day PPID").trim());
 			}
 			else {
@@ -733,7 +733,7 @@ public class MerchandisingUtilities {
 //			
 //			System.out.println("HI" + ppidinrow + "HI");
 //			System.out.println("HI" + ppid + "HI");
-			if(ppidinrow.strip().equalsIgnoreCase(ppid.strip())){
+			if(ppidinrow.trim().equalsIgnoreCase(ppid.trim())){
 				for(int j=0; j<catalogData[0].length; j++) {
 					if(catalogData[0][j] != null) {
 						if(catalogData[0][j].contains("Acq One Time price")) {
