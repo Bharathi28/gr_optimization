@@ -68,8 +68,8 @@ public class BuyflowValidation {
 	
 	@BeforeSuite
 	public void getEmailId() {
-		System.setProperty("email", "aaqil@searchnscore.com,manibharathi@searchnscore.com");
-		System.setProperty("testset", "Core");
+//		System.setProperty("email", "aaqil@searchnscore.com,manibharathi@searchnscore.com");
+//		System.setProperty("testset", "Core");
 		
 		sendReportTo = System.getProperty("email");
 		testSet = System.getProperty("testset");
