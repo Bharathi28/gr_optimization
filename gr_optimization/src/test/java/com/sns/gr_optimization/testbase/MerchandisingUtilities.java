@@ -716,23 +716,23 @@ public class MerchandisingUtilities {
 
 		for(int i=0; i<catalogData[0].length; i++) {
 			String colName = catalogData[0][i];
-			System.out.println(colName);
+//			System.out.println(colName);
 			if((colName != null) && (colName.equalsIgnoreCase("PPID"))) {
 				ppidcolumn = i;
 			}
 
 		}
-		System.out.println("ppidcolumn:" + ppidcolumn);
+//		System.out.println("ppidcolumn:" + ppidcolumn);
 		
 		for(int i=0; i<catalogData.length; i++) {	
 			String ppidinrow = catalogData[i][ppidcolumn].replaceAll("\\s+", "");
 
 				
-			System.out.println("ppidinrow:" + ppidinrow);
-
-			
-			System.out.println("HI" + ppidinrow + "HI");
-			System.out.println("HI" + ppid + "HI");
+//			System.out.println("ppidinrow:" + ppidinrow);
+//
+//			
+//			System.out.println("HI" + ppidinrow + "HI");
+//			System.out.println("HI" + ppid + "HI");
 			if(ppidinrow.strip().equalsIgnoreCase(ppid.strip())){
 				for(int j=0; j<catalogData[0].length; j++) {
 					if(catalogData[0][j] != null) {
@@ -753,7 +753,7 @@ public class MerchandisingUtilities {
 				break;
 			}
 		}
-		System.out.println("Product Data:" + productdata);
+//		System.out.println("Product Data:" + productdata);
 		return productdata;
 	}
 	
