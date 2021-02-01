@@ -6,6 +6,9 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,8 +72,8 @@ public class BuyflowValidation {
 	@BeforeSuite
 	public void getEmailId() {
 //		System.setProperty("email", "aaqil@searchnscore.com,manibharathi@searchnscore.com");
-//		System.setProperty("testset", "Core");
-		
+//		System.setProperty("testset", "Top 3");
+//		
 		sendReportTo = System.getProperty("email");
 		testSet = System.getProperty("testset");
 	}
@@ -100,6 +103,8 @@ public class BuyflowValidation {
 				arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "All active", 1);
 			}
 		}
+		
+//		arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
 		return arrayObject;
 	}	
 	
@@ -1304,8 +1309,26 @@ public class BuyflowValidation {
 		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Run Output\\");
 
 		attachmentList.add(file);
-		attachmentList.add(System.getProperty("user.dir") + "\\test-output\\emailable-report.html");
+		
+		Path testoutput_path = Paths.get(System.getProperty("user.dir") + "\\test-output\\emailable-report.html");
+		Path target_path = Paths.get(System.getProperty("user.dir") + "\\target\\surefire-reports\\emailable-report.html");
+		if (Files.exists(testoutput_path)) {
+			attachmentList.add(System.getProperty("user.dir") + "\\test-output\\emailable-report.html");
+		}
+		else if (Files.exists(target_path)){
+			attachmentList.add(System.getProperty("user.dir") + "\\target\\surefire-reports\\emailable-report.html");
+		}	
 		
 		mailObj.sendEmail("Buyflow Results", sendReportTo, attachmentList);
 	}	
 }
+
+
+
+
+//List<HarEntry> entries = proxy.getHar().getLog().getEntries();
+//for (HarEntry entry : entries) {
+//System.out.println(entry.getRequest().getUrl());
+//}
+//proxy.stop();
+//driver.close();
