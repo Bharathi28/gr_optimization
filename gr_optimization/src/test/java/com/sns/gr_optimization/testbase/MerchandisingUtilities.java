@@ -805,4 +805,67 @@ public class MerchandisingUtilities {
 //		System.out.println("Chosen single : " + randsingles);
 		return randsingles;
 	}
+	
+	public String getrandomPPID(String[][] merchData) {
+		int ppidcolumn = 0;
+		int temp = 0;
+		String[] expectedrowNames = { "Entry PPID", "Pre-Purchase Entry PPID", "Post Purchase Upsell to" };
+		List<String> all_ppid = new ArrayList<String>();
+		for (int i = 0; i < merchData.length; i++) {
+//			System.out.println(i);
+			String currentrowname = merchData[i][0];
+//			System.out.println("currentrowname : " + currentrowname);
+			for (String name : expectedrowNames) {
+				if ((currentrowname != null) && (currentrowname.contains(name))) {
+					for (int j = 1; j < merchData[i].length; j++) {
+						String rowPPID = merchData[i][j];
+//						System.out.println("rowPPID : " + rowPPID);
+						if ((rowPPID != null)) { // && (rowPPID.contains(ppid))) {
+							all_ppid.add(rowPPID);
+//							ppidcolumn = j;
+//							temp = 1;
+//							break;
+						}
+					}
+//					if (temp == 1) {
+//						break;
+//					}
+				}
+			}
+//			if (temp == 1) {
+//				break;
+//			}
+		}
+
+		Random rand = new Random();
+		String random_ppid = all_ppid.get(rand.nextInt(all_ppid.size()));
+
+		return random_ppid;
+	}
+	
+	public List<String> fetch_random_ppid(String[][] catalogData, int count) {
+
+		int ppidcolumn = 0;
+		for (int i = 0; i < catalogData[0].length; i++) {
+			String colName = catalogData[0][i];
+			if (colName.equalsIgnoreCase("PPID")) {
+				ppidcolumn = i;
+			}
+		}
+
+		List<String> ppidlist = new ArrayList<String>();
+		for (int i = 1; i < catalogData.length - 1; i++) {
+			ppidlist.add(catalogData[i][ppidcolumn]);
+		}
+//		System.out.println(ppidlist);
+
+		List<String> randsingles = new ArrayList<String>();
+		Random rand = new Random();
+		for (int i = 0; i < count; i++) {
+			randsingles.add(ppidlist.get(rand.nextInt(ppidlist.size())));
+		}
+
+//		System.out.println("Chosen single : " + randsingles);
+		return randsingles;
+	}
 }

@@ -233,6 +233,14 @@ public class CommonUtilities {
 			header_list.add("Browser");
 			header_list.add("Remarks");
 		}	
+		else if (header.toLowerCase().contains("contentvalidation")) {
+			header_list.add("Environment");
+			header_list.add("Brand");
+			header_list.add("Campaign");
+			header_list.add("Testcase");
+			header_list.add("Result");
+			header_list.add("Remarks");
+		}
 				
 		XSSFRow firstRow = resultSheet.createRow(0);
 		for(int j=0; j<header_list.size(); j++) {
