@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,6 +30,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
@@ -68,6 +70,10 @@ public class BuyflowValidation {
 	List<List<String>> output = new ArrayList<List<String>>();
 	String sendReportTo = "aaqil@searchnscore.com,manibharathi@searchnscore.com";
 	String testSet = "Core";
+	
+	final String USERNAME = "manibharathikaru1";
+	final String AUTOMATE_KEY = "hFN19RHbQmGyeL8Z47Ls";
+	final String URL = "https://" + USERNAME + ":" + AUTOMATE_KEY + "@hub-cloud.browserstack.com/wd/hub";
 	
 	@BeforeSuite
 	public void getEmailId() {
@@ -142,6 +148,14 @@ public class BuyflowValidation {
 	    options.setAcceptInsecureCerts(true);	   
 	    options.addArguments("--ignore-certificate-errors");
 	    options.addArguments("--disable-backgrounding-occluded-windows");
+	    
+	    DesiredCapabilities capabilities = new DesiredCapabilities();
+	    capabilities.setCapability(ChromeOptions.CAPABILITY, options);	    
+//	    capabilities.setCapability("os", "Windows");
+//	    capabilities.setCapability("os_version", "10");
+//	    capabilities.setCapability("browser", "Chrome");
+//	    capabilities.setCapability("browser_version", "80");	    
+//	    capabilities.setCapability("name", "manibharathikaru1's First Test");
 
 		// Get Source Code Information - Campaign Category
 		String campaigncategory = db_obj.checkcampaigncategory(brand, campaign);
@@ -215,10 +229,11 @@ public class BuyflowValidation {
 		String PriceBookIdResult = "PASS";
 		
 		ListIterator<String> offerIterator = offerlist.listIterator();
-		ListIterator<String> categoryIterator = categorylist.listIterator();
+		ListIterator<String> categoryIterator = categorylist.listIterator();		
 		
 		// Launch Browser
-		WebDriver driver = new ChromeDriver(options);
+//		WebDriver driver = new RemoteWebDriver(new java.net.URL(URL), capabilities);
+		WebDriver driver = new ChromeDriver(capabilities);
 		driver.manage().window().maximize();
 		
 		// enable more detailed HAR capture, if desired (see CaptureType for the complete list)
@@ -492,23 +507,37 @@ public class BuyflowValidation {
 				else {
 					String subtotal_str = bf_obj.CalculateTotalPrice(subtotal_list_forshippingcalc);
 					double subtotal_calc = Double.parseDouble(subtotal_str);  
-					if(subtotal_calc > 49) {
-						shipping_calc = "FREE";
+					
+					if(brand.equalsIgnoreCase("MeaningfulBeauty")) {
+						if(subtotal_calc > 89) {
+							shipping_calc = "$8.99";
+						}
+						else if(subtotal_calc > 59) {
+							shipping_calc = "$7.99";
+						}
+						else if(subtotal_calc > 40) {
+							shipping_calc = "$6.99";
+						}
+						else {
+							shipping_calc = "$5.99";
+						}
 					}
 					else {
-						if(brand.equalsIgnoreCase("JLoBeauty")) {
-							shipping_calc = "$4.99";
+						if(subtotal_calc > 49) {
+							shipping_calc = "FREE";
 						}
-						else if(brand.equalsIgnoreCase("CrepeErase")){
-							shipping_calc = "$5.99";
-						}	
-						else if(brand.equalsIgnoreCase("MeaningfulBeauty")){
-							shipping_calc = "$6.99";
-						}	
 						else {
-							shipping_calc = "$4.99";
+							if(brand.equalsIgnoreCase("JLoBeauty")) {
+								shipping_calc = "$4.99";
+							}
+							else if(brand.equalsIgnoreCase("CrepeErase")){
+								shipping_calc = "$5.99";
+							}		
+							else {
+								shipping_calc = "$4.99";
+							}
 						}
-					}  
+					} 
 				}
 				
 				shipping_list.add(shipping_calc);

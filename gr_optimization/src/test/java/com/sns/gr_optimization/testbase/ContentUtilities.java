@@ -6,10 +6,22 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+
 public class ContentUtilities {
+
+	CommonUtilities comm_obj = new CommonUtilities();
+	static final String pass = "PASS";
+	static final String fail = "FAIL";
+	String Spanish = "Spanish";
+	String English = "English";
 
 //	public void select_subscribe(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata)
 //			throws ClassNotFoundException, SQLException, InterruptedException, IOException {
@@ -81,7 +93,7 @@ public class ContentUtilities {
 		}
 
 	}
-	
+
 	public List<Map<String, Object>> get_terms_conditions(String brand, String campaign, String step, String offer)
 			throws ClassNotFoundException, SQLException {
 
@@ -116,6 +128,40 @@ public class ContentUtilities {
 		System.out.println("Locator : " + query);
 		List<Map<String, Object>> locator = DBLibrary.dbAction("fetch", query);
 		return locator;
+	}
+
+	public List<String> donotsell(WebDriver driver, String ev, String bnd, String cpg, String Query_Name)
+			throws Exception {
+		// Check Do Not Sell My Info
+		List<String> output_row = new ArrayList<String>();
+		output_row = new ArrayList<String>();
+
+		output_row.add(ev);
+		output_row.add(bnd);
+		output_row.add(cpg);
+		output_row.add("Check Do Not Sell My Info " + Query_Name);
+		List<Map<String, Object>> Privacy_Policy_Content_S = null;
+		Privacy_Policy_Content_S = get_terms_conditions(bnd, cpg, Query_Name, null);
+		String elementvalue_Content_PP_S = Privacy_Policy_Content_S.get(0).get("ELEMENTVALUE").toString();
+		String elementlocator_Content_PP_S = Privacy_Policy_Content_S.get(0).get("ELEMENTLOCATOR").toString();
+
+		WebElement kit_elmt_Content_PP_S = comm_obj.find_webelement(driver, elementlocator_Content_PP_S,
+				elementvalue_Content_PP_S);
+		comm_obj.waitUntilElementAppears(driver, elementvalue_Content_PP_S);
+
+		try {
+			kit_elmt_Content_PP_S.isDisplayed();
+			if (driver.findElements(By.xpath(elementvalue_Content_PP_S)).size() != 0) {
+				output_row.add(pass);
+			} else {
+				output_row.add(fail);
+			}
+
+		} catch (NoSuchElementException e) {
+			throw new RuntimeException("Do Not Sell My Info link not available");
+		}
+
+		return output_row;
 	}
 
 }

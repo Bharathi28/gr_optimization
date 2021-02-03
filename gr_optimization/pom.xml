@@ -36,6 +36,21 @@
          </plugin>
       </plugins>
    </build>
+   
+   <profiles>
+  <profile>
+     <id>allow-snapshots</id>
+        <activation><activeByDefault>true</activeByDefault></activation>
+     <repositories>
+       <repository>
+         <id>snapshots-repo</id>
+         <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+         <releases><enabled>false</enabled></releases>
+         <snapshots><enabled>true</enabled></snapshots>
+       </repository>
+     </repositories>
+   </profile>
+</profiles>
   
   	<dependencies>
   		<dependency>
@@ -43,13 +58,19 @@
     	<artifactId>selenium-java</artifactId>
     	<version>3.13.0</version>
 	</dependency>
+	
+	<dependency>
+    <groupId>org.seleniumhq.selenium</groupId>
+    <artifactId>selenium-remote-driver</artifactId>
+    <version>3.13.0</version>
+</dependency>
   	
   	<dependency>
         <groupId>net.lightbody.bmp</groupId>
         <artifactId>browsermob-core</artifactId>
         <version>2.1.5</version>
     </dependency>
-  	  	
+    
   	<dependency>
     	<groupId>ru.yandex.qatools.ashot</groupId>
     	<artifactId>ashot</artifactId>

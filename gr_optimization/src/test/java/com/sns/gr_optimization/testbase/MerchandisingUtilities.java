@@ -74,15 +74,25 @@ public class MerchandisingUtilities {
 			shade = offerdata.get("Shade if any").trim();
 			expectedofferdata.put("Shade", shade);
 		}
-//		expectedofferdata.put("Shade", shade);
 		
 		if(offerdata.get("Size") != null) {
 			expectedofferdata.put("Size", offerdata.get("Size").trim());
-		}		
+		}			
+		String subscribe_option = "";
+		if((offerdata.get("Subscribe and Save price") == null) || (offerdata.get("Subscribe and Save price").trim().equalsIgnoreCase(""))) {
+			subscribe_option = "No";
+		}
+		else {
+			subscribe_option = "Yes";
+		}
+		System.out.println("Subscribe Price : " + offerdata.get("Subscribe and Save price"));
 		
-
+		String pagepattern = generatePagePattern(category, shade, brand, subscribe_option);
+		expectedofferdata.put("PagePattern", pagepattern);
 		if(category.equalsIgnoreCase("Product")) {
-			expectedofferdata.put("PagePattern", offerdata.get("PagePattern").trim());
+			
+			
+//			expectedofferdata.put("PagePattern", offerdata.get("PagePattern").trim());
 
 			expectedofferdata.put("Price", offerdata.get("Acq One Time price").trim());
 			expectedofferdata.put("Renewal Plan Id", "No Renewal Plan Id");
@@ -93,9 +103,9 @@ public class MerchandisingUtilities {
 			expectedofferdata.put("Price Book Id", CatalogPriceBookIDs.get("Acq One Time price"));
 		}
 		else if(category.equalsIgnoreCase("SubscribeandSave")) {
-			String pagepattern = offerdata.get("PagePattern").trim();
-			pagepattern = pagepattern.replace("onetime", "subscribe");
-			expectedofferdata.put("PagePattern", pagepattern);
+//			String pagepattern = offerdata.get("PagePattern").trim();
+//			pagepattern = pagepattern.replace("onetime", "subscribe");
+//			expectedofferdata.put("PagePattern", pagepattern);
 
 			if(offerdata.get("Subscribe and Save price") != null) {
 				expectedofferdata.put("Price", offerdata.get("Subscribe and Save price").trim());
@@ -115,7 +125,7 @@ public class MerchandisingUtilities {
 		}		
 		else if(category.equalsIgnoreCase("ShopKit")) {
 
-			expectedofferdata.put("PagePattern", offerdata.get("PagePattern").trim());
+//			expectedofferdata.put("PagePattern", offerdata.get("PagePattern").trim());
 			expectedofferdata.put("Price", offerdata.get("Entry-Continuity Pricebook").trim());
 			expectedofferdata.put("Renewal Plan Id", offerdata.get("Renewal Plan ID").trim());
 			expectedofferdata.put("Cart Language", offerdata.get("Cart Language").trim());
@@ -131,6 +141,30 @@ public class MerchandisingUtilities {
 		}
 		
 		return expectedofferdata;
+	}
+	
+	public String generatePagePattern(String category, String shade, String brand, String subscribe_option) {
+		String pagepattern = "product-";
+		
+		if(!(shade.equalsIgnoreCase("No Shade"))) {
+			pagepattern = pagepattern + "shade-";
+		}
+		
+		if(subscribe_option.equalsIgnoreCase("Yes")) {
+			if(category.equalsIgnoreCase("Product")) {
+				pagepattern = pagepattern + "onetime";
+			}
+			else if(category.equalsIgnoreCase("SubscribeandSave")) {
+				pagepattern = pagepattern + "subscribe";
+			}
+		}					
+		
+		String last_char = pagepattern.substring(pagepattern.length() - 1);
+		if(last_char.equalsIgnoreCase("-")) {
+			pagepattern = pagepattern.substring(0, pagepattern.length() - 1);
+		}	
+		System.out.println("Generated PagePattern : " + pagepattern);
+		return pagepattern; 
 	}
 	
 	public String getValueFromCellIfExists(HashMap<String, String> offerdata, String key) {
@@ -684,6 +718,7 @@ public class MerchandisingUtilities {
 
 		for(int i=0; i<catalogData[0].length; i++) {
 			String colName = catalogData[0][i];
+			System.out.println(colName);
 			if(colName.contains("Acq One Time price")) {
 				colName = colName.replaceAll("Acq One Time price", "");
 				colName = colName.replaceAll("\\s+", "");				
@@ -822,19 +857,10 @@ public class MerchandisingUtilities {
 //						System.out.println("rowPPID : " + rowPPID);
 						if ((rowPPID != null)) { // && (rowPPID.contains(ppid))) {
 							all_ppid.add(rowPPID);
-//							ppidcolumn = j;
-//							temp = 1;
-//							break;
 						}
 					}
-//					if (temp == 1) {
-//						break;
-//					}
 				}
 			}
-//			if (temp == 1) {
-//				break;
-//			}
 		}
 
 		Random rand = new Random();
