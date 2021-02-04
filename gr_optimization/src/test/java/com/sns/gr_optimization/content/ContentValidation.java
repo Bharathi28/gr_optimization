@@ -173,13 +173,13 @@ public class ContentValidation {
 		String T_C = "Terms & Conditions";
 		String P_P = "Privacy Policy";
 
-		List<Map<String, Object>> Terms_Conditions_locator = null;
 		// Go to Terms Conditions
-		output_row = new ArrayList<String>();
-		output_row.add(env);
-		output_row.add(brand);
-		output_row.add(campaign);
-		output_row.add("Terms & Conditions : ");
+		// output_row = new ArrayList<String>();
+		// output_row.add(env);
+		// output_row.add(brand);
+		// output_row.add(campaign);
+		// output_row.add("Terms & Conditions : ");
+		List<Map<String, Object>> Terms_Conditions_locator = null;
 		Terms_Conditions_locator = content_obj.get_terms_conditions(brand, campaign, "Terms & Conditions", null);
 		String elementvalue = Terms_Conditions_locator.get(0).get("ELEMENTVALUE").toString();
 		String elementlocator = Terms_Conditions_locator.get(0).get("ELEMENTLOCATOR").toString();
@@ -190,16 +190,16 @@ public class ContentValidation {
 		try {
 			kit_elmt.isDisplayed();
 			if (driver.findElements(By.xpath(elementvalue)).size() != 0) {
-				output_row.add(pass);
+				// output_row.add(pass);
 			} else {
-				output_row.add(fail);
+				// output_row.add(fail);
 			}
 
 		} catch (NoSuchElementException e) {
 			throw new RuntimeException("Terms & Conditions link not available");
 		}
 		kit_elmt.click();
-		output.add(output_row);
+		// output.add(output_row);
 
 		// Check Content T & C - English
 		List<Map<String, Object>> Terms_Conditions_Content = null;
@@ -208,7 +208,7 @@ public class ContentValidation {
 		output_row.add(env);
 		output_row.add(brand);
 		output_row.add(campaign);
-		output_row.add("Check Terms & Conditions Content - English ");
+		output_row.add("Terms & Conditions: Validate English Content ");
 		Terms_Conditions_Content = content_obj.get_terms_conditions(brand, campaign,
 				"Terms & Conditions Content English", null);
 		String elementvalue_Content = Terms_Conditions_Content.get(0).get("ELEMENTVALUE").toString();
@@ -241,7 +241,7 @@ public class ContentValidation {
 		output_row.add(env);
 		output_row.add(brand);
 		output_row.add(campaign);
-		output_row.add("Check Sales Tax link");
+		output_row.add("Terms & Conditions: Check Sales Tax link");
 		List<Map<String, Object>> Sales_Tax_locator = null;
 		Sales_Tax_locator = content_obj.get_terms_conditions(brand, campaign, "Sales Tax", null);
 		String saleselementvalue = Sales_Tax_locator.get(0).get("ELEMENTVALUE").toString();
@@ -270,7 +270,7 @@ public class ContentValidation {
 		output_row.add(env);
 		output_row.add(brand);
 		output_row.add(campaign);
-		output_row.add("Check Terms & Conditions : Spanish ");
+		output_row.add("Terms & Conditions: Validate En Español link");
 		Terms_Conditions_locator_Es = content_obj.get_terms_conditions(brand, campaign, "Terms & Conditions Español",
 				null);
 		String elementvalue_Es = Terms_Conditions_locator_Es.get(0).get("ELEMENTVALUE").toString();
@@ -301,7 +301,7 @@ public class ContentValidation {
 		output_row.add(env);
 		output_row.add(brand);
 		output_row.add(campaign);
-		output_row.add("Check Terms & Conditions Content - Spanish ");
+		output_row.add("Terms & Conditions: Validate Spanish Content ");
 		Terms_Conditions_Content_S = content_obj.get_terms_conditions(brand, campaign,
 				"Terms & Conditions Content Spanish", null);
 		String elementvalue_Content_S = Terms_Conditions_Content_S.get(0).get("ELEMENTVALUE").toString();
@@ -332,11 +332,11 @@ public class ContentValidation {
 		output.add(output_row);
 
 		// Go to Privacy Policy
-		output_row = new ArrayList<String>();
-		output_row.add(env);
-		output_row.add(brand);
-		output_row.add(campaign);
-		output_row.add("Check Privacy Policy ");
+		// output_row = new ArrayList<String>();
+		// output_row.add(env);
+		// output_row.add(brand);
+		// output_row.add(campaign);
+		// output_row.add("Check Privacy Policy ");
 		List<Map<String, Object>> Terms_Conditions_locator_PP = null;
 		Terms_Conditions_locator_PP = content_obj.get_terms_conditions(brand, campaign, "Privacy Policy", null);
 		String elementvalue_PP = Terms_Conditions_locator_PP.get(0).get("ELEMENTVALUE").toString();
@@ -348,9 +348,9 @@ public class ContentValidation {
 		try {
 			kit_elmt_PP.isDisplayed();
 			if (driver.findElements(By.xpath(elementvalue_PP)).size() != 0) {
-				output_row.add(pass);
+				// output_row.add(pass);
 			} else {
-				output_row.add(fail);
+				// output_row.add(fail);
 			}
 
 		} catch (NoSuchElementException e) {
@@ -358,9 +358,9 @@ public class ContentValidation {
 		}
 		Thread.sleep(2000);
 		kit_elmt_PP.click();
-		output.add(output_row);
+		// output.add(output_row);
 
-		String winHandleBefore = driver.getWindowHandle();
+		// String winHandleBefore = driver.getWindowHandle();
 		for (String winHandle : driver.getWindowHandles()) {
 			driver.switchTo().window(winHandle);
 			// driver.manage().window().maximize();
@@ -375,7 +375,7 @@ public class ContentValidation {
 		output_row.add(env);
 		output_row.add(brand);
 		output_row.add(campaign);
-		output_row.add("Check Privacy Policy Content - English ");
+		output_row.add("Privacy Policy: Validate English content ");
 		List<Map<String, Object>> Terms_Conditions_Content_PP = null;
 		Terms_Conditions_Content_PP = content_obj.get_terms_conditions(brand, campaign,
 				"Privacy Policy Content English", null);
@@ -410,7 +410,7 @@ public class ContentValidation {
 		output_row.add(env);
 		output_row.add(brand);
 		output_row.add(campaign);
-		output_row.add("Check Your California Privacy Rights link");
+		output_row.add("Privacy Policy: Check Your California Privacy Rights link ");
 		List<Map<String, Object>> Sales_Tax_locator_PPR = null;
 		Sales_Tax_locator_PPR = content_obj.get_terms_conditions(brand, campaign, "California Privacy Rights", null);
 		String saleselementvalue_PPR = Sales_Tax_locator_PPR.get(0).get("ELEMENTVALUE").toString();
@@ -439,7 +439,7 @@ public class ContentValidation {
 		output_row.add(env);
 		output_row.add(brand);
 		output_row.add(campaign);
-		output_row.add("Check Privacy Policy : Spanish ");
+		output_row.add("Privacy Policy : Validate En Español link ");
 		Privacy_Policy_locator_Es = content_obj.get_terms_conditions(brand, campaign, "Privacy Policy Español", null);
 		String elementvalue_PP_Es = Privacy_Policy_locator_Es.get(0).get("ELEMENTVALUE").toString();
 		String elementlocator_PP_Es = Privacy_Policy_locator_Es.get(0).get("ELEMENTLOCATOR").toString();
@@ -457,7 +457,7 @@ public class ContentValidation {
 			}
 
 		} catch (NoSuchElementException e) {
-			throw new RuntimeException("Privacy_Policy link not available");
+			throw new RuntimeException("Privacy Policy link not available");
 		}
 		Thread.sleep(2000);
 		kit_elmt_PP_Es.click();
@@ -468,7 +468,7 @@ public class ContentValidation {
 		output_row.add(env);
 		output_row.add(brand);
 		output_row.add(campaign);
-		output_row.add("Check Privacy Policy Content - Spanish ");
+		output_row.add("Privacy Policy: Validate Spanish content ");
 		List<Map<String, Object>> Privacy_Policy_Content_S = null;
 		Privacy_Policy_Content_S = content_obj.get_terms_conditions(brand, campaign, "Privacy Policy Content Spanish",
 				null);
@@ -500,8 +500,47 @@ public class ContentValidation {
 		output.add(output_row);
 
 		// Check DND on Home Page
-		output.add(content_obj.donotsell(driver, env, brand, campaign, "DND Home"));
+		output.add(content_obj.donotsell(driver, env, brand, campaign, "HomePage"));
 
+		// Check Customer_Service
+		// output_row = new ArrayList<String>();
+		// output_row.add(env);
+		// output_row.add(brand);
+		// output_row.add(campaign);
+		// output_row.add("Check Customer Service : ");
+		List<Map<String, Object>> Customer_Service_Content_S = null;
+		Customer_Service_Content_S = content_obj.get_terms_conditions(brand, campaign, "Customer Service", null);
+		String elementvalue_Customer_Service = Customer_Service_Content_S.get(0).get("ELEMENTVALUE").toString();
+		String elementlocator_Customer_Service = Customer_Service_Content_S.get(0).get("ELEMENTLOCATOR").toString();
+
+		WebElement kit_elmt_Customer_Service = comm_obj.find_webelement(driver, elementlocator_Customer_Service,
+				elementvalue_Customer_Service);
+		comm_obj.waitUntilElementAppears(driver, elementvalue_Customer_Service);
+		Thread.sleep(1000);
+
+		try {
+			kit_elmt_Customer_Service.isDisplayed();
+			if (driver.findElements(By.xpath(elementvalue_Customer_Service)).size() != 0) {
+				// output_row.add(pass);
+			} else {
+				// output_row.add(fail);
+			}
+
+		} catch (NoSuchElementException e) {
+			throw new RuntimeException("Customer Service link not available");
+		}
+		Thread.sleep(2000);
+		kit_elmt_Customer_Service.click();
+		// output.add(output_row);
+
+		output.add(content_obj.Check_Available(driver, env, brand, campaign, "Phone Number",
+				"Validate Phone Number in Customer Service "));
+		output.add(content_obj.Check_Available(driver, env, brand, campaign, "live chat",
+				"Validate chat link in Customer Service "));
+		output.add(content_obj.Check_Available(driver, env, brand, campaign, "Accessibility Interface",
+				"Validate AccessiBe tool "));
+
+		content_obj.clickaelement(driver, env, brand, campaign, "Accessibility Interface");
 		//
 
 		driver.get(url);
@@ -520,6 +559,7 @@ public class ContentValidation {
 				PPUSection = "Yes";
 			}
 		}
+
 		// System.out.println(PPIDcolumn + PPUSection);
 
 		// Check if the PPID is present in the campaign
@@ -657,20 +697,39 @@ public class ContentValidation {
 		sas_obj.select_offer(driver, expectedofferdata_kit, "Kit");
 
 		// Check DND on SAS Page
-		output.add(content_obj.donotsell(driver, env, brand, campaign, "DND SAS"));
+		output.add(content_obj.donotsell(driver, env, brand, campaign, "SASPage"));
 
 		// Move to Checkout
 
 		bf_obj.move_to_checkout(driver, brand, campaigncategory, "Kit");
 
 		// Check DND on Checkout Page
-		output.add(content_obj.donotsell(driver, env, brand, campaign, "DND Checkout"));
+		output.add(content_obj.donotsell(driver, env, brand, campaign, "CheckoutPage"));
+
+		output.add(content_obj.Check_Available(driver, env, brand, campaign, "Terms & Conditions Checkout",
+				"Click open Terms & Conditions popup in Checkout page"));
+
+		content_obj.clickaelement(driver, env, brand, campaign, "Terms & Conditions Checkout");
 
 		output_row.add(remarks);
 		// System.out.println("Output row : " + output_row);
 		// output.add(output_row);
 
-		// driver.close();
+		// Move - sitemap.xml
+		String site = "sitemap.xml";
+		String Append_xml = url + "/" + site;
+		driver.get(Append_xml);
+
+		output.add(content_obj.Check_Available(driver, env, brand, campaign, site, "Validate sitemap.xml "));
+
+		// Move - robots.txt
+		String txt = "robots.txt";
+		String Append_rb = url + "/" + txt;
+		driver.get(Append_rb);
+
+		output.add(content_obj.Check_Available(driver, env, brand, campaign, txt, "Validate Robots.txt "));
+
+		driver.quit();
 
 	}
 
@@ -679,11 +738,10 @@ public class ContentValidation {
 		String file = comm_obj.populateOutputExcel(output, "ContentValidation",
 				System.getProperty("user.dir") + "\\Input_Output\\ContentValidation\\Run Output\\");
 
-//		List<String> attachmentList = new ArrayList<String>();
+		// List<String> attachmentList = new ArrayList<String>();
 		attachmentList.add(file);
 
-		// mailObj.sendEmail("Content Validation Results", sendReportTo,
-		// attachmentList);
+		mailObj.sendEmail("Content Validation Results", sendReportTo, attachmentList);
 	}
 
 	public void mkdir() {
@@ -703,36 +761,4 @@ public class ContentValidation {
 		}
 	}
 
-	public void check(WebDriver driver, String brand, String env, String campaign, List<String> output_row)
-			throws Exception, SQLException {
-		// Terms Conditions Español
-		List<Map<String, Object>> Terms_Conditions_locator_Es = null;
-		output_row = new ArrayList<String>();
-		output_row.add(env);
-		output_row.add(brand);
-		output_row.add(campaign);
-		output_row.add("Check Terms & Conditions : Spanish ");
-		Terms_Conditions_locator_Es = content_obj.get_terms_conditions(brand, campaign, "Terms & Conditions Español",
-				null);
-		String elementvalue_Es = Terms_Conditions_locator_Es.get(0).get("ELEMENTVALUE").toString();
-		String elementlocator_Es = Terms_Conditions_locator_Es.get(0).get("ELEMENTLOCATOR").toString();
-
-		WebElement kit_elmt_Es = comm_obj.find_webelement(driver, elementlocator_Es, elementvalue_Es);
-		comm_obj.waitUntilElementAppears(driver, elementvalue_Es);
-		Thread.sleep(1000);
-
-		try {
-			kit_elmt_Es.isDisplayed();
-			if (driver.findElements(By.xpath(elementvalue_Es)).size() != 0) {
-				output_row.add(pass);
-			} else {
-				output_row.add(fail);
-			}
-
-		} catch (NoSuchElementException e) {
-			throw new RuntimeException("Terms & Conditions link not available");
-		}
-
-		output.add(output_row);
-	}
 }

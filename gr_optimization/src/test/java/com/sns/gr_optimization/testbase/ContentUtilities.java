@@ -125,7 +125,7 @@ public class ContentUtilities {
 			query = query + include_offer;
 		}
 //		query = query + ";";
-		System.out.println("Locator : " + query);
+		// System.out.println("Locator : " + query);
 		List<Map<String, Object>> locator = DBLibrary.dbAction("fetch", query);
 		return locator;
 	}
@@ -139,7 +139,7 @@ public class ContentUtilities {
 		output_row.add(ev);
 		output_row.add(bnd);
 		output_row.add(cpg);
-		output_row.add("Check Do Not Sell My Info " + Query_Name);
+		output_row.add("Validate Do Not Sell My Info link in " + Query_Name);
 		List<Map<String, Object>> Privacy_Policy_Content_S = null;
 		Privacy_Policy_Content_S = get_terms_conditions(bnd, cpg, Query_Name, null);
 		String elementvalue_Content_PP_S = Privacy_Policy_Content_S.get(0).get("ELEMENTVALUE").toString();
@@ -162,6 +162,68 @@ public class ContentUtilities {
 		}
 
 		return output_row;
+	}
+
+	public List<String> Check_Available(WebDriver driver, String ev, String bnd, String cpg, String Query_Name,
+			String Check) throws Exception {
+		List<String> output_row = new ArrayList<String>();
+		output_row = new ArrayList<String>();
+
+		output_row.add(ev);
+		output_row.add(bnd);
+		output_row.add(cpg);
+		output_row.add(Check);
+		List<Map<String, Object>> Privacy_Policy_Content_S = null;
+		Privacy_Policy_Content_S = get_terms_conditions(bnd, cpg, Query_Name, null);
+		String elementvalue_Content_PP_S = Privacy_Policy_Content_S.get(0).get("ELEMENTVALUE").toString();
+		String elementlocator_Content_PP_S = Privacy_Policy_Content_S.get(0).get("ELEMENTLOCATOR").toString();
+
+		WebElement kit_elmt_Content_PP_S = comm_obj.find_webelement(driver, elementlocator_Content_PP_S,
+				elementvalue_Content_PP_S);
+		comm_obj.waitUntilElementAppears(driver, elementvalue_Content_PP_S);
+
+		try {
+			kit_elmt_Content_PP_S.isDisplayed();
+			if (driver.findElements(By.xpath(elementvalue_Content_PP_S)).size() != 0) {
+				output_row.add(pass);
+			} else {
+				output_row.add(fail);
+			}
+
+		} catch (NoSuchElementException e) {
+			throw new RuntimeException(Check + " not available");
+		}
+
+		return output_row;
+	}
+
+	public void clickaelement(WebDriver driver, String ev, String bnd, String cpg, String Query_Name)
+			throws Exception, SQLException {
+		List<Map<String, Object>> Customer_Service_Content_S = null;
+		Customer_Service_Content_S = get_terms_conditions(bnd, cpg, Query_Name, null);
+		String elementvalue_Customer_Service = Customer_Service_Content_S.get(0).get("ELEMENTVALUE").toString();
+		String elementlocator_Customer_Service = Customer_Service_Content_S.get(0).get("ELEMENTLOCATOR").toString();
+
+		WebElement kit_elmt_Customer_Service = comm_obj.find_webelement(driver, elementlocator_Customer_Service,
+				elementvalue_Customer_Service);
+		comm_obj.waitUntilElementAppears(driver, elementvalue_Customer_Service);
+		Thread.sleep(1000);
+
+		try {
+			kit_elmt_Customer_Service.isDisplayed();
+			if (driver.findElements(By.xpath(elementvalue_Customer_Service)).size() != 0) {
+				System.out.println(pass);
+				// output_row.add(pass);
+			} else {
+				System.out.println(fail);
+				// output_row.add(fail);
+			}
+
+		} catch (NoSuchElementException e) {
+			throw new RuntimeException(Query_Name + " link not available");
+		}
+		Thread.sleep(2000);
+		kit_elmt_Customer_Service.click();
 	}
 
 }

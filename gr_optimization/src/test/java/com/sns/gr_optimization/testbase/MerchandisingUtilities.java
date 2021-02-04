@@ -70,7 +70,7 @@ public class MerchandisingUtilities {
 		expectedofferdata.put("Product Name", offerdata.get("Product Name").trim());
 		
 		String shade = "No Shade";
-		if(offerdata.get("Shade if any") != null) {
+		if((offerdata.get("Shade if any") != null) && (!(offerdata.get("Shade if any").equalsIgnoreCase(" ")))){
 			shade = offerdata.get("Shade if any").trim();
 			expectedofferdata.put("Shade", shade);
 		}
@@ -78,21 +78,19 @@ public class MerchandisingUtilities {
 		if(offerdata.get("Size") != null) {
 			expectedofferdata.put("Size", offerdata.get("Size").trim());
 		}			
-		String subscribe_option = "";
-		if((offerdata.get("Subscribe and Save price") == null) || (offerdata.get("Subscribe and Save price").trim().equalsIgnoreCase(""))) {
-			subscribe_option = "No";
+		String onetime_subscribe_option = "";
+		if((offerdata.get("Subscribe and Save price") == null) || (offerdata.get("Subscribe and Save price").trim().equalsIgnoreCase(" ")) ||
+				(offerdata.get("Acq One Time price") == null) || (offerdata.get("Acq One Time price").trim().equalsIgnoreCase(" "))) {
+			onetime_subscribe_option = "No";
 		}
 		else {
-			subscribe_option = "Yes";
+			onetime_subscribe_option = "Yes";
 		}
 		System.out.println("Subscribe Price : " + offerdata.get("Subscribe and Save price"));
 		
-		String pagepattern = generatePagePattern(category, shade, brand, subscribe_option);
+		String pagepattern = generatePagePattern(category, shade, brand, onetime_subscribe_option);
 		expectedofferdata.put("PagePattern", pagepattern);
 		if(category.equalsIgnoreCase("Product")) {
-			
-			
-//			expectedofferdata.put("PagePattern", offerdata.get("PagePattern").trim());
 
 			expectedofferdata.put("Price", offerdata.get("Acq One Time price").trim());
 			expectedofferdata.put("Renewal Plan Id", "No Renewal Plan Id");
@@ -103,9 +101,6 @@ public class MerchandisingUtilities {
 			expectedofferdata.put("Price Book Id", CatalogPriceBookIDs.get("Acq One Time price"));
 		}
 		else if(category.equalsIgnoreCase("SubscribeandSave")) {
-//			String pagepattern = offerdata.get("PagePattern").trim();
-//			pagepattern = pagepattern.replace("onetime", "subscribe");
-//			expectedofferdata.put("PagePattern", pagepattern);
 
 			if(offerdata.get("Subscribe and Save price") != null) {
 				expectedofferdata.put("Price", offerdata.get("Subscribe and Save price").trim());
@@ -125,7 +120,6 @@ public class MerchandisingUtilities {
 		}		
 		else if(category.equalsIgnoreCase("ShopKit")) {
 
-//			expectedofferdata.put("PagePattern", offerdata.get("PagePattern").trim());
 			expectedofferdata.put("Price", offerdata.get("Entry-Continuity Pricebook").trim());
 			expectedofferdata.put("Renewal Plan Id", offerdata.get("Renewal Plan ID").trim());
 			expectedofferdata.put("Cart Language", offerdata.get("Cart Language").trim());
@@ -718,7 +712,9 @@ public class MerchandisingUtilities {
 
 		for(int i=0; i<catalogData[0].length; i++) {
 			String colName = catalogData[0][i];
-			System.out.println(colName);
+			if(colName == null) {
+				break;
+			}
 			if(colName.contains("Acq One Time price")) {
 				colName = colName.replaceAll("Acq One Time price", "");
 				colName = colName.replaceAll("\\s+", "");				
@@ -726,14 +722,14 @@ public class MerchandisingUtilities {
 
 				CatalogPriceBookIDs.put("Acq One Time price", colName);
 			}
-			if(colName.contains("Subscribe and Save price")) {
+			else if(colName.contains("Subscribe and Save price")) {
 				colName = colName.replaceAll("Subscribe and Save price", "");
 				colName = colName.replaceAll("\\s+", "");				
 				colName = colName.replaceAll("[^a-zA-Z0-9$]+", "");
 
 				CatalogPriceBookIDs.put("Subscribe and Save price", colName);
 			}			
-			if(colName.contains("Entry-Continuity Pricebook")) {
+			else if(colName.contains("Entry-Continuity Pricebook")) {
 				colName = colName.replaceAll("Entry-Continuity Pricebook", "");
 				colName = colName.replaceAll("\\s+", "");				
 				colName = colName.replaceAll("[^a-zA-Z0-9$]+", "");

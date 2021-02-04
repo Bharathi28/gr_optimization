@@ -63,17 +63,19 @@ public class PixelUtilities {
 		return proxy.newHar(name);
 	}
 	
-	public void getHarData(BrowserMobProxy proxy, String filename, WebDriver driver) throws InterruptedException {
-		comm_obj.checkPageIsReady(driver);
-		Thread.sleep(10000);
-		// get the HAR data
-	    Har har = proxy.getHar();
-	    
-        try {
-			har.writeTo(new File(filename));
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+	public void getHarData(BrowserMobProxy proxy, String filename, WebDriver driver, String pixelStr) throws InterruptedException {
+		if(!(pixelStr.equalsIgnoreCase("-"))) {
+			comm_obj.checkPageIsReady(driver);
+			Thread.sleep(10000);
+			// get the HAR data
+		    Har har = proxy.getHar();
+		    
+	        try {
+				har.writeTo(new File(filename));
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}	
 	}
 	
 	public String generateURL(String url, String pixel, String brand) throws ClassNotFoundException, SQLException {

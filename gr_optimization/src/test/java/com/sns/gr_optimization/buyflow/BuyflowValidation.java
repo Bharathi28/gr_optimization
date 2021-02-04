@@ -250,7 +250,7 @@ public class BuyflowValidation {
 		System.out.println(url);
 		driver.get(url);
 		driver.manage().timeouts().implicitlyWait(6, TimeUnit.SECONDS);	
-		pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_homepage_" + pattern +".har", driver);
+		pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_homepage_" + pattern +".har", driver, pixelStr);
 						
 		HashMap<String, String> sourcecodedata = null;
 		HashMap<String, String> expectedsourcecodedata = null;
@@ -438,7 +438,7 @@ public class BuyflowValidation {
 				
 				// DrDenese - FB - AddToCart event will fire only after selecting the kit (After clicking on "Add To cart")
 				if(!(brand.equalsIgnoreCase("DrDenese"))) {
-					pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver);
+					pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver, pixelStr);
 				}				
 				
 				// Gift Validation
@@ -455,7 +455,7 @@ public class BuyflowValidation {
 				sas_obj.select_offer(driver, expectedofferdata_kit, currentCategory);
 				
 				if(brand.equalsIgnoreCase("DrDenese")) {
-					pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver);
+					pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver, pixelStr);
 					pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
 				}
 				
@@ -550,12 +550,12 @@ public class BuyflowValidation {
 				// Move to Shop
 				pixel_obj.defineNewHar(proxy, brand + "ShopPage");	  
 				bf_obj.click_cta(driver, brand, campaign, "Shop");
-				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_shoppage_" + pattern +".har", driver);
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_shoppage_" + pattern +".har", driver, pixelStr);
 			
 				// Select offer			
 				pixel_obj.defineNewHar(proxy, brand + "PDPage");	
 				sas_obj.select_offer(driver, expectedofferdata_product, currentCategory);
-				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_pdpage_" + pattern +".har", driver);
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_pdpage_" + pattern +".har", driver, pixelStr);
 				
 				// Move to Checkout
 				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
@@ -626,18 +626,18 @@ public class BuyflowValidation {
 		else {
 			if(((categorylist.contains("Kit")) || (categorylist.contains("ShopKit"))) && (offer_postpurchase.equalsIgnoreCase("Yes"))) {
 				email = bf_obj.fill_out_form(driver, brand, campaigncategory, "VISA", "same", "90");
-				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver);
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver, pixelStr);
 						
 				pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
 				bf_obj.complete_order(driver, brand, "VISA");
-				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern +".har", driver);
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern +".har", driver, pixelStr);
 						
 				bf_obj.upsell_confirmation(driver, brand, campaigncategory, offer_postpurchase);
 			}
 			else {
 				email = bf_obj.fill_out_form(driver, brand, campaigncategory, cc, shipbill, "30");
 				System.out.println("Email : " + email);
-				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver);
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver, pixelStr);
 			}	
 		}	
 		
@@ -914,7 +914,7 @@ public class BuyflowValidation {
 			pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");
         	// Navigate to Confirmation Page	        
         	bf_obj.complete_order(driver, brand, cc);          
-            pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver);
+            pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver, pixelStr);
 		}
 		// Post Purchase Upsell page is present
 		else {
@@ -923,14 +923,14 @@ public class BuyflowValidation {
 			if(supplysize.equalsIgnoreCase("30")) {
 				pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
 				bf_obj.complete_order(driver, brand, cc);
-				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern + ".har", driver);
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern + ".har", driver, pixelStr);
 			}
 			// supplysize - 90
 			// After Fall back scenario - control navigates to Confirmation page
 			else if(supplysize.equalsIgnoreCase("90")) {
 				pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");	        
 	        	bf_obj.complete_order(driver, brand, cc);          
-	            pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver);
+	            pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver, pixelStr);
 			}					
 		}			
 		Thread.sleep(3000);
@@ -944,7 +944,7 @@ public class BuyflowValidation {
 			if((supplysize.equalsIgnoreCase("30")) || (cc.equalsIgnoreCase("Paypal"))) {
 				pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");
 				bf_obj.upsell_confirmation(driver, brand, campaigncategory, expectedofferdata_kit.get("Offer Post-Purchase"));
-				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver);
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver, pixelStr);
 			}
 		}								
 		
