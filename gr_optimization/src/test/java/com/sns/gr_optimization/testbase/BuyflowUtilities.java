@@ -57,7 +57,7 @@ public class BuyflowUtilities {
 			query = query + include_offer;
 		}
 //		query = query + ";";
-			System.out.println(query);
+//			System.out.println(query);
 		List<Map<String, Object>> locator = DBLibrary.dbAction("fetch",query);
 		return locator;		
 	}
@@ -66,7 +66,6 @@ public class BuyflowUtilities {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 				
 		String query = "select * from cta_locators where brand='" + brand + "' and campaign='" + campaign + "' and step='" + step + "'";
-//		System.out.println(query);
 		List<Map<String, Object>> locator = DBLibrary.dbAction("fetch",query);
 		String elementlocator = locator.get(0).get("LOCATOR").toString();
 		String elementvalue = locator.get(0).get("VALUE").toString();
@@ -80,7 +79,6 @@ public class BuyflowUtilities {
 	}
 	
 	public void click_logo(WebDriver driver, String brand, String campaign) throws ClassNotFoundException, SQLException {
-		System.out.println("Clicking Logo");
 		
 		List<Map<String, Object>> locator = null;
 		
@@ -88,9 +86,7 @@ public class BuyflowUtilities {
 		if(locator.size() == 0) {
 			locator = get_element_locator(brand, null, "Logo", null);
 		}
-//		System.out.println(locator.size());
 		for(Map<String,Object> logo : locator) {
-//			System.out.println(logo.get("ELEMENTVALUE").toString());
 			String elementvalue = logo.get("ELEMENTVALUE").toString();
 			if(driver.findElements(By.xpath(elementvalue)).size() != 0) {
 				driver.findElement(By.xpath(elementvalue)).click();
@@ -100,8 +96,7 @@ public class BuyflowUtilities {
 	}		
 
 	public void move_to_checkout(WebDriver driver, String brand, String campaign, String category) throws InterruptedException, ClassNotFoundException, SQLException {
-		System.out.println("Moving to Checkout Page...");	
-//		System.out.println(brand + campaign + category);	
+//		System.out.println("Moving to Checkout Page...");	
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 				
 		Thread.sleep(2000);
@@ -194,7 +189,6 @@ public class BuyflowUtilities {
 		for(String gift : gift_list) {
 			String query = "select * from locators where brand='" + brand + "' and campaign='" + campaign + "' and step='Gift' and offer like '%" + gift + "%'";
 			List<Map<String, Object>> giftloc = DBLibrary.dbAction("fetch", query);
-			System.out.println(query);
 			Thread.sleep(4000);
 			
 			if(!(giftloc.get(0).get("ELEMENTVALUE").toString().equalsIgnoreCase("n/a"))) {
@@ -211,44 +205,12 @@ public class BuyflowUtilities {
 		return giftResult;
 	}
 	
-	
-//	public String checkGifts(WebDriver driver, String brand, String campaign, String gifts) throws ClassNotFoundException, SQLException, InterruptedException {		
-//		JavascriptExecutor jse = (JavascriptExecutor) driver;
-//		
-//		List<String> gift_arr = getPPIDfromString(brand, gifts);
-//		
-//		if(!((brand.equalsIgnoreCase("MallyBeauty")) && (campaign.equalsIgnoreCase("Core")))) {
-//			jse.executeScript("window.scrollBy(0,1000)", 0);
-//		}
-//		
-//		Thread.sleep(2000);
-//		String giftResult = "";
-//		for(String gift : gift_arr) {
-//			String query = "select * from locators where brand='" + brand + "' and campaign='" + campaign + "' and step='Gift' and offer like '%" + gift + "%'";
-//			List<Map<String, Object>> giftloc = DBLibrary.dbAction("fetch", query);
-//			System.out.println(query);
-//			Thread.sleep(4000);
-//			if(driver.findElements(By.xpath(giftloc.get(0).get("ELEMENTVALUE").toString())).size() != 0) {
-//				if(driver.findElement(By.xpath(giftloc.get(0).get("ELEMENTVALUE").toString())).isDisplayed()) {
-//				}
-//			}
-//			else {
-//				giftResult = giftResult + giftloc.get(0).get("OFFER").toString() + " is not present on SAS";
-//			}
-//		}
-//		jse.executeScript("window.scrollBy(0,0)", 0);
-//		Thread.sleep(2000);
-//		return giftResult;
-//	}
-	
 	public List<List<String>> getLineItems(WebDriver driver, String cc, String offerpostpu, String brand) {
 		
 		List<List<String>> actual_lineitems = new ArrayList<List<String>>();
 		
 		List<WebElement> lineitems = driver.findElements(By.xpath("//div[@id='cartsummary']//div[contains(@class,'product-card')]"));
-//		System.out.println("Fetching lineitems " + lineitems.size());
 		for(int i=1; i<=lineitems.size(); i++) {
-//			System.out.println("Lineitem " + i + " : ");
 			List<String> item = new ArrayList<String>();
 			
 			String ppid = "";
@@ -263,22 +225,18 @@ public class BuyflowUtilities {
 			if(offerpostpu.equalsIgnoreCase("Yes")) {
 				if(cc.equalsIgnoreCase("Paypal")) {
 					price = driver.findElement(By.xpath("(//div[contains(@class,'product-card')]//ul//li[contains(@class,'item-total')]//span[last()])[" + i + "]")).getText();
-//					System.out.println("Paypal " + "Yes " + price);
 				}
 				else {
 					if(driver.findElements(By.xpath("(//div[contains(@class,'product-card')]//ul//li[contains(@class,'first-payment-price')]//span[last()])[" + i + "]")).size() != 0) {
 						price = driver.findElement(By.xpath("(//div[contains(@class,'product-card')]//ul//li[contains(@class,'first-payment-price')]//span[last()])[" + i + "]")).getText();
-//						System.out.println("Visa " + "Yes " + price);
 					}
 					else {
 						price = driver.findElement(By.xpath("(//div[contains(@class,'product-card')]//ul//li[contains(@class,'item-total')]//span[last()])[" + i + "]")).getText();
-//						System.out.println("Not Kit - Visa " + "Yes " + price);
 					}
 				}
 			}
 			else {
 				price = driver.findElement(By.xpath("(//div[contains(@class,'product-card')]//ul//li[contains(@class,'item-total')]//span[last()])[" + i + "]")).getText();
-//				System.out.println("Visa " + "No " + price);
 			}
 			
 			item.add(ppid);
@@ -410,7 +368,6 @@ public class BuyflowUtilities {
 	}
 	
 	public void complete_order(WebDriver driver, String brand, String cc) throws ClassNotFoundException, SQLException, InterruptedException {
-//		System.out.println("Completing Order");
 		WebDriverWait wait = new WebDriverWait(driver,50);
 		String realm = DBUtilities.get_realm(brand);
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
@@ -497,14 +454,12 @@ public class BuyflowUtilities {
 			}						
 			
 			if(driver.findElements(By.xpath("//div[@id='loginSection']//div//div[2]//a")).size() != 0) {
-//				System.out.println("first if");
 				Thread.sleep(4000);
 				driver.findElement(By.xpath("//div[@id='loginSection']//div//div[2]//a")).click();
 				Thread.sleep(2000);
 				email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
 			}
 			else if(driver.findElements(By.xpath("//button[text()='Log In']")).size() != 0) {
-//				System.out.println("first else if");
 				Thread.sleep(4000);
 				driver.findElement(By.xpath("//button[text()='Log In']")).click();
 				Thread.sleep(2000);
@@ -512,48 +467,39 @@ public class BuyflowUtilities {
 			}
 			else {
 				while(driver.findElements(By.xpath("//div[@id='loginSection']//div//div[2]//a")).size() == 0) {
-//					System.out.println("else while");
 					if(driver.findElements(By.xpath("//section[@id='genericError']//div//div[2]")).size() != 0) {
-//						System.out.println("1 - if in while");
 						driver.close();
 						driver.switchTo().window(winHandleBefore);
 						Thread.sleep(2000);
 						email = ccPayment(driver, jse, realm, brand, campaign, "Visa", shipbill, supply);
 					}
 					else if(driver.findElements(By.xpath("//div[contains(text(),\"Things don't appear to be working at the moment\")]")).size() != 0) {
-//						System.out.println("2 - else if in while");
-//						getText().equalsIgnoreCase("Things don't appear to be working at the moment. Please try again later.")) {
 						driver.close();
 						driver.switchTo().window(winHandleBefore);
 						Thread.sleep(2000);
 						email = ccPayment(driver, jse, realm, brand, campaign, "Visa", shipbill, supply);
 					}
 					else if(driver.findElements(By.xpath("//div[@id='loginSection']//div//div[2]//a")).size() != 0) {
-//						System.out.println("3 - else if in while");
 						driver.findElement(By.xpath("//div[@id='loginSection']//div//div[2]//a")).click();
 						Thread.sleep(2000);
 						email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
 					}
 					else if(driver.findElements(By.xpath("//button[text()='Log In']")).size() != 0) {
-//						System.out.println("4 - else if in while");
 						driver.findElement(By.xpath("//button[text()='Log In']")).click();
 						Thread.sleep(2000);
 						email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
 					}
 					if(!(email.equalsIgnoreCase(""))) {
-//						System.out.println("while - email empty");
 						break;
 					}
 				}
 				if(driver.findElements(By.xpath("//div[@id='loginSection']//div//div[2]//a")).size() != 0) {
-					System.out.println("3 - else if in while");
 					Thread.sleep(2000);
 					driver.findElement(By.xpath("//div[@id='loginSection']//div//div[2]//a")).click();
 					Thread.sleep(2000);
 					email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
 				}
 				else if(driver.findElements(By.xpath("//button[text()='Log In']")).size() != 0) {
-					System.out.println("4 - else if in while");
 					Thread.sleep(2000);
 					driver.findElement(By.xpath("//button[text()='Log In']")).click();
 					Thread.sleep(2000);
@@ -648,30 +594,27 @@ public class BuyflowUtilities {
 	}
 	
 	public String paypalPayment(WebDriver driver, WebDriverWait wait, JavascriptExecutor jse, String winHandleBefore, String realm) throws ClassNotFoundException, SQLException, InterruptedException {
-//		comm_obj.waitUntilElementAppears(driver, "//div[@id='loginSection']//div//div[2]//a");
-		Thread.sleep(4000);		
-			
-		comm_obj.waitUntilElementAppears(driver, "//div[@id='login_emaildiv']//div//input");
+		// Email Field
+		Thread.sleep(5000);
 		driver.findElement(By.xpath("//div[@id='login_emaildiv']//div//input")).sendKeys("testbuyer2@guthy-renker.com");
-		
+				
 		if(driver.findElements(By.xpath("//button[@class='button actionContinue scTrack:unifiedlogin-login-click-next']")).size() != 0) {
 			driver.findElement(By.xpath("//button[@class='button actionContinue scTrack:unifiedlogin-login-click-next']")).click();
 		}
-			
-		comm_obj.waitUntilElementAppears(driver, "//div[@id='login_passworddiv']//div//input");
+					
+		// Password Field
+		Thread.sleep(4000);
 		driver.findElement(By.xpath("//div[@id='login_passworddiv']//div//input")).sendKeys("123456789");
-		
+						
+		// Login button
 		driver.findElement(By.xpath("//button[@class='button actionContinue scTrack:unifiedlogin-login-submit']")).click();	
-		
-		Thread.sleep(3000);
-		driver.findElement(By.xpath("//button[@class='btn full confirmButton continueButton']")).click();			
-		
-//		comm_obj.waitUntilElementAppears(driver, "//h2[@data-testid='paywith-title']");
+				
+		Thread.sleep(5000);
+		// Agree and Continue
 		jse.executeScript("window.scrollBy(0,500)", 0);
 		Thread.sleep(2000);
-		comm_obj.waitUntilElementAppears(driver, "//input[@id='confirmButtonTop']");
-		driver.findElement(By.xpath("//input[@id='confirmButtonTop']")).click();
-					
+		driver.findElement(By.xpath("//button[@id='payment-submit-btn']")).click();
+				
 		wait.until(ExpectedConditions.numberOfWindowsToBe(1));
 		driver.switchTo().window(winHandleBefore);
 		Thread.sleep(2000);
@@ -718,8 +661,6 @@ public class BuyflowUtilities {
 					break;
 				}
 			}
-//			state = citytext[2];
-//			System.out.println(state);
 		}
 		else {
 			String query = "select * from form_locators where realm='R4' and form='Checkout' and field='State'";
@@ -731,7 +672,6 @@ public class BuyflowUtilities {
 			Select select = new Select(comm_obj.find_webelement(driver, elementlocator, elementvalue));
 			WebElement selectedoption = select.getFirstSelectedOption();
 			state = selectedoption.getText();
-//			System.out.println(state);
 		}
 		
 		// Remove $
@@ -754,30 +694,15 @@ public class BuyflowUtilities {
 		Double percent_value = Double.valueOf(salestaxpercent);
 				
 		Double salestax_value = ((subtotal_value + shipping_value)*percent_value)/100;
-		System.out.println("SalesTax value: " + salestax_value);
 		double salextax_roundOff = Math.floor(salestax_value * 100.0) / 100.0;
 				
 		String salestax = String.valueOf(salextax_roundOff);		
 		return salestax;
 	}
 	
-//	public String getTotal(String subtotal, String shipping, String salestax) {
-//		Double subtotal_value = Double.valueOf(subtotal);
-//		Double shipping_value = Double.valueOf(shipping);
-//		Double salestax_value = Double.valueOf(salestax);
-//		
-//		Double total_value = subtotal_value + shipping_value + salestax_value;
-//		double total_roundOff = Math.floor(total_value * 100.0) / 100.0;
-//				
-//		String total = String.valueOf(total_roundOff);		
-//		return total;
-//	}
-	
 	public String CalculateTotalPrice(List<String> price) {
-//		System.out.println("Price list : " + price);
 		Double total_value = (double) 0;
 		for(String value : price) {
-//			System.out.println("Value : " + value);
 			if((value.equalsIgnoreCase("FREE")) || (value.equalsIgnoreCase("0.0")) || (value.equalsIgnoreCase("0"))) {
 				value="0";
 			}
@@ -790,11 +715,8 @@ public class BuyflowUtilities {
 			
 			total_value = total_value + temp_value;
 		}
-//		System.out.println("Total Value : " + total_value);
 		double total_roundOff = Math.floor(total_value * 100.0) / 100.0;		
-//		System.out.println("Total Roundoff : " + total_roundOff);
 		String total = String.valueOf(total_roundOff);		
-//		System.out.println("Total : " + total);
 		return total;
 	}
 	

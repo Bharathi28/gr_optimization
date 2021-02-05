@@ -36,7 +36,7 @@ public class DBUtilities {
 			url = url.replace("www.", "storefront:eComweb123@www.");
 			url = url.replace("com", "stg.dw4.grdev.com");
 			url = url.replace(".stg.", "."+ env.toLowerCase() +".");
-			System.out.println(url);
+//			System.out.println(url);
 		}
 		return url;
 	}
@@ -50,7 +50,6 @@ public class DBUtilities {
 	
 	public static String checkcampaigncategory(String brand, String campaign) throws ClassNotFoundException, SQLException {
 		String query = "select * from campaign_urls where brand ='" + brand + "' and campaign='" + campaign + "'";
-		System.out.println(query);
 		List<Map<String, Object>> result = DBLibrary.dbAction("fetch", query);
 		String category = result.get(0).get("DWCAMPAIGNCATEGORY").toString();
 		return category;
@@ -166,7 +165,6 @@ public class DBUtilities {
 					}
 				}
 			}
-			System.out.println("PageList:" + pageList);
 			return pageList;
 		}	
 		

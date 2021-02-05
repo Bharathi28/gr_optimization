@@ -39,6 +39,7 @@ import org.testng.annotations.Test;
 import com.sns.gr_optimization.testbase.BuyflowUtilities;
 import com.sns.gr_optimization.testbase.CartLanguageUtilities;
 import com.sns.gr_optimization.testbase.CommonUtilities;
+import com.sns.gr_optimization.testbase.ConsoleUtilities;
 import com.sns.gr_optimization.testbase.DBUtilities;
 import com.sns.gr_optimization.testbase.MailUtilities;
 import com.sns.gr_optimization.testbase.MerchandisingUtilities;
@@ -64,6 +65,7 @@ public class BuyflowValidation {
 	SASUtilities sas_obj = new SASUtilities();
 	MerchandisingUtilities merch_obj = new MerchandisingUtilities();
 	PixelUtilities pixel_obj = new PixelUtilities();
+	ConsoleUtilities console_obj = new ConsoleUtilities();
 
 	static List<String> attachmentList = new ArrayList<String>();
 	
@@ -71,9 +73,9 @@ public class BuyflowValidation {
 	String sendReportTo = "aaqil@searchnscore.com,manibharathi@searchnscore.com";
 	String testSet = "Core";
 	
-	final String USERNAME = "manibharathikaru1";
-	final String AUTOMATE_KEY = "hFN19RHbQmGyeL8Z47Ls";
-	final String URL = "https://" + USERNAME + ":" + AUTOMATE_KEY + "@hub-cloud.browserstack.com/wd/hub";
+//	final String USERNAME = "manibharathikaru1";
+//	final String AUTOMATE_KEY = "hFN19RHbQmGyeL8Z47Ls";
+//	final String URL = "https://" + USERNAME + ":" + AUTOMATE_KEY + "@hub-cloud.browserstack.com/wd/hub";
 	
 	@BeforeSuite
 	public void getEmailId() {
@@ -88,7 +90,7 @@ public class BuyflowValidation {
 	public Object[][] testData() {
 		Calendar calendar = Calendar.getInstance();
 		int day = calendar.get(Calendar.DAY_OF_WEEK);
-		System.out.println(day);
+//		System.out.println(day);
 		
 		Object[][] arrayObject = null;
 		
@@ -247,11 +249,11 @@ public class BuyflowValidation {
 		
 		// HomePage
 		pixel_obj.defineNewHar(proxy, brand + "HomePage");		
-		System.out.println(url);
 		driver.get(url);
 		driver.manage().timeouts().implicitlyWait(6, TimeUnit.SECONDS);	
 		pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_homepage_" + pattern +".har", driver, pixelStr);
-						
+		console_obj.analyzeLog(driver, "HomePage");			
+		
 		HashMap<String, String> sourcecodedata = null;
 		HashMap<String, String> expectedsourcecodedata = null;
 
@@ -259,7 +261,6 @@ public class BuyflowValidation {
 		sourcecodedata = merch_obj.getSourceCodeInfo(merchData, campaign);	
 		// Collect Source code details for the campaign
 		expectedsourcecodedata = merch_obj.generateExpectedSourceCodeData(sourcecodedata);
-//		System.out.println(expectedsourcecodedata);		
 		
 		// HashMap variable to collect Kit related details from Merchandising Template
 		HashMap<String, String> expectedofferdata_kit = null;
@@ -294,7 +295,6 @@ public class BuyflowValidation {
 						PPUSection = "Yes";
 					}
 				}
-//				System.out.println(PPIDcolumn + PPUSection);
 				
 				// Check if the PPID is present in the campaign
 				if(PPIDcolumn == 0) {
@@ -304,7 +304,7 @@ public class BuyflowValidation {
 	
 				// Read the entire column data
 				HashMap<String, String> kit_offerdata = merch_obj.getColumnData(merchData, PPIDcolumn, PPUSection);
-//				System.out.println(kit_offerdata);
+
 				// Check Post-purchase Upsell for the campaign
 				postpu = merch_obj.checkPostPU(kit_offerdata, brand);
 				if(((brand.equalsIgnoreCase("CrepeErase")) && (campaign.equalsIgnoreCase("order30fsh2b"))) && (PPUSection.equalsIgnoreCase("No"))) {
@@ -325,7 +325,6 @@ public class BuyflowValidation {
 				// Collect current Offer related details from Merchandising Input file
 				if(!(brand.equalsIgnoreCase("JloBeauty"))) {
 					expectedofferdata_kit = merch_obj.generateExpectedOfferDataForKit(kit_offerdata, PPUSection, postpu, ppid, giftppid, brand, campaigncategory);
-					System.out.println("Expected Offerdata - Kit : " + expectedofferdata_kit);
 				}
 								
 				// Add Kit PPID to lineitem list
@@ -439,6 +438,7 @@ public class BuyflowValidation {
 				// DrDenese - FB - AddToCart event will fire only after selecting the kit (After clicking on "Add To cart")
 				if(!(brand.equalsIgnoreCase("DrDenese"))) {
 					pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver, pixelStr);
+					console_obj.analyzeLog(driver, "SASPage");	
 				}				
 				
 				// Gift Validation
@@ -456,6 +456,7 @@ public class BuyflowValidation {
 				
 				if(brand.equalsIgnoreCase("DrDenese")) {
 					pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver, pixelStr);
+					console_obj.analyzeLog(driver, "SASPage");	
 					pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
 				}
 				
@@ -466,7 +467,6 @@ public class BuyflowValidation {
 								
 				// Get the product data from Web Catalog
 				HashMap<String, String> product_offerdata = merch_obj.getProdRowfromCatalog(catalogData, ppid);
-//				System.out.println(product_offerdata);
 				
 				LinkedHashMap<String, String> catalogPriceBookIDs = merch_obj.getCatalogPriceBookIDs(catalogData);
 				
@@ -481,7 +481,6 @@ public class BuyflowValidation {
 				
 				// Collect current Offer related details from Merchandising Input file
 				expectedofferdata_product = merch_obj.generateExpectedOfferDataForProduct(product_offerdata, ppid, postpu, brand, campaigncategory, currentCategory, catalogPriceBookIDs);
-//				System.out.println("Expected Offerdata - Product : " + expectedofferdata_product);
 				
 				// Add Product PPID to lineitem list
 				List<String> product_lineitem = new ArrayList<String>();
@@ -551,11 +550,13 @@ public class BuyflowValidation {
 				pixel_obj.defineNewHar(proxy, brand + "ShopPage");	  
 				bf_obj.click_cta(driver, brand, campaign, "Shop");
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_shoppage_" + pattern +".har", driver, pixelStr);
-			
+				console_obj.analyzeLog(driver, "ShopPage");	
+				
 				// Select offer			
 				pixel_obj.defineNewHar(proxy, brand + "PDPage");	
 				sas_obj.select_offer(driver, expectedofferdata_product, currentCategory);
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_pdpage_" + pattern +".har", driver, pixelStr);
+				console_obj.analyzeLog(driver, "PDPage");	
 				
 				// Move to Checkout
 				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
@@ -592,7 +593,6 @@ public class BuyflowValidation {
 		}
 		
 		campaignpages.add("ConfirmationPage");
-//		System.out.println(campaignpages);
 		
 		String offer_postpurchase  = "";
 		String supplysize  = "";
@@ -627,17 +627,20 @@ public class BuyflowValidation {
 			if(((categorylist.contains("Kit")) || (categorylist.contains("ShopKit"))) && (offer_postpurchase.equalsIgnoreCase("Yes"))) {
 				email = bf_obj.fill_out_form(driver, brand, campaigncategory, "VISA", "same", "90");
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver, pixelStr);
-						
+				console_obj.analyzeLog(driver, "CheckoutPage");			
+				
 				pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
 				bf_obj.complete_order(driver, brand, "VISA");
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern +".har", driver, pixelStr);
-						
+				console_obj.analyzeLog(driver, "PostPurchaseUpsell");			
+				
 				bf_obj.upsell_confirmation(driver, brand, campaigncategory, offer_postpurchase);
 			}
 			else {
 				email = bf_obj.fill_out_form(driver, brand, campaigncategory, cc, shipbill, "30");
 				System.out.println("Email : " + email);
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver, pixelStr);
+				console_obj.analyzeLog(driver, "CheckoutPage");		
 			}	
 		}	
 		
@@ -660,7 +663,6 @@ public class BuyflowValidation {
 			diff_lineitemlist = new ArrayList<>(expected_lineitems);
 						
 			for(List<String> actual_item : actual_lineitems) {
-//				System.out.println("Actual item: " + actual_item);
 				String actual_ppid = actual_item.get(0);
 				String actual_price = actual_item.get(1);
 				String actual_cart_language = actual_item.get(2);
@@ -668,9 +670,7 @@ public class BuyflowValidation {
 				String actual_continuity_shipping = actual_item.get(4);
 					
 				for(List<String> expected_item : expected_lineitems) {
-//					System.out.println("Expected item: " + expected_item);
-//					System.out.println("Actual PPID: " + actual_ppid);					
-					
+				
 					if(expected_item.contains(actual_ppid)) {
 						if(!(expected_item.get(2).equalsIgnoreCase("-"))) {
 							actual_price = actual_price.replace("$", "");
@@ -732,7 +732,6 @@ public class BuyflowValidation {
 			}
 			
 			// When Extra lineitems are present
-//			System.out.println("Extra lineitems check");
 			temp_lineitemlist.clear();
 			temp_lineitemlist = new ArrayList<>();
 			diff_lineitemlist = new ArrayList<>(actual_lineitems);
@@ -746,10 +745,7 @@ public class BuyflowValidation {
 					}				
 				}				
 			}			
-//			System.out.println(temp_lineitemlist);
-//			System.out.println(diff_lineitemlist);
 			diff_lineitemlist.removeAll(temp_lineitemlist);
-//			System.out.println(diff_lineitemlist);
 			for(List<String> lineitem : diff_lineitemlist) {
 				ppidResult = "FAIL";
 				remarks = remarks + lineitem.get(0) + " is present in Checkout Cart ; ";
@@ -764,14 +760,12 @@ public class BuyflowValidation {
 							
 				for(List<String> expected_item : expected_lineitems) {
 					String exp_suppl_cart_lang = expected_item.get(6);
-					System.out.println("Expected Supplemental cart language : " + exp_suppl_cart_lang);
 					
 					if(exp_suppl_cart_lang.equalsIgnoreCase("No Supplemental Cart Language")) {
 						continue;
 					}
 					
 					String actual_suppl_cart_lang = lang_obj.getsupplementalcartlanguage(driver);
-					System.out.println("Actual Supplemental cart language : " + actual_suppl_cart_lang);
 						
 					if(exp_suppl_cart_lang.contains("No expected Supplemental Cart Language")) {
 						SuppCartLanguageResult = "Could not validate";		
@@ -799,7 +793,6 @@ public class BuyflowValidation {
 		}		
 				
 		// Validate Checkout pricing		
-//		System.out.println("Validating Checkout Pricing");
 		// Get Actual Checkout Price
 		String checkout_subtotal = "";
 		String checkout_shipping = "";
@@ -820,7 +813,6 @@ public class BuyflowValidation {
 			checkout_salestax = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Salestax");
 			checkout_total = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Total");
 		}			
-//		System.out.println("Checkout Pricing expected : " + expectedofferdata.get("Final Pricing") + "," + expectedofferdata.get("Final Shipping"));
 		System.out.println("Checkout Pricing fetched : " + checkout_subtotal + "," + checkout_shipping + "," + checkout_salestax + "," + checkout_total);
 				
 		// Calculate Expected Checkout Price
@@ -875,9 +867,6 @@ public class BuyflowValidation {
 			remarks = remarks + "Checkout Salestax does not match with the expected salestax, Expected - " + salestax + " , Actual - " + checkout_salestax;
 		}
 		
-//		System.out.println("Expected SalesTax : " + salestax);
-//		System.out.println("Actual SalesTax : " + checkout_salestax);
-		
 		// Checkout Total Validation
 		List<String> total_list = new ArrayList<String>();
 		total_list.add(expected_subtotal);
@@ -894,9 +883,6 @@ public class BuyflowValidation {
 			EntryPriceResult = "FAIL";
 			remarks = remarks + "Checkout Total does not match with the expected total, Expected - " + total + " , Actual - " + checkout_total;
 		}
-		
-//		System.out.println("Expected Total : " + total);
-//		System.out.println("Actual Total : " + checkout_total);		
 		
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		if(!(cc.equalsIgnoreCase("Paypal"))) {
@@ -915,6 +901,7 @@ public class BuyflowValidation {
         	// Navigate to Confirmation Page	        
         	bf_obj.complete_order(driver, brand, cc);          
             pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver, pixelStr);
+            console_obj.analyzeLog(driver, "ConfirmationPage");	
 		}
 		// Post Purchase Upsell page is present
 		else {
@@ -924,6 +911,7 @@ public class BuyflowValidation {
 				pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
 				bf_obj.complete_order(driver, brand, cc);
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern + ".har", driver, pixelStr);
+				console_obj.analyzeLog(driver, "PostPurchaseUpsell");	
 			}
 			// supplysize - 90
 			// After Fall back scenario - control navigates to Confirmation page
@@ -931,6 +919,7 @@ public class BuyflowValidation {
 				pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");	        
 	        	bf_obj.complete_order(driver, brand, cc);          
 	            pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver, pixelStr);
+	            console_obj.analyzeLog(driver, "ConfirmationPage");	
 			}					
 		}			
 		Thread.sleep(3000);
@@ -945,6 +934,7 @@ public class BuyflowValidation {
 				pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");
 				bf_obj.upsell_confirmation(driver, brand, campaigncategory, expectedofferdata_kit.get("Offer Post-Purchase"));
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver, pixelStr);
+				 console_obj.analyzeLog(driver, "ConfirmationPage");	
 			}
 		}								
 		
@@ -965,10 +955,7 @@ public class BuyflowValidation {
 				}
 			}				
 		}			
-//		System.out.println("Diff lineitem :" + diff_lineitemlist);
-//		System.out.println("Temp lineitem :" + temp_lineitemlist);
 		diff_lineitemlist.removeAll(temp_lineitemlist);
-//		System.out.println("Diff lineitem - After Removal :" + diff_lineitemlist);
 		for(List<String> lineitem : diff_lineitemlist) {
 			// If Result is already fail, then the overall ppid result is fail
 			if(ppidResult.equalsIgnoreCase("FAIL")) {
@@ -1182,10 +1169,6 @@ public class BuyflowValidation {
 				}			
 			}
 		}
-					
-			
-//			System.out.println("Expected Renewal Plan Id : " + expectedofferdata.get("Renewal Plan Id"));	
-//			System.out.println("Actual Renewal Plan Id : " + actualrenewalplanid);
 				
 		// Installment Plan Validation
 		String actualinstallmentplanid = "";
@@ -1203,9 +1186,6 @@ public class BuyflowValidation {
 						// To remove null and commas
 						actualinstallmentplanid = expectedofferdata_kit.get("Installment Plan Id");
 					}
-					
-//					System.out.println("Expected Installment Plan Id : " + expectedofferdata.get("Installment Plan Id"));	
-//					System.out.println("Actual Installment Plan Id : " + actualinstallmentplanid);
 				}				
 				else {
 					actualinstallmentplanid = "";
@@ -1246,11 +1226,8 @@ public class BuyflowValidation {
 		
 //		// Price Book Id Validation
 		String actualpricebookid = comm_obj.getFromVariableMap(driver, "pricebookId");
-//		System.out.println("Actual price book id: " + actualpricebookid);
 				
 		List<String> actual_price_book_list = Arrays.asList(actualpricebookid.split("\\s*,\\s*"));
-//		System.out.println("Expected price book list: " + pricebook_id_list);
-//		System.out.println("Actual price book list: " + actual_price_book_list);
 				
 		if(pricebook_id_list.contains("No expected PriceBookID")) {
 			PriceBookIdResult = "Could not validate";		
@@ -1288,10 +1265,7 @@ public class BuyflowValidation {
 					}
 				}				
 			}			
-//			System.out.println("Diff price book id: " + diff_pricebooklist);
-//			System.out.println("Temp price book id: " + temp_pricebooklist);
 			diff_pricebooklist.removeAll(temp_pricebooklist);
-//			System.out.println("Diff price book id - after removal: " + diff_pricebooklist);
 			for(String id : diff_pricebooklist) {
 				if(!(id.equalsIgnoreCase("null"))) {
 					PriceBookIdResult = "FAIL";
@@ -1322,7 +1296,6 @@ public class BuyflowValidation {
 		output_row.add(cc);	
 		output_row.add(browser);	
 		output_row.add(remarks);
-//		System.out.println("Output row : " + output_row);
 		output.add(output_row);
 		
 		driver.close();

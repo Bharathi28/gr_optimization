@@ -24,8 +24,6 @@ public class MerchandisingUtilities {
 		expectedsourcecodedata.put("Creative ID", sourcecodedata.get("Creative ID"));
 		expectedsourcecodedata.put("Venue ID", sourcecodedata.get("Venue ID"));
 		expectedsourcecodedata.put("Price Book ID", sourcecodedata.get("Price Book ID"));
-		
-//		System.out.println(expectedsourcecodedata);
 		return expectedsourcecodedata;
 	}
 	
@@ -86,7 +84,6 @@ public class MerchandisingUtilities {
 		else {
 			onetime_subscribe_option = "Yes";
 		}
-		System.out.println("Subscribe Price : " + offerdata.get("Subscribe and Save price"));
 		
 		String pagepattern = generatePagePattern(category, shade, brand, onetime_subscribe_option);
 		expectedofferdata.put("PagePattern", pagepattern);
@@ -157,7 +154,6 @@ public class MerchandisingUtilities {
 		if(last_char.equalsIgnoreCase("-")) {
 			pagepattern = pagepattern.substring(0, pagepattern.length() - 1);
 		}	
-		System.out.println("Generated PagePattern : " + pagepattern);
 		return pagepattern; 
 	}
 	
@@ -205,8 +201,6 @@ public class MerchandisingUtilities {
 		if(PostPU.equalsIgnoreCase("Yes")) {
 			String offerpostpu = offerdata.get("Post Purchase Upsell to").trim();
 			offerpostpu = offerpostpu.replaceAll("\\s+", "");
-			System.out.println("hi" + offerpostpu + "hi");
-			System.out.println("hi" + kitppid + "hi");
 			if(offerpostpu.contains(kitppid)) {
 				offerpostpu="Yes";
 			}
@@ -229,7 +223,6 @@ public class MerchandisingUtilities {
 		// Check Supplysize of PPID
 		String supplysize = checkSupplySize(kitppid, offerdata);
 		expectedofferdata.put("SupplySize", supplysize);
-//		System.out.println("SupplySize" + supplysize);		
 		
 		String giftseperatelineitem = db_obj.checkgiftlineitem(brand, campaign);
 		expectedofferdata.put("GiftSeperateLineItem", giftseperatelineitem);
@@ -289,7 +282,6 @@ public class MerchandisingUtilities {
 			expectedfinalshipping = expectedEntryShipping;
 			// Pre-Purchase - Yes
 			if(PPUSection.equalsIgnoreCase("Yes")) {	
-//				System.out.println("Pre-Purchase Yes");
 				if(offerdata.get("Pre-Purchase Entry Promotion 1") != null) {
 					expectedcampaigngifts = offerdata.get("Pre-Purchase Entry Promotion 1").trim();
 				}					
@@ -383,8 +375,6 @@ public class MerchandisingUtilities {
 			if(offerdata.get("Post Purchase Upsell Promotion 1") != null) {
 				expectedcampaigngifts = offerdata.get("Post Purchase Upsell Promotion 1").trim();
 			}			
-//			expectedprepuproduct = getValueFromCellIfExists(offerdata, "Post Purchase Upsell Promotion 2");
-//			System.out.println("Expected PrePU Product:" + expectedprepuproduct);
 			if(PPUSection.equalsIgnoreCase("Yes")) {
 				if(offerdata.get("Post Purchase Upsell Promotion 2") != null) {
 					expectedprepuproduct = offerdata.get("Post Purchase Upsell Promotion 2").trim();
@@ -442,7 +432,6 @@ public class MerchandisingUtilities {
 			else {
 				// If no seperate lineitem, then no GiftPPID
 				if(giftseperatelineitem.equalsIgnoreCase("Yes")) {
-//					System.out.println("Expected Campaign Gifts : " + expectedcampaigngifts);
 					if((expectedcampaigngifts != null) && (!(expectedcampaigngifts.equals("-"))) && (!(expectedcampaigngifts.equals(""))) && (!(expectedcampaigngifts.equalsIgnoreCase("Free gift")))) {
 						giftppid = String.join(",", bf_obj.getPPIDfromString(brand, expectedcampaigngifts));
 						expectedofferdata.put("Gift PPID", giftppid);
@@ -476,7 +465,6 @@ public class MerchandisingUtilities {
 		String PostPU;
 		if(offerdata.get("Post Purchase Upsell to") != null) {
 			String postpuppid = offerdata.get("Post Purchase Upsell to").trim();
-//			System.out.println(postpuppid);
 			
 			String brandcode = db_obj.get_sourceproductlinecode(brand); 
 			
@@ -490,7 +478,6 @@ public class MerchandisingUtilities {
 		else {
 			PostPU = "No";
 		}		
-		System.out.println("PostPU:" + PostPU);
 		return PostPU;
 	}
 	
@@ -513,14 +500,13 @@ public class MerchandisingUtilities {
 		String giftvalue = "";
 		
 		String sourceproductlinecode = db_obj.get_sourceproductlinecode(brand);
-//		System.out.println(sourceproductlinecode);
+
 		if(PPUSection.equalsIgnoreCase("Yes")) {
 			giftvalue = offerdata.get("Pre-Purchase Entry Promotion 1");	
 		}
 		else {
 			giftvalue = offerdata.get("Entry Promotion 1");	
 		}
-//		System.out.println(giftvalue);
 		
 		if((giftvalue != null) && (!(giftvalue.equalsIgnoreCase("-")))){
 			giftvalue = giftvalue.trim();
@@ -548,14 +534,11 @@ public class MerchandisingUtilities {
 		String[] expectedrowNames = {"Entry PPID", "Pre-Purchase Entry PPID", "Post Purchase Upsell to"};
 		
 		for(int i=0; i<merchData.length; i++) {			
-//			System.out.println(i);
 			String currentrowname = merchData[i][0];
-//			System.out.println("currentrowname : " + currentrowname);
 			for(String name : expectedrowNames) {
 				if((currentrowname != null) && (currentrowname.contains(name))) {
 					for(int j=1; j<merchData[i].length; j++) {
 						String rowPPID = merchData[i][j];
-//						System.out.println("rowPPID : " + rowPPID);
 			            if((rowPPID != null) && (rowPPID.contains(ppid))) {
 			            	ppidcolumn = j;
 			            	temp = 1;
@@ -581,7 +564,6 @@ public class MerchandisingUtilities {
 		
 		for(int i=0; i<merchData.length; i++) {			
 			String currentrowname = merchData[i][0];
-//			System.out.println("currentrowname : " + currentrowname);
 			if((currentrowname != null) && (currentrowname.equalsIgnoreCase("Pre Purchase Upsell"))) {
 				PPUSection = "Yes";
 			}
@@ -609,14 +591,12 @@ public class MerchandisingUtilities {
 	public HashMap<String, String> getSourceCodeInfo(String[][] merchData, String sourcecodegroup) {
 		LinkedHashMap<String, String> sourcecodedata = new LinkedHashMap<String, String>();
 		int columnCount = merchData[0].length;
-//		System.out.println(columnCount);
 		
 		int sourcecodegroupcolumn = 0;
 		int vanityurlcolumn = 0;
 		int sourcecodecolumn = 0;
 		for(int i=0; i<columnCount; i++) {
 			String colName = merchData[0][i];
-//			System.out.println(merchData[0][i]);
 			if(merchData[0][i] != null) {
 				if(colName.equalsIgnoreCase("Vanity URL")) {
 					vanityurlcolumn = i;
@@ -653,7 +633,6 @@ public class MerchandisingUtilities {
 				break;
 			}
 		}
-//		System.out.println("Source Code Data : " + sourcecodedata);
 		return sourcecodedata;
 	}
 	
@@ -665,7 +644,6 @@ public class MerchandisingUtilities {
 			if(merchData[i][0] != null) {
 				if(merchData[i][0].equalsIgnoreCase("Kit")) {		
 					while(!(merchData[i][0].equalsIgnoreCase("Entry Kit"))) {
-//						System.out.println(merchData[i][0]);
 						i++;
 						offerdata.put(merchData[i][0].trim(), merchData[i][column]);
 					}
@@ -747,23 +725,15 @@ public class MerchandisingUtilities {
 
 		for(int i=0; i<catalogData[0].length; i++) {
 			String colName = catalogData[0][i];
-//			System.out.println(colName);
 			if((colName != null) && (colName.equalsIgnoreCase("PPID"))) {
 				ppidcolumn = i;
 			}
 
 		}
-//		System.out.println("ppidcolumn:" + ppidcolumn);
 		
 		for(int i=0; i<catalogData.length; i++) {	
 			String ppidinrow = catalogData[i][ppidcolumn].replaceAll("\\s+", "");
 
-				
-//			System.out.println("ppidinrow:" + ppidinrow);
-//
-//			
-//			System.out.println("HI" + ppidinrow + "HI");
-//			System.out.println("HI" + ppid + "HI");
 			if(ppidinrow.trim().equalsIgnoreCase(ppid.trim())){
 				for(int j=0; j<catalogData[0].length; j++) {
 					if(catalogData[0][j] != null) {
@@ -784,7 +754,6 @@ public class MerchandisingUtilities {
 				break;
 			}
 		}
-//		System.out.println("Product Data:" + productdata);
 		return productdata;
 	}
 	
@@ -792,7 +761,6 @@ public class MerchandisingUtilities {
 		String PostPU;
 		if(offerdata.get("90 Day PPID") != null) {
 			String postpuppid = offerdata.get("90 Day PPID").trim();
-//			System.out.println(postpuppid);
 			
 			String brandcode = db_obj.get_sourceproductlinecode(brand); 
 			
@@ -806,7 +774,6 @@ public class MerchandisingUtilities {
 		else {
 			PostPU = "No";
 		}		
-//		System.out.println(PostPU);
 		return PostPU;
 	}
 	
@@ -824,16 +791,13 @@ public class MerchandisingUtilities {
 		for(int i=1; i<catalogData.length-1; i++) {	
 			ppidlist.add(catalogData[i][ppidcolumn]);
 		}
-//		System.out.println(ppidlist);
-		
 		
 		List<String> randsingles = new ArrayList<String>();
 		Random rand = new Random(); 
 		for(int i=0; i<count; i++) {						
 			randsingles.add(ppidlist.get(rand.nextInt(ppidlist.size())));
 		}
-		
-//		System.out.println("Chosen single : " + randsingles);
+
 		return randsingles;
 	}
 	
@@ -843,15 +807,12 @@ public class MerchandisingUtilities {
 		String[] expectedrowNames = { "Entry PPID", "Pre-Purchase Entry PPID", "Post Purchase Upsell to" };
 		List<String> all_ppid = new ArrayList<String>();
 		for (int i = 0; i < merchData.length; i++) {
-//			System.out.println(i);
 			String currentrowname = merchData[i][0];
-//			System.out.println("currentrowname : " + currentrowname);
 			for (String name : expectedrowNames) {
 				if ((currentrowname != null) && (currentrowname.contains(name))) {
 					for (int j = 1; j < merchData[i].length; j++) {
 						String rowPPID = merchData[i][j];
-//						System.out.println("rowPPID : " + rowPPID);
-						if ((rowPPID != null)) { // && (rowPPID.contains(ppid))) {
+						if ((rowPPID != null)) {
 							all_ppid.add(rowPPID);
 						}
 					}
@@ -879,7 +840,6 @@ public class MerchandisingUtilities {
 		for (int i = 1; i < catalogData.length - 1; i++) {
 			ppidlist.add(catalogData[i][ppidcolumn]);
 		}
-//		System.out.println(ppidlist);
 
 		List<String> randsingles = new ArrayList<String>();
 		Random rand = new Random();
@@ -887,7 +847,6 @@ public class MerchandisingUtilities {
 			randsingles.add(ppidlist.get(rand.nextInt(ppidlist.size())));
 		}
 
-//		System.out.println("Chosen single : " + randsingles);
 		return randsingles;
 	}
 }
