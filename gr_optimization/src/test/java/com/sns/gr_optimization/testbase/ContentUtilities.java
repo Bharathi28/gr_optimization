@@ -64,8 +64,8 @@ public class ContentUtilities {
 
 		} else {
 			System.out.println("Two files have different content. They differ at line " + lineNum);
-			result = "Two files have different content. They differ at line " + lineNum + " File1 has : " + line1
-					+ " and File2 has : " + line2 + " at line ";
+			result = "Two files have different content. Difference at line " + lineNum + " Expected Results : " + line1
+					+ " and Actual Result : " + line2 + " at line ";
 
 			// System.out.println("File1 has " + line1 + " and File2 has " + line2 + " at
 			// line " + lineNum);
@@ -225,5 +225,4 @@ public class ContentUtilities {
 		Thread.sleep(2000);
 		kit_elmt_Customer_Service.click();
 	}
-
 }

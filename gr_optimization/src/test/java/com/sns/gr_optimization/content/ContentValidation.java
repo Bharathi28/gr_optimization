@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -734,14 +735,18 @@ public class ContentValidation {
 	}
 
 	@AfterSuite
-	public void populateExcel() throws IOException {
+	public void populateExcel() throws Exception {
+
+		take_result();
+
 		String file = comm_obj.populateOutputExcel(output, "ContentValidation",
 				System.getProperty("user.dir") + "\\Input_Output\\ContentValidation\\Run Output\\");
 
 		// List<String> attachmentList = new ArrayList<String>();
 		attachmentList.add(file);
 
-		mailObj.sendEmail("Content Validation Results", sendReportTo, attachmentList);
+		// mailObj.sendEmail("Content Validation Results", sendReportTo,
+		// attachmentList);
 	}
 
 	public void mkdir() {
@@ -761,4 +766,20 @@ public class ContentValidation {
 		}
 	}
 
+	public void take_result() throws Exception {
+		File old_file = new File(System.getProperty("user.dir") + "\\Input_Output\\ContentValidation\\Run Output\\",
+				comm_obj.generateFileName("ContentValidation") + ".xlsx");
+		System.out.println(old_file + " task result ");
+		if (old_file.exists() == true) {
+			// old_file.move(old_file, newName);
+			Calendar now = Calendar.getInstance();
+			String minute = Integer.toString(now.get(Calendar.MINUTE));
+			String hour = Integer.toString(now.get(Calendar.HOUR_OF_DAY));
+
+			String new_file = (System.getProperty("user.dir") + "\\Input_Output\\ContentValidation\\Run Output\\"
+					+ "ContentValidation" + minute + hour);
+			old_file.renameTo(new File(comm_obj.generateFileName(new_file)));
+			System.out.println(old_file + "replaced with  :" + new_file);
+		}
+	}
 }
