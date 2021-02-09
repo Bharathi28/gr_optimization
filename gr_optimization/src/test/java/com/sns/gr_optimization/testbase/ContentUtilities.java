@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -223,6 +224,11 @@ public class ContentUtilities {
 			throw new RuntimeException(Query_Name + " link not available");
 		}
 		Thread.sleep(2000);
+		WebElement Element = driver.findElement(By.xpath(elementvalue_Customer_Service));
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].scrollIntoView();", Element);
+
 		kit_elmt_Customer_Service.click();
 	}
+
 }

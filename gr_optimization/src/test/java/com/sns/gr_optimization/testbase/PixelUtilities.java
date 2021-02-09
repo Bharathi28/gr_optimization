@@ -269,8 +269,8 @@ public class PixelUtilities {
 		return overallOutput;
 	}
 	
-	public static List<String> writePixelOutput(HashMap map, String fileName, String sheetName, List<String> attachmentList) throws IOException {	
-		File file = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel Output\\" + fileName + ".xlsx");
+	public static List<String> writePixelOutput(HashMap map, String fileName, String sheetName, List<String> attachmentList, String Output_foldername) throws IOException {	
+		File file = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel Output\\" + Output_foldername + "\\" + fileName + ".xlsx");
 		XSSFWorkbook workbook = null;
 		// Check file existence 
 	    if (file.exists() == false) {
@@ -278,7 +278,7 @@ public class PixelUtilities {
 	        workbook = new XSSFWorkbook();
 	    } 
 	    else {
-	        FileInputStream inputStream = new FileInputStream(new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel Output\\" + fileName + ".xlsx"));
+	        FileInputStream inputStream = new FileInputStream(new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel Output\\" + Output_foldername + "\\" + fileName + ".xlsx"));
 	        workbook = new XSSFWorkbook(inputStream);
 	    }
 	    
@@ -464,11 +464,11 @@ public class PixelUtilities {
 			resultSheet.autoSizeColumn(columnIndex, true);
 		}			
 		
-		FileOutputStream outputStream = new FileOutputStream(new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel Output\\" + brand +".xlsx"));
+		FileOutputStream outputStream = new FileOutputStream(new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel Output\\" + Output_foldername + "\\" + brand +".xlsx"));
 	    workbook.write(outputStream);
 	    workbook.close();
 	    outputStream.close();
-	    attachmentList.add(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel Output\\" + brand +".xlsx");
+	    attachmentList.add(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel Output\\" + Output_foldername + "\\" + brand +".xlsx");
 	    System.out.println("pixel_output.xlsx written successfully");
 	    return attachmentList;
 	}

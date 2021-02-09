@@ -74,6 +74,13 @@ public class BuyflowValidation {
 	String testSet = "Core";
 	String testSuite = "Buyflow";
 	
+	static Calendar now = Calendar.getInstance();		
+	static String monthStr = Integer.toString(now.get(Calendar.MONTH) + 1); // Note: zero based!
+	static String dayStr = Integer.toString(now.get(Calendar.DAY_OF_MONTH));  
+	static String yearStr = Integer.toString(now.get(Calendar.YEAR));
+	
+	static String Output_foldername = monthStr + dayStr + yearStr;
+	
 //	final String USERNAME = "manibharathikaru1";
 //	final String AUTOMATE_KEY = "hFN19RHbQmGyeL8Z47Ls";
 //	final String URL = "https://" + USERNAME + ":" + AUTOMATE_KEY + "@hub-cloud.browserstack.com/wd/hub";
@@ -140,6 +147,8 @@ public class BuyflowValidation {
 		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles", brand);
 		newDirectory.mkdir();
 		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Pixel Output");
+		newDirectory.mkdir();		
+		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel_Output", Output_foldername);
 		newDirectory.mkdir();
 		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Run Output");
 		newDirectory.mkdir();
@@ -1321,7 +1330,7 @@ public class BuyflowValidation {
 	
 		if(!(pixelStr.equalsIgnoreCase("-"))) {
 			HashMap<Integer, HashMap> overallOutput = pixel_obj.validatePixels(pixelStr, pattern, brand, campaign, env, campaignpages);
-			attachmentList = pixel_obj.writePixelOutput(overallOutput, brand, campaign, attachmentList);
+			attachmentList = pixel_obj.writePixelOutput(overallOutput, brand, campaign, attachmentList, Output_foldername);
 		}
 	}
 	

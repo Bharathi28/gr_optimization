@@ -1,8 +1,6 @@
 package com.sns.gr_optimization.content;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -14,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.Proxy;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -34,11 +32,6 @@ import com.sns.gr_optimization.testbase.MerchandisingUtilities;
 import com.sns.gr_optimization.testbase.PixelUtilities;
 import com.sns.gr_optimization.testbase.PricingUtilities;
 import com.sns.gr_optimization.testbase.SASUtilities;
-
-import net.lightbody.bmp.BrowserMobProxy;
-import net.lightbody.bmp.BrowserMobProxyServer;
-import net.lightbody.bmp.client.ClientUtil;
-import net.lightbody.bmp.proxy.CaptureType;
 
 public class ContentValidation {
 	CommonUtilities comm_obj = new CommonUtilities();
@@ -90,6 +83,7 @@ public class ContentValidation {
 
 	@Test(dataProvider = "buyflowInput")
 	public void buyflow(String env, String brand, String campaign) throws Exception {
+
 		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "/Drivers/chromedriver.exe");
 
 		ChromeOptions options = new ChromeOptions();
@@ -265,6 +259,9 @@ public class ContentValidation {
 		}
 		output.add(output_row);
 
+		// Click T & C Spanish
+		content_obj.clickaelement(driver, env, brand, campaign, "Terms & Conditions Español");
+
 		// Terms Conditions Español
 		List<Map<String, Object>> Terms_Conditions_locator_Es = null;
 		output_row = new ArrayList<String>();
@@ -332,34 +329,13 @@ public class ContentValidation {
 		output_row.add(result_S);
 		output.add(output_row);
 
+		// Click English Version
+
+		content_obj.clickaelement(driver, env, brand, campaign, "Terms & Conditions English");
+
 		// Go to Privacy Policy
-		// output_row = new ArrayList<String>();
-		// output_row.add(env);
-		// output_row.add(brand);
-		// output_row.add(campaign);
-		// output_row.add("Check Privacy Policy ");
-		List<Map<String, Object>> Terms_Conditions_locator_PP = null;
-		Terms_Conditions_locator_PP = content_obj.get_terms_conditions(brand, campaign, "Privacy Policy", null);
-		String elementvalue_PP = Terms_Conditions_locator_PP.get(0).get("ELEMENTVALUE").toString();
-		String elementlocator_PP = Terms_Conditions_locator_PP.get(0).get("ELEMENTLOCATOR").toString();
 
-		WebElement kit_elmt_PP = comm_obj.find_webelement(driver, elementlocator_PP, elementvalue_PP);
-		comm_obj.waitUntilElementAppears(driver, elementvalue_PP);
-		Thread.sleep(1000);
-		try {
-			kit_elmt_PP.isDisplayed();
-			if (driver.findElements(By.xpath(elementvalue_PP)).size() != 0) {
-				// output_row.add(pass);
-			} else {
-				// output_row.add(fail);
-			}
-
-		} catch (NoSuchElementException e) {
-			throw new RuntimeException("Privacy Policy link not available");
-		}
-		Thread.sleep(2000);
-		kit_elmt_PP.click();
-		// output.add(output_row);
+		content_obj.clickaelement(driver, env, brand, campaign, "Privacy Policy");
 
 		// String winHandleBefore = driver.getWindowHandle();
 		for (String winHandle : driver.getWindowHandles()) {
@@ -724,8 +700,14 @@ public class ContentValidation {
 		output.add(content_obj.Check_Available(driver, env, brand, campaign, site, "Validate sitemap.xml "));
 
 		// Move - robots.txt
+		String Append_rb = null;
 		String txt = "robots.txt";
-		String Append_rb = url + "/" + txt;
+		// if (campaign.equalsIgnoreCase("Core") == false) {
+		// String[] up_url = url.split("/", 4);
+		// Append_rb = up_url[2] + "/" + txt;
+		// }
+		Append_rb = url + "/" + txt;
+		System.out.println("URL : " + Append_rb);
 		driver.get(Append_rb);
 
 		output.add(content_obj.Check_Available(driver, env, brand, campaign, txt, "Validate Robots.txt "));
@@ -737,7 +719,7 @@ public class ContentValidation {
 	@AfterSuite
 	public void populateExcel() throws Exception {
 
-		take_result();
+		// take_result();
 
 		String file = comm_obj.populateOutputExcel(output, "ContentValidation",
 				System.getProperty("user.dir") + "\\Input_Output\\ContentValidation\\Run Output\\");
@@ -745,8 +727,7 @@ public class ContentValidation {
 		// List<String> attachmentList = new ArrayList<String>();
 		attachmentList.add(file);
 
-		// mailObj.sendEmail("Content Validation Results", sendReportTo,
-		// attachmentList);
+		mailObj.sendEmail("Content Validation Results", sendReportTo, attachmentList);
 	}
 
 	public void mkdir() {
@@ -764,12 +745,13 @@ public class ContentValidation {
 		if (newDirectory.exists() != true) {
 			newDirectory.mkdir();
 		}
+
 	}
 
 	public void take_result() throws Exception {
 		File old_file = new File(System.getProperty("user.dir") + "\\Input_Output\\ContentValidation\\Run Output\\",
 				comm_obj.generateFileName("ContentValidation") + ".xlsx");
-		System.out.println(old_file + " task result ");
+		System.out.println(" task result old : " + old_file);
 		if (old_file.exists() == true) {
 			// old_file.move(old_file, newName);
 			Calendar now = Calendar.getInstance();
@@ -782,4 +764,5 @@ public class ContentValidation {
 			System.out.println(old_file + "replaced with  :" + new_file);
 		}
 	}
+
 }
