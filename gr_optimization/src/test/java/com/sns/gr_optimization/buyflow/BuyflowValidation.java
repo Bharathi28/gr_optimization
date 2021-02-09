@@ -72,6 +72,7 @@ public class BuyflowValidation {
 	List<List<String>> output = new ArrayList<List<String>>();
 	String sendReportTo = "aaqil@searchnscore.com,manibharathi@searchnscore.com";
 	String testSet = "Core";
+	String testSuite = "Buyflow";
 	
 //	final String USERNAME = "manibharathikaru1";
 //	final String AUTOMATE_KEY = "hFN19RHbQmGyeL8Z47Ls";
@@ -84,6 +85,7 @@ public class BuyflowValidation {
 //		
 		sendReportTo = System.getProperty("email");
 		testSet = System.getProperty("testset");
+		testSuite = System.getProperty("testsuite");
 	}
 	
 	@DataProvider(name="buyflowInput", parallel=true)
@@ -101,18 +103,28 @@ public class BuyflowValidation {
 			arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Sunday", 1);
 		}
 		else {
-			if(testSet.equalsIgnoreCase("Core")) {
-				arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Core", 1);
+			if(testSuite.equalsIgnoreCase("Buyflow")) {
+				if(testSet.equalsIgnoreCase("Core")) {
+					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Core", 1);
+				}
+				else if(testSet.equalsIgnoreCase("Top 3")){
+					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Top 3", 1);
+				}
+				else if(testSet.equalsIgnoreCase("All active")){
+					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "All active", 1);
+				}
 			}
-			else if(testSet.equalsIgnoreCase("Top 3")){
-				arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Top 3", 1);
-			}
-			else if(testSet.equalsIgnoreCase("All active")){
-				arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "All active", 1);
+			else if(testSuite.equalsIgnoreCase("Pixel")) {
+				if((day == 5) || (day == 6)) {
+					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "FBPixels", 1);
+				}
+				else {
+					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "AllPixels", 1);
+				}
 			}
 		}
 		
-//		arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
+//	arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
 		return arrayObject;
 	}	
 	
@@ -325,6 +337,7 @@ public class BuyflowValidation {
 				// Collect current Offer related details from Merchandising Input file
 				if(!(brand.equalsIgnoreCase("JloBeauty"))) {
 					expectedofferdata_kit = merch_obj.generateExpectedOfferDataForKit(kit_offerdata, PPUSection, postpu, ppid, giftppid, brand, campaigncategory);
+					System.out.println(expectedofferdata_kit);
 				}
 								
 				// Add Kit PPID to lineitem list
@@ -411,8 +424,8 @@ public class BuyflowValidation {
 					}					
 				}
 				
-				subtotal_list.add(expectedofferdata_kit.get("Final Pricing"));
-				shipping_list.add(expectedofferdata_kit.get("Final Shipping"));
+				subtotal_list.add(expectedofferdata_kit.get("Entry Pricing"));
+				shipping_list.add(expectedofferdata_kit.get("Entry Shipping"));
 				
 				if(expectedofferdata_kit.get("Renewal Plan Id") == null) {
 					renewal_plan_list.add("No expected RenewalPlanID");
@@ -428,7 +441,10 @@ public class BuyflowValidation {
 					pricebook_id_list.add("No expected PriceBookID");
 				}
 				else {
-					pricebook_id_list.add(expectedsourcecodedata.get("Price Book ID"));
+					String[] pricebookArr = expectedsourcecodedata.get("Price Book ID").split(",");
+					for(String str: pricebookArr) {
+						pricebook_id_list.add(str);
+					}					
 				}				
 				
 				// Move to SAS
@@ -1228,6 +1244,9 @@ public class BuyflowValidation {
 		String actualpricebookid = comm_obj.getFromVariableMap(driver, "pricebookId");
 				
 		List<String> actual_price_book_list = Arrays.asList(actualpricebookid.split("\\s*,\\s*"));
+		
+		System.out.println("Actual:" + actual_price_book_list);
+		System.out.println("Expected:" + pricebook_id_list);
 				
 		if(pricebook_id_list.contains("No expected PriceBookID")) {
 			PriceBookIdResult = "Could not validate";		

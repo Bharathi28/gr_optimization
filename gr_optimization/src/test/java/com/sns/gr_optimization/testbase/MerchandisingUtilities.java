@@ -244,33 +244,28 @@ public class MerchandisingUtilities {
 		
 		// 30 day PPID, Entry Pricing and Shipping
 		String ppid30day = "";
-		String expectedEntryPrice = "";
-		String expectedEntryShipping = "";
+		
 		if(PPUSection.equalsIgnoreCase("Yes")) {
 			ppid30day = offerdata.get("Pre-Purchase Entry PPID").trim();
-			expectedEntryPrice = offerdata.get("Pre-Purchase Entry Pricing").trim();
-			expectedEntryShipping = offerdata.get("Pre-Purchase Entry Shipping").trim();		
+//			expectedEntryPrice = offerdata.get("Pre-Purchase Entry Pricing").trim();
+//			expectedEntryShipping = offerdata.get("Pre-Purchase Entry Shipping").trim();		
 		}
 		else {
 			ppid30day = offerdata.get("Entry PPID").trim();
-			expectedEntryPrice = offerdata.get("Entry Pricing").trim();
-			expectedEntryShipping = offerdata.get("Entry Shipping").trim();
+//			expectedEntryPrice = offerdata.get("Entry Pricing").trim();
+//			expectedEntryShipping = offerdata.get("Entry Shipping").trim();
 		}					
 		expectedofferdata.put("30 day PPID", ppid30day);
 		
-		expectedEntryPrice = expectedEntryPrice.replace("$", "");
-		expectedofferdata.put("Entry Pricing", expectedEntryPrice);
 		
-		expectedEntryShipping = expectedEntryShipping.replace("$", "");
-		expectedofferdata.put("Entry Shipping", expectedEntryShipping);		
 		
+		String expectedEntryPrice = "";
+		String expectedEntryShipping = "";
 		String expectedcampaigngifts = "";
 		String expectedrenewalplanid = "No Renewal Plan";
 		String expectedinstallmentplanid = "No Installment Plan";
 		String expectedcartlanguage = "No Cart Language";
 		String expectedsuppcartlanguage = "No Supplemental Cart Language";
-		String expectedfinalpricing = "";
-		String expectedfinalshipping = "";
 		String expectedprepuproduct = "No PrePU Product";
 		String expectedpostpuproduct = "No PostPU Product";
 		String continuitypricing = "";
@@ -278,10 +273,11 @@ public class MerchandisingUtilities {
 		
 		// Post-Purchase - No
 		if(supplysize.equalsIgnoreCase("30")) {
-			expectedfinalpricing = expectedEntryPrice;
-			expectedfinalshipping = expectedEntryShipping;
 			// Pre-Purchase - Yes
 			if(PPUSection.equalsIgnoreCase("Yes")) {	
+				expectedEntryPrice = offerdata.get("Pre-Purchase Entry Pricing").trim();
+				expectedEntryShipping = offerdata.get("Pre-Purchase Entry Shipping").trim();
+				
 				if(offerdata.get("Pre-Purchase Entry Promotion 1") != null) {
 					expectedcampaigngifts = offerdata.get("Pre-Purchase Entry Promotion 1").trim();
 				}					
@@ -327,6 +323,9 @@ public class MerchandisingUtilities {
 			}
 			// Pre-Purchase - No
 			else {
+				expectedEntryPrice = offerdata.get("Entry Pricing").trim();
+				expectedEntryShipping = offerdata.get("Entry Shipping").trim();
+				
 				if(offerdata.get("Entry Promotion 1") != null) {
 					expectedcampaigngifts = offerdata.get("Entry Promotion 1").trim();
 				}				
@@ -370,8 +369,8 @@ public class MerchandisingUtilities {
 		}
 		// Post-Purchase - Yes
 		else {
-			expectedfinalpricing = offerdata.get("Post Purchase Upsell Pricing").trim();	
-			expectedfinalshipping = offerdata.get("Post Purchase Upsell Shipping").trim();	
+			expectedEntryPrice = offerdata.get("Post Purchase Upsell Pricing").trim();	
+			expectedEntryShipping = offerdata.get("Post Purchase Upsell Shipping").trim();	
 			if(offerdata.get("Post Purchase Upsell Promotion 1") != null) {
 				expectedcampaigngifts = offerdata.get("Post Purchase Upsell Promotion 1").trim();
 			}			
@@ -417,9 +416,9 @@ public class MerchandisingUtilities {
 				continuityshipping = "No Continuity";
 			}
 		}		
-		expectedfinalpricing = expectedfinalpricing.replace("$", "");
-		expectedfinalshipping = expectedfinalshipping.replace("$", "");
-		
+//		expectedfinalpricing = expectedfinalpricing.replace("$", "");
+//		expectedfinalshipping = expectedfinalshipping.replace("$", "");
+//		
 		// Gift ppid
 		// No gift for MeaningfulBeauty - one-shot campaign
 		// And GiftPPID will carry Pre-Purchase value
@@ -446,6 +445,12 @@ public class MerchandisingUtilities {
 			}
 		}		
 		
+		expectedEntryPrice = expectedEntryPrice.replace("$", "");
+		expectedofferdata.put("Entry Pricing", expectedEntryPrice);
+		
+		expectedEntryShipping = expectedEntryShipping.replace("$", "");
+		expectedofferdata.put("Entry Shipping", expectedEntryShipping);		
+		
 		expectedofferdata.put("Campaign Gifts", expectedcampaigngifts);
 		expectedofferdata.put("PrePU Product", expectedprepuproduct);
 		expectedofferdata.put("PostPU Product", expectedpostpuproduct);
@@ -453,8 +458,8 @@ public class MerchandisingUtilities {
 		expectedofferdata.put("Supplemental Cart Language", expectedsuppcartlanguage);
 		expectedofferdata.put("Renewal Plan Id", expectedrenewalplanid);
 		expectedofferdata.put("Installment Plan Id", expectedinstallmentplanid);
-		expectedofferdata.put("Final Pricing", expectedfinalpricing);
-		expectedofferdata.put("Final Shipping", expectedfinalshipping);
+//		expectedofferdata.put("Final Pricing", expectedfinalpricing);
+//		expectedofferdata.put("Final Shipping", expectedfinalshipping);
 		expectedofferdata.put("Continuity Pricing", continuitypricing);	
 		expectedofferdata.put("Continuity Shipping", continuityshipping);
 		

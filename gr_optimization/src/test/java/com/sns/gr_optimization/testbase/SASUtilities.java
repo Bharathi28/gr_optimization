@@ -308,12 +308,12 @@ public class SASUtilities {
 			product_elmt.click();
 		}		
 		
-		if(brand.equalsIgnoreCase("JLoBeauty")) {
-			if(!(pagepattern.contains("shade"))) {
-				Thread.sleep(4000);
-				driver.findElement(By.xpath("//button[@id='add-cart-modal']")).click();
-			}
-		}
+//		if(brand.equalsIgnoreCase("JLoBeauty")) {
+//			if(!(pagepattern.contains("shade"))) {
+//				Thread.sleep(4000);
+//				driver.findElement(By.xpath("//button[@id='add-cart-modal']")).click();
+//			}
+//		}
 		Thread.sleep(1000);
 	}
 	
@@ -344,10 +344,10 @@ public class SASUtilities {
 			Thread.sleep(1000);	
 		}		
 		
-		if(brand.equalsIgnoreCase("JLoBeauty")) {
-			Thread.sleep(4000);
-			driver.findElement(By.xpath("//button[@id='add-cart-modal']")).click();
-		}
+//		if(brand.equalsIgnoreCase("JLoBeauty")) {
+//			Thread.sleep(4000);
+//			driver.findElement(By.xpath("//button[@id='add-cart-modal']")).click();
+//		}
 	}
 	
 	public void select_onetime(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
