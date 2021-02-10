@@ -189,6 +189,7 @@ public class BuyflowValidation {
 		///////////////////////////////////////////////////////////////		
 		// Read all Merchandising Input
 		String[][] catalogData = null;
+		String[][] JLoshipfreq = null;
 		String[][] merchData = null;		
 		
 		String brandcode = db_obj.get_sourceproductlinecode(brand);
@@ -199,6 +200,9 @@ public class BuyflowValidation {
 		// Read Web Catalog
 		if((category_list.contains("Product")) || (category_list.contains("SubscribeandSave")) || (category_list.contains("ShopKit"))) {
 			catalogData = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/Merchandising Input/" + brand + "/" + brandcode + " Web Catalog.xlsx", "Acq", 0);
+			if(brand.equalsIgnoreCase("JLoBeauty")) {
+				JLoshipfreq = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/Merchandising Input/" + brand + "/" + brandcode + " Web Catalog.xlsx", "Shipping Frequencies", 0);
+			}
 		}
 		
 		// Read Merchandising Input
@@ -493,6 +497,10 @@ public class BuyflowValidation {
 				// Get the product data from Web Catalog
 				HashMap<String, String> product_offerdata = merch_obj.getProdRowfromCatalog(catalogData, ppid);
 				
+				// Get Shipping Frequency
+				HashMap<String, String> product_shippingfrequency = merch_obj.getProdShippingFrequency(JLoshipfreq, ppid);
+				
+				// Get Price Book IDs
 				LinkedHashMap<String, String> catalogPriceBookIDs = merch_obj.getCatalogPriceBookIDs(catalogData);
 				
 				// Check if the PPID is present in the campaign
@@ -505,7 +513,7 @@ public class BuyflowValidation {
 				postpu = merch_obj.checkShopKitPostPU(product_offerdata, brand);
 				
 				// Collect current Offer related details from Merchandising Input file
-				expectedofferdata_product = merch_obj.generateExpectedOfferDataForProduct(product_offerdata, ppid, postpu, brand, campaigncategory, currentCategory, catalogPriceBookIDs);
+				expectedofferdata_product = merch_obj.generateExpectedOfferDataForProduct(product_offerdata, product_shippingfrequency, ppid, giftppid, postpu, brand, campaigncategory, currentCategory, catalogPriceBookIDs);
 				
 				// Add Product PPID to lineitem list
 				List<String> product_lineitem = new ArrayList<String>();

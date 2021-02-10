@@ -56,6 +56,9 @@ public class SASUtilities {
 	    	case "subscribe":
 	    		select_subscribe(driver, brand, campaign, offerdata);
 	    		break;
+	    	case "frequency":
+	    		select_frequency(driver, brand, campaign, offerdata);
+	    		break;	    		
 			}
 		}	
 		add_product_to_cart(driver, brand, campaign, category);
@@ -245,7 +248,7 @@ public class SASUtilities {
 	
 	public void select_giftshade(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
-		jse.executeScript("window.scrollBy(0,100)", 0);
+		jse.executeScript("window.scrollBy(0,500)", 0);
 		
 		String giftshade = offerdata.get("GiftShade");
 		
@@ -372,5 +375,14 @@ public class SASUtilities {
 		Thread.sleep(1000);
 		driver.findElement(By.xpath("//input[@name='dwopt_" + ppid + "_entryKit']/../../..//label[contains(@for,'entryKit-auto-renew')]")).click();
 		Thread.sleep(1000);
+	}
+	
+	public void select_frequency(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
+	
+		String shipfreq = offerdata.get("Shipping Frequency");
+		
+		Select sel_element = new Select(driver.findElement(By.xpath("//select[@id='shippingFrequencySelector']")));
+		sel_element.selectByVisibleText(shipfreq.toLowerCase() + "s");
+		Thread.sleep(2000);
 	}
 }

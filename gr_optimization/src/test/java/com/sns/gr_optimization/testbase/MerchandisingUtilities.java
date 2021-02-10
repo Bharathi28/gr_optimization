@@ -27,7 +27,7 @@ public class MerchandisingUtilities {
 		return expectedsourcecodedata;
 	}
 	
-	public HashMap<String, String> generateExpectedOfferDataForProduct(HashMap<String, String> offerdata, String kitppid, String PostPU, String brand, String campaign, String category, LinkedHashMap<String, String> CatalogPriceBookIDs) throws ClassNotFoundException, SQLException {
+	public HashMap<String, String> generateExpectedOfferDataForProduct(HashMap<String, String> offerdata, HashMap<String, String> ProductShipFreq, String kitppid, String Expshipfreq, String PostPU, String brand, String campaign, String category, LinkedHashMap<String, String> CatalogPriceBookIDs) throws ClassNotFoundException, SQLException {
 		LinkedHashMap<String, String> expectedofferdata = new LinkedHashMap<String, String>();
 		
 		expectedofferdata.put("Brand", brand);
@@ -102,10 +102,29 @@ public class MerchandisingUtilities {
 			if(offerdata.get("Subscribe and Save price") != null) {
 				expectedofferdata.put("Price", offerdata.get("Subscribe and Save price").trim());
 			}			
-					
-			expectedofferdata.put("Renewal Plan Id", offerdata.get("Renewal Plan ID").trim());
-			expectedofferdata.put("Cart Language", offerdata.get("Cart Language").trim());
-			expectedofferdata.put("Supplemental Cart Language", offerdata.get("Supplementary Cart Language").trim());
+			expectedofferdata.put("Shipping Frequency", Expshipfreq);
+			
+			String ShipFreqCol = Expshipfreq + " RP";
+			expectedofferdata.put("Renewal Plan Id", ProductShipFreq.get(ShipFreqCol).trim());
+			
+			String cartlanguage =  offerdata.get("Cart Language").trim();
+			if(Expshipfreq.contains("30")) {
+				cartlanguage = cartlanguage.replace("90", "30");
+			}
+			else if(Expshipfreq.contains("60")) {
+				cartlanguage = cartlanguage.replace("90", "60");
+			}
+			expectedofferdata.put("Cart Language", cartlanguage);
+			
+			
+			String supplementalcartlanguage =  offerdata.get("Supplementary Cart Language").trim();
+			if(Expshipfreq.contains("30")) {
+				supplementalcartlanguage = supplementalcartlanguage.replace("90", "30");
+			}
+			else if(Expshipfreq.contains("60")) {
+				supplementalcartlanguage = supplementalcartlanguage.replace("90", "60");
+			}
+			expectedofferdata.put("Supplemental Cart Language", supplementalcartlanguage);
 			
 			String[] lang_price_arr = lang_obj.parse_cart_language(offerdata.get("Cart Language").trim());			
 			String cart_lang_price = lang_price_arr[1];
@@ -147,6 +166,10 @@ public class MerchandisingUtilities {
 			}
 			else if(category.equalsIgnoreCase("SubscribeandSave")) {
 				pagepattern = pagepattern + "subscribe";
+				
+				if(brand.equalsIgnoreCase("JLoBeauty")) {
+					pagepattern = pagepattern + "-frequency";
+				}
 			}
 		}					
 		
@@ -733,7 +756,6 @@ public class MerchandisingUtilities {
 			if((colName != null) && (colName.equalsIgnoreCase("PPID"))) {
 				ppidcolumn = i;
 			}
-
 		}
 		
 		for(int i=0; i<catalogData.length; i++) {	
@@ -760,6 +782,32 @@ public class MerchandisingUtilities {
 			}
 		}
 		return productdata;
+	}
+	
+	public HashMap<String, String> getProdShippingFrequency(String[][] shipFreqData, String ppid) {
+		LinkedHashMap<String, String> shipfreqdata = new LinkedHashMap<String, String>();
+		int ppidcolumn = 0;
+		
+		for(int i=0; i<shipFreqData[0].length; i++) {
+			String colName = shipFreqData[0][i];
+			System.out.println(colName);
+			if((colName != null) && (colName.equalsIgnoreCase("PPID"))) {
+				ppidcolumn = i;
+			}
+		}
+		for(int i=0; i<shipFreqData.length; i++) {	
+			String ppidinrow = shipFreqData[i][ppidcolumn].replaceAll("\\s+", "");
+			System.out.println(ppidinrow);
+			if(ppidinrow.trim().equalsIgnoreCase(ppid.trim())){
+				for(int j=0; j<shipFreqData[0].length; j++) {
+					if(shipFreqData[0][j] != null) {
+						shipfreqdata.put(shipFreqData[0][j].trim(), shipFreqData[i][j]);
+					}
+				}
+			}
+		}		
+		System.out.println(shipfreqdata);
+		return shipfreqdata;
 	}
 	
 	public String checkShopKitPostPU(HashMap<String, String> offerdata, String brand) throws ClassNotFoundException, SQLException {
