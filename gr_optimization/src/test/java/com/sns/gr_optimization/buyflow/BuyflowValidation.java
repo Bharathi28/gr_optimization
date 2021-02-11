@@ -148,7 +148,7 @@ public class BuyflowValidation {
 		newDirectory.mkdir();
 		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Pixel Output");
 		newDirectory.mkdir();		
-		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel_Output", Output_foldername);
+		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel Output", Output_foldername);
 		newDirectory.mkdir();
 		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Run Output");
 		newDirectory.mkdir();
@@ -789,7 +789,7 @@ public class BuyflowValidation {
 			
 		// Scenario - 90-day order + Paypal - could not validate 90-day cart language and supplemental language because invalid zipcode could not be fill-in for Paypal
 		if((category_list.contains("Kit")) || (category_list.contains("SubscribeandSave")) || (category_list.contains("ShopKit"))) {
-//			if((!(cc.equalsIgnoreCase("Paypal"))) && (!(supplysize.equalsIgnoreCase("90"))) && (!(offer_postpurchase.equalsIgnoreCase("Yes")))) {
+//			if(!((cc.equalsIgnoreCase("Paypal")) && (supplysize.equalsIgnoreCase("90")) && (offer_postpurchase.equalsIgnoreCase("Yes")))){
 							
 				for(List<String> expected_item : expected_lineitems) {
 					String exp_suppl_cart_lang = expected_item.get(6);

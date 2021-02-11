@@ -596,7 +596,7 @@ public class BuyflowUtilities {
 	public String paypalPayment(WebDriver driver, WebDriverWait wait, JavascriptExecutor jse, String winHandleBefore, String realm) throws ClassNotFoundException, SQLException, InterruptedException {
 		// Email Field
 		Thread.sleep(5000);
-		driver.findElement(By.xpath("//div[@id='login_emaildiv']//div//input")).sendKeys("testbuyer2@guthy-renker.com");
+		driver.findElement(By.xpath("//div[@id='login_emaildiv']//div//input")).sendKeys("testbuyer1@guthy-renker.com");
 				
 		if(driver.findElements(By.xpath("//button[@class='button actionContinue scTrack:unifiedlogin-login-click-next']")).size() != 0) {
 			driver.findElement(By.xpath("//button[@class='button actionContinue scTrack:unifiedlogin-login-click-next']")).click();
@@ -619,7 +619,7 @@ public class BuyflowUtilities {
 		driver.switchTo().window(winHandleBefore);
 		Thread.sleep(2000);
 		fill_form_field(driver, realm, "Agree", "");
-		return "testbuyer2@guthy-renker.com";
+		return "testbuyer1@guthy-renker.com";
 	}
 	
 	public String getCCNumber(String cc) {
