@@ -102,6 +102,12 @@ public class ContentValidation {
 		String[][] catalogData = null;
 		String[][] merchData = null;
 
+		// Read All SEO Page
+		String[][] seoData = null;
+		HashMap<String, String> kit_offerdata_d = null;
+		HashMap<String, String> SAS_offerdata = null;
+		HashMap<String, String> Checkout_offerdata = null;
+
 		System.out.println(env);
 		List<String> category_list = Arrays.asList("Kit".split(","));
 		System.out.println(category_list);
@@ -112,6 +118,18 @@ public class ContentValidation {
 				+ "/Input_Output/BuyflowValidation/Merchandising Input/" + brand + "/" + campaigncategory + ".xlsx",
 				"Active Campaign", 0);
 
+		if (brand.equalsIgnoreCase("CrepeErase")) {
+			// Read SEO Page
+
+			seoData = comm_obj
+					.getExcelData(System.getProperty("user.dir") + "/Input_Output/ContentValidation/Content/SEO/"
+							+ English + "/src/" + brand + "/" + brand + ".xlsx", brand, 0);
+
+			kit_offerdata_d = content_obj.getProdRowfromCatalog(seoData, "Home page");
+
+			System.out.println("Page Source Data : " + kit_offerdata_d);
+
+		}
 		// PPID List<String> single_offers = merch_obj.fetch_random_singles(catalogData,
 		// 1);
 
@@ -167,6 +185,65 @@ public class ContentValidation {
 		String prepu = "No";
 		String T_C = "Terms & Conditions";
 		String P_P = "Privacy Policy";
+		String seo = "SEO";
+
+		// Get Page Source
+		if (brand.equalsIgnoreCase("CrepeErase")) {
+			String pageSource = driver.getPageSource();
+
+			content_obj.write_textfile(pageSource, brand, English, seo, "pageSource", ".txt");
+
+			String Title_Tag = kit_offerdata_d.get("Title Tag");
+			String Meta_description = kit_offerdata_d.get("Meta description");
+			String Meta_Name = kit_offerdata_d.get("Meta Name");
+			String Meta_verification = kit_offerdata_d.get("Meta Google-site-verification");
+
+			// System.out.println("Title Tag Data : " + Title_Tag);
+			// System.out.println("Title Tag Data : " + Meta_description);
+			// System.out.println("Title Tag Data : " + Meta_Name);
+			// System.out.println("Title Tag Data : " + Meta_verification);
+
+			Boolean Title_Tag_result = pageSource.contains(Title_Tag);
+			Boolean Meta_description_result = pageSource.contains(Meta_description);
+			Boolean Meta_Name_result = pageSource.contains(Meta_Name);
+			// if (homepage.trim().contains(pageSource.trim())) {
+			Boolean Meta_verification_result = pageSource.contains(Meta_verification);
+
+			// if (homepage.trim().contains(pageSource.trim())) {
+			if (Title_Tag_result == true) {
+				System.out.println("Title Tag Exp : " + pass);
+				output.add(content_obj.add_result(env, brand, campaign, "Homepage : Validate Title Tag ", pass));
+			} else {
+
+				System.out.println("Title Tag Exp : " + fail);
+				output.add(content_obj.add_result(env, brand, campaign, "Homepage : Validate Title Tag ", fail));
+			}
+			// }
+			if (Meta_description_result == true) {
+				System.out.println("Meta  description : " + pass);
+				output.add(content_obj.add_result(env, brand, campaign, "Homepage : Validate Meta description ", pass));
+			} else {
+
+				System.out.println("Meta  description Exp : " + fail);
+				output.add(content_obj.add_result(env, brand, campaign, "Homepage : Validate Meta description ", fail));
+			}
+			if (Meta_Name_result == true) {
+				System.out.println("Meta Name Exp : " + pass);
+			} else {
+
+				System.out.println("Meta Name Exp : " + fail);
+			}
+			if (Meta_verification_result == true) {
+				System.out.println("Meta Google-site-verification Exp : " + pass);
+				output.add(content_obj.add_result(env, brand, campaign,
+						"Homepage : Validate Meta Google-site-verification ", pass));
+			} else {
+
+				System.out.println("Meta Google-site-verification Exp : " + fail);
+				output.add(content_obj.add_result(env, brand, campaign,
+						"Homepage : Validate Meta Google-site-verification ", fail));
+			}
+		}
 
 		// Go to Terms Conditions
 		// output_row = new ArrayList<String>();
@@ -227,7 +304,7 @@ public class ContentValidation {
 		} catch (NoSuchElementException e) {
 			throw new RuntimeException("Terms & Conditions link not available");
 		}
-		String result = content_obj.Compare_text_file(path_src, brand, English, T_C);
+		String result = content_obj.Compare_text_file(path_src, brand, English, T_C, "Content", ".txt");
 		output_row.add(result);
 		output.add(output_row);
 
@@ -325,13 +402,18 @@ public class ContentValidation {
 		} catch (NoSuchElementException e) {
 			throw new RuntimeException("Terms & Conditions link not available");
 		}
-		String result_S = content_obj.Compare_text_file(path_src_S, brand, Spanish, T_C);
+		String result_S = content_obj.Compare_text_file(path_src_S, brand, Spanish, T_C, "Content", ".txt");
 		output_row.add(result_S);
 		output.add(output_row);
 
 		// Click English Version
 
 		content_obj.clickaelement(driver, env, brand, campaign, "Terms & Conditions English");
+
+		if (brand.equalsIgnoreCase("JLoBeauty") == true) {
+
+			content_obj.clickaelement(driver, env, brand, campaign, "CloseTermsConditions");
+		}
 
 		// Go to Privacy Policy
 
@@ -378,7 +460,7 @@ public class ContentValidation {
 		} catch (NoSuchElementException e) {
 			throw new RuntimeException("Privacy Policy link not available");
 		}
-		String result_PP = content_obj.Compare_text_file(path_src_PP, brand, English, P_P);
+		String result_PP = content_obj.Compare_text_file(path_src_PP, brand, English, P_P, "Content", ".txt");
 		output_row.add(result_PP);
 		output.add(output_row);
 
@@ -472,7 +554,7 @@ public class ContentValidation {
 		} catch (NoSuchElementException e) {
 			throw new RuntimeException("Privacy Policy link not available");
 		}
-		String result_PP_S = content_obj.Compare_text_file(path_src_PP_S, brand, Spanish, P_P);
+		String result_PP_S = content_obj.Compare_text_file(path_src_PP_S, brand, Spanish, P_P, "Content", ".txt");
 		output_row.add(result_PP_S);
 		output.add(output_row);
 
@@ -666,8 +748,8 @@ public class ContentValidation {
 		// }
 		String Gift_PPID = expectedofferdata_kit.get("Gift PPID");
 		String[] arrOfStr = Gift_PPID.split(",", 2);
-		expectedofferdata_kit.put("Gift PPID", arrOfStr[1]);
-		System.out.println("Selected Gift : " + arrOfStr[1]);
+		expectedofferdata_kit.put("Gift PPID", arrOfStr[0]);
+		System.out.println("Selected Gift : " + arrOfStr[0]);
 
 		// Select offer
 
@@ -675,6 +757,44 @@ public class ContentValidation {
 
 		// Check DND on SAS Page
 		output.add(content_obj.donotsell(driver, env, brand, campaign, "SASPage"));
+
+		if (brand.equalsIgnoreCase("CrepeErase")) {
+
+			SAS_offerdata = content_obj.getProdRowfromCatalog(seoData, "SAS page");
+
+			// System.out.println("Page Source Data : " + SAS_offerdata);
+
+			String pageSource = driver.getPageSource();
+
+			content_obj.write_textfile(pageSource, brand, English, seo, "pageSource_SAS_Page", ".txt");
+
+			String Title_Tag = SAS_offerdata.get("Title Tag");
+			String Meta_description = SAS_offerdata.get("Meta description");
+
+			System.out.println(" SAS Page Data : " + Title_Tag);
+			System.out.println(" SAS Page Data : " + Meta_description);
+
+			Boolean Title_Tag_result = pageSource.contains(Title_Tag);
+			Boolean Meta_description_result = pageSource.contains(Meta_description);
+			// if (homepage.trim().contains(pageSource.trim())) {
+			if (Title_Tag_result == true) {
+				System.out.println(" SAS Page Exp : " + pass);
+				output.add(content_obj.add_result(env, brand, campaign, "SAS Page : Validate Title Tag ", pass));
+			} else {
+
+				System.out.println(" SAS Page Exp : " + fail);
+				output.add(content_obj.add_result(env, brand, campaign, "SAS Page : Validate Title Tag ", fail));
+			}
+			if (Meta_description_result == true) {
+				System.out.println(" SAS Page Exp : " + pass);
+				output.add(content_obj.add_result(env, brand, campaign, "SAS Page : Validate Meta description ", pass));
+			} else {
+
+				System.out.println(" SAS Page Exp : " + fail);
+				output.add(content_obj.add_result(env, brand, campaign, "SAS Page : Validate Meta description ", fail));
+			}
+
+		}
 
 		// Move to Checkout
 
@@ -697,21 +817,71 @@ public class ContentValidation {
 		String Append_xml = url + "/" + site;
 		driver.get(Append_xml);
 
-		output.add(content_obj.Check_Available(driver, env, brand, campaign, site, "Validate sitemap.xml "));
+		content_obj.Check_Available(driver, env, brand, campaign, site, "Validate sitemap.xml ");
+
+		if (brand.equalsIgnoreCase("CrepeErase")) {
+			// Compare sitemap.xml Text
+			output_row = new ArrayList<String>();
+			output_row.add(env);
+			output_row.add(brand);
+			output_row.add(campaign);
+			output_row.add("Validate sitemap.xml Data ");
+			String sitemap = content_obj.get_String(driver, env, brand, campaign, "sitemap.xml data");
+			content_obj.write_textfile(sitemap, brand, English, seo, "CE-Sitemap", ".xml");
+			File path_sitemap = new File(System.getProperty("user.dir") + "\\Input_Output\\ContentValidation\\Content\\"
+					+ seo + "\\" + English + "\\src\\" + brand + "\\" + "CE-Sitemap.xml");
+			String result_sitemap = content_obj.Compare_text_file(path_sitemap, brand, English, seo, "CE-Sitemap",
+					".xml");
+
+			if (result_sitemap == null) {
+
+				output_row.add(pass);
+			} else {
+				output_row.add(fail);
+			}
+			output_row.add(result_sitemap);
+			output.add(output_row);
+		}
+
+//		HashMap<String, String> robots = content_obj.getSourceCodeInfo(seoData, brand);
+//		System.out.println(robots);
 
 		// Move - robots.txt
 		String Append_rb = null;
 		String txt = "robots.txt";
-		// if (campaign.equalsIgnoreCase("Core") == false) {
-		// String[] up_url = url.split("/", 4);
-		// Append_rb = up_url[2] + "/" + txt;
-		// }
-		Append_rb = url + "/" + txt;
+		if (campaign.equalsIgnoreCase("Core") == false) {
+			String[] up_url = url.split("/", 4);
+			String up = up_url[0] + "/" + up_url[1] + up_url[2];
+			Append_rb = up + "/" + txt;
+		} else {
+			Append_rb = url + "/" + txt;
+		}
 		System.out.println("URL : " + Append_rb);
 		driver.get(Append_rb);
 
-		output.add(content_obj.Check_Available(driver, env, brand, campaign, txt, "Validate Robots.txt "));
+		content_obj.Check_Available(driver, env, brand, campaign, txt, "Validate Robots.txt ");
 
+		if (brand.equalsIgnoreCase("CrepeErase")) {
+			// Compare Robots Text
+			output_row = new ArrayList<String>();
+			output_row.add(env);
+			output_row.add(brand);
+			output_row.add(campaign);
+			output_row.add("Validate Robots.txt Data ");
+			String robots = content_obj.get_String(driver, env, brand, campaign, txt);
+			content_obj.write_textfile(robots, brand, English, seo, "Robotx_src", ".txt");
+			File path_robots = new File(System.getProperty("user.dir") + "\\Input_Output\\ContentValidation\\Content\\"
+					+ seo + "\\" + English + "\\src\\" + brand + "\\" + "Robotx_src.txt");
+			String result_robots = content_obj.Compare_text_file(path_robots, brand, English, seo, "Robotx", ".txt");
+			if (result_robots == null) {
+
+				output_row.add(pass);
+			} else {
+				output_row.add(fail);
+			}
+			output_row.add(result_robots);
+			output.add(output_row);
+		}
 		driver.quit();
 
 	}
@@ -727,7 +897,8 @@ public class ContentValidation {
 		// List<String> attachmentList = new ArrayList<String>();
 		attachmentList.add(file);
 
-		mailObj.sendEmail("Content Validation Results", sendReportTo, attachmentList);
+		// mailObj.sendEmail("Content Validation Results", sendReportTo,
+		// attachmentList);
 	}
 
 	public void mkdir() {

@@ -7,9 +7,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
@@ -26,11 +32,11 @@ public class ContentUtilities {
 
 //	public void select_subscribe(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata)
 //			throws ClassNotFoundException, SQLException, InterruptedException, IOException {
-	public String Compare_text_file(File path_src, String brand, String lang, String T_C)
-			throws ClassNotFoundException, SQLException, InterruptedException, IOException {
+	public String Compare_text_file(File path_src, String brand, String lang, String T_C, String filename,
+			String format) throws ClassNotFoundException, SQLException, InterruptedException, IOException {
 
 		File path_des = new File(System.getProperty("user.dir") + "\\Input_Output\\ContentValidation\\Content\\" + T_C
-				+ "\\" + lang + "\\des\\" + brand + "\\" + "Content.txt");
+				+ "\\" + lang + "\\des\\" + brand + "\\" + filename + format);
 
 		BufferedReader reader1 = new BufferedReader(new FileReader(path_src));
 		BufferedReader reader2 = new BufferedReader(new FileReader(path_des));
@@ -95,6 +101,21 @@ public class ContentUtilities {
 
 	}
 
+	public void write_textfile(String W, String brand, String lang, String T_C, String filename, String format) {
+		try {
+			File newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\ContentValidation\\Content\\"
+					+ T_C + "\\" + lang + "\\src\\" + brand + "\\" + filename + format); // "Robotx_src.txt"
+			FileWriter myWriter = new FileWriter(newDirectory);// "filename.txt"
+			myWriter.write(W);
+			myWriter.close();
+			System.out.println("Successfully wrote Content to the file : " + newDirectory);
+		} catch (IOException e) {
+			System.out.println("An error occurred.");
+			e.printStackTrace();
+		}
+
+	}
+
 	public List<Map<String, Object>> get_terms_conditions(String brand, String campaign, String step, String offer)
 			throws ClassNotFoundException, SQLException {
 
@@ -126,9 +147,32 @@ public class ContentUtilities {
 			query = query + include_offer;
 		}
 //		query = query + ";";
-		// System.out.println("Locator : " + query);
+		System.out.println("Locator query: " + query);
+
 		List<Map<String, Object>> locator = DBLibrary.dbAction("fetch", query);
+
 		return locator;
+	}
+
+	public void upsell_terms_conditions(WebDriver driver, String brand, String campaign, String upsell)
+			throws InterruptedException, ClassNotFoundException, SQLException {
+		Thread.sleep(4000);
+		JavascriptExecutor jse = (JavascriptExecutor) driver;
+
+		List<Map<String, Object>> locator = null;
+
+		locator = get_terms_conditions(brand, campaign, "PostPU", upsell);
+
+		if (locator.size() == 0) {
+			locator = get_terms_conditions(brand, null, "PostPU", upsell);
+		}
+
+		String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
+		String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();
+		jse.executeScript("window.scrollBy(0,350)", 0);
+		Thread.sleep(4000);
+
+		comm_obj.find_webelement(driver, elementlocator, elementvalue).click();
 	}
 
 	public List<String> donotsell(WebDriver driver, String ev, String bnd, String cpg, String Query_Name)
@@ -229,6 +273,92 @@ public class ContentUtilities {
 		js.executeScript("arguments[0].scrollIntoView();", Element);
 
 		kit_elmt_Customer_Service.click();
+	}
+
+	public String get_String(WebDriver driver, String ev, String bnd, String cpg, String Query_Name) throws Exception {
+		String output_row = null;
+		List<Map<String, Object>> Privacy_Policy_Content_S = null;
+		Privacy_Policy_Content_S = get_terms_conditions(bnd, cpg, Query_Name, null);
+		String elementvalue_Content_PP_S = Privacy_Policy_Content_S.get(0).get("ELEMENTVALUE").toString();
+		String elementlocator_Content_PP_S = Privacy_Policy_Content_S.get(0).get("ELEMENTLOCATOR").toString();
+
+		WebElement kit_elmt_robot = comm_obj.find_webelement(driver, elementlocator_Content_PP_S,
+				elementvalue_Content_PP_S);
+		comm_obj.waitUntilElementAppears(driver, elementvalue_Content_PP_S);
+
+		try {
+			kit_elmt_robot.isDisplayed();
+			if (driver.findElements(By.xpath(elementvalue_Content_PP_S)).size() != 0) {
+				output_row = kit_elmt_robot.getText();
+			} else {
+				output_row = "No Data found";
+			}
+
+		} catch (NoSuchElementException e) {
+			throw new RuntimeException(" not available");
+		}
+
+		return output_row;
+	}
+
+	// public HashMap<String, String> getProdRowfromCatalog(String[][] catalogData,
+	// String ppid) {
+	public HashMap<String, String> getProdRowfromCatalog(String[][] catalogData, String ppid) {
+		LinkedHashMap<String, String> productdata = new LinkedHashMap<String, String>();
+
+		int ppidcolumn = 0; // --->> row
+
+		for (int i = 0; i < catalogData[0].length; i++) {
+			String colName = catalogData[0][i];
+			String colName2 = colName.trim();
+			if ((colName2 != null) && (colName2.equalsIgnoreCase("Page Name") && (colName2.contains("Page Name")))) {
+				ppidcolumn = i;
+			}
+		}
+		System.out.println(ppidcolumn);
+
+		for (int i = 0; i < catalogData.length; i++) {
+			String ppidinrow = "";
+			if (ppidinrow != null) {
+				ppidinrow = catalogData[i][ppidcolumn];
+				System.out.println("ppidinrow :" + ppidinrow);
+				// ppidinrow = catalogData[i][ppidcolumn].replaceAll("\\s+", "");
+			}
+
+			// System.out.println("Test : " + ppidinrow + " " + ppid);//
+			// System.out.println("catalogData 1 : " + catalogData[0][1] + " " +
+			// catalogData[i][1]);
+			if (ppidinrow != null) {
+				if (ppidinrow.trim().equalsIgnoreCase(ppid.trim())) {
+					for (int j = 0; j < catalogData[0].length; j++) {
+						// if (catalogData[0][j] != null) {
+						productdata.put(catalogData[0][j].trim(), catalogData[i][j]);
+						// System.out.println("catalogData 2 : " + catalogData[0][j] + " " +
+						// catalogData[i][j]);
+						// }
+					}
+					break;
+				}
+
+			}
+
+			// }
+		}
+		// System.out.println("productdata : " + productdata);
+		return productdata;
+
+	}
+
+	public List<String> add_result(String EV, String BD, String CG, String Validate_Off, String Result) {
+		// Bind all result together
+		List<String> output_row = new ArrayList<String>();
+		output_row = new ArrayList<String>();
+		output_row.add(EV);
+		output_row.add(BD);
+		output_row.add(CG);
+		output_row.add(Validate_Off);
+		output_row.add(Result);
+		return output_row;
 	}
 
 }

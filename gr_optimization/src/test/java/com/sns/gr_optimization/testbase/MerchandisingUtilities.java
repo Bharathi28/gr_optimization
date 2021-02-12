@@ -278,9 +278,7 @@ public class MerchandisingUtilities {
 //			expectedEntryPrice = offerdata.get("Entry Pricing").trim();
 //			expectedEntryShipping = offerdata.get("Entry Shipping").trim();
 		}					
-		expectedofferdata.put("30 day PPID", ppid30day);
-		
-		
+		expectedofferdata.put("30 day PPID", ppid30day);	
 		
 		String expectedEntryPrice = "";
 		String expectedEntryShipping = "";
@@ -320,29 +318,47 @@ public class MerchandisingUtilities {
 //				}			
 				
 				// Continuity Pricing and Shipping
-				if((offerdata.get("Pre Purchase Continuity Pricing (product)") != null) && (!(offerdata.get("Pre Purchase Continuity Pricing (product)").equalsIgnoreCase("-")))) {
-					continuitypricing = offerdata.get("Pre Purchase Continuity Pricing (product)").trim();	
-					continuitypricing = continuitypricing.replace("$", "");
-				}
-				else if((offerdata.get("Continuity Pricing (product)") != null) && (!(offerdata.get("Continuity Pricing (product)").equalsIgnoreCase("-")))) {
-					continuitypricing = offerdata.get("Continuity Pricing (product)").trim();	
-					continuitypricing = continuitypricing.replace("$", "");
-				}
-				else {
-					continuitypricing = "No Continuity";
-				}
-				
-				if((offerdata.get("Pre Purchase Continuity Shipping") != null) && (!(offerdata.get("Pre Purchase Continuity Shipping").equalsIgnoreCase("-")))) {
-					continuityshipping = offerdata.get("Pre Purchase Continuity Shipping").trim();
-					continuityshipping = continuityshipping.replace("$", "");
-				}	
-				else if((offerdata.get("Continuity Shipping") != null) && (!(offerdata.get("Continuity Shipping").equalsIgnoreCase("-")))) {
-					continuityshipping = offerdata.get("Continuity Shipping").trim();	
-					continuityshipping = continuityshipping.replace("$", "");
+				if((brand.equalsIgnoreCase("Smileactives")) && (campaign.equalsIgnoreCase("core2"))) {
+					if((offerdata.get("Pre Purchase Continuity Pricing (product)") != null) && (!(offerdata.get("Pre Purchase Continuity Pricing (product)").equalsIgnoreCase("-")))) {
+						continuitypricing = offerdata.get("Pre Purchase Continuity Pricing (product)").trim();	
+						continuitypricing = continuitypricing.replace("$", "");
+					}
+					else {
+						continuitypricing = "No Continuity";
+					}
+					if((offerdata.get("Pre Purchase Continuity Shipping") != null) && (!(offerdata.get("Pre Purchase Continuity Shipping").equalsIgnoreCase("-")))) {
+						continuityshipping = offerdata.get("Pre Purchase Continuity Shipping").trim();
+						continuityshipping = continuityshipping.replace("$", "");
+					}	
+					else {
+						continuityshipping = "No Continuity";
+					}
 				}
 				else {
-					continuityshipping = "No Continuity";
-				}
+					if((offerdata.get("Pre Purchase Continuity Pricing (product)") != null) && (!(offerdata.get("Pre Purchase Continuity Pricing (product)").equalsIgnoreCase("-")))) {
+						continuitypricing = offerdata.get("Pre Purchase Continuity Pricing (product)").trim();	
+						continuitypricing = continuitypricing.replace("$", "");
+					}
+					else if((offerdata.get("Continuity Pricing (product)") != null) && (!(offerdata.get("Continuity Pricing (product)").equalsIgnoreCase("-")))) {
+						continuitypricing = offerdata.get("Continuity Pricing (product)").trim();	
+						continuitypricing = continuitypricing.replace("$", "");
+					}
+					else {
+						continuitypricing = "No Continuity";
+					}
+					
+					if((offerdata.get("Pre Purchase Continuity Shipping") != null) && (!(offerdata.get("Pre Purchase Continuity Shipping").equalsIgnoreCase("-")))) {
+						continuityshipping = offerdata.get("Pre Purchase Continuity Shipping").trim();
+						continuityshipping = continuityshipping.replace("$", "");
+					}	
+					else if((offerdata.get("Continuity Shipping") != null) && (!(offerdata.get("Continuity Shipping").equalsIgnoreCase("-")))) {
+						continuityshipping = offerdata.get("Continuity Shipping").trim();	
+						continuityshipping = continuityshipping.replace("$", "");
+					}
+					else {
+						continuityshipping = "No Continuity";
+					}
+				}						
 			}
 			// Pre-Purchase - No
 			else {
@@ -365,28 +381,46 @@ public class MerchandisingUtilities {
 //				}												
 								
 				// Continuity Pricing and Shipping
-				if((offerdata.get("Entry Continuity Pricing (product)") != null) && (!(offerdata.get("Entry Continuity Pricing (product)").equalsIgnoreCase("-")))) {
-					continuitypricing = offerdata.get("Entry Continuity Pricing (product)").trim();	
-					continuitypricing = continuitypricing.replace("$", "");
-				}
-				else if((offerdata.get("Continuity Pricing (product)") != null) && (!(offerdata.get("Continuity Pricing (product)").equalsIgnoreCase("-")))) {
-					continuitypricing = offerdata.get("Continuity Pricing (product)").trim();	
-					continuitypricing = continuitypricing.replace("$", "");
-				}
-				else {
-					continuitypricing = "No Continuity";
-				}
-				
-				if((offerdata.get("Entry Continuity Shipping") != null) && (!(offerdata.get("Entry Continuity Shipping").equalsIgnoreCase("-")))) {
-					continuityshipping = offerdata.get("Entry Continuity Shipping").trim();
-					continuityshipping = continuityshipping.replace("$", "");
-				}	
-				else if((offerdata.get("Continuity Shipping") != null) && (!(offerdata.get("Continuity Shipping").equalsIgnoreCase("-")))) {
-					continuityshipping = offerdata.get("Continuity Shipping").trim();	
-					continuityshipping = continuityshipping.replace("$", "");
+				if((brand.equalsIgnoreCase("Smileactives")) && (campaign.equalsIgnoreCase("core2"))) {
+					if((offerdata.get("Entry Continuity Pricing (product)") != null) && (!(offerdata.get("Entry Continuity Pricing (product)").equalsIgnoreCase("-")))) {
+						continuitypricing = offerdata.get("Entry Continuity Pricing (product)").trim();	
+						continuitypricing = continuitypricing.replace("$", "");
+					}
+					else {
+						continuitypricing = "No Continuity";
+					}
+					if((offerdata.get("Entry Continuity Shipping") != null) && (!(offerdata.get("Entry Continuity Shipping").equalsIgnoreCase("-")))) {
+						continuityshipping = offerdata.get("Entry Continuity Shipping").trim();
+						continuityshipping = continuityshipping.replace("$", "");
+					}	
+					else {
+						continuityshipping = "No Continuity";
+					}
 				}
 				else {
-					continuityshipping = "No Continuity";
+					if((offerdata.get("Entry Continuity Pricing (product)") != null) && (!(offerdata.get("Entry Continuity Pricing (product)").equalsIgnoreCase("-")))) {
+						continuitypricing = offerdata.get("Entry Continuity Pricing (product)").trim();	
+						continuitypricing = continuitypricing.replace("$", "");
+					}
+					else if((offerdata.get("Continuity Pricing (product)") != null) && (!(offerdata.get("Continuity Pricing (product)").equalsIgnoreCase("-")))) {
+						continuitypricing = offerdata.get("Continuity Pricing (product)").trim();	
+						continuitypricing = continuitypricing.replace("$", "");
+					}
+					else {
+						continuitypricing = "No Continuity";
+					}
+					
+					if((offerdata.get("Entry Continuity Shipping") != null) && (!(offerdata.get("Entry Continuity Shipping").equalsIgnoreCase("-")))) {
+						continuityshipping = offerdata.get("Entry Continuity Shipping").trim();
+						continuityshipping = continuityshipping.replace("$", "");
+					}	
+					else if((offerdata.get("Continuity Shipping") != null) && (!(offerdata.get("Continuity Shipping").equalsIgnoreCase("-")))) {
+						continuityshipping = offerdata.get("Continuity Shipping").trim();	
+						continuityshipping = continuityshipping.replace("$", "");
+					}
+					else {
+						continuityshipping = "No Continuity";
+					}
 				}
 			}					
 		}
@@ -439,9 +473,7 @@ public class MerchandisingUtilities {
 				continuityshipping = "No Continuity";
 			}
 		}		
-//		expectedfinalpricing = expectedfinalpricing.replace("$", "");
-//		expectedfinalshipping = expectedfinalshipping.replace("$", "");
-//		
+	
 		// Gift ppid
 		// No gift for MeaningfulBeauty - one-shot campaign
 		// And GiftPPID will carry Pre-Purchase value
@@ -481,8 +513,6 @@ public class MerchandisingUtilities {
 		expectedofferdata.put("Supplemental Cart Language", expectedsuppcartlanguage);
 		expectedofferdata.put("Renewal Plan Id", expectedrenewalplanid);
 		expectedofferdata.put("Installment Plan Id", expectedinstallmentplanid);
-//		expectedofferdata.put("Final Pricing", expectedfinalpricing);
-//		expectedofferdata.put("Final Shipping", expectedfinalshipping);
 		expectedofferdata.put("Continuity Pricing", continuitypricing);	
 		expectedofferdata.put("Continuity Shipping", continuityshipping);
 		

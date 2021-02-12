@@ -148,7 +148,7 @@ public class SASUtilities {
 	
 	public void moveto_prepu(WebDriver driver, String brand, String campaign) throws InterruptedException, ClassNotFoundException, SQLException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
-		jse.executeScript("window.scrollBy(0,200)", 0);
+		jse.executeScript("window.scrollBy(0,500)", 0);
 		
 		List<Map<String, Object>> locator = null;
 		
