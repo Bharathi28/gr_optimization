@@ -18,11 +18,13 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
@@ -31,6 +33,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.Select;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
@@ -123,10 +126,10 @@ public class BuyflowValidation {
 			}
 			else if(testSuite.equalsIgnoreCase("Pixel")) {
 				if((day == 5) || (day == 6)) {
-					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "FBPixels", 1);
+					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "AllPixels", 1);
 				}
 				else {
-					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "AllPixels", 1);
+					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "FBPixels", 1);
 				}
 			}
 		}
@@ -302,6 +305,8 @@ public class BuyflowValidation {
 		
 		String postpu = "No";
 		String prepu = "No";
+		
+		String jloShippingSelect = "";
 		
 		while(offerIterator.hasNext() && categoryIterator.hasNext()) {
 			String ppid = offerIterator.next();			
@@ -533,44 +538,83 @@ public class BuyflowValidation {
 				}				
 				
 				String shipping_calc = "";
-				if((category_list.contains("Kit")) || (currentCategory.equalsIgnoreCase("SubscribeandSave")) || (category_list.contains("ShopKit"))){
-					shipping_calc = "FREE";
-				}
-				else {
-					String subtotal_str = bf_obj.CalculateTotalPrice(subtotal_list_forshippingcalc);
-					double subtotal_calc = Double.parseDouble(subtotal_str);  
+				String subtotal_str = bf_obj.CalculateTotalPrice(subtotal_list_forshippingcalc);
+				double subtotal_calc = Double.parseDouble(subtotal_str);  
+				if(brand.equalsIgnoreCase("JLoBeauty")) {
+					String[] jloShippingOptions= {"Free Shipping","Two Day Shipping"};
+					int rnd = new Random().nextInt(jloShippingOptions.length);
 					
-					if(brand.equalsIgnoreCase("MeaningfulBeauty")) {
-						if(subtotal_calc > 89) {
-							shipping_calc = "$8.99";
-						}
-						else if(subtotal_calc > 59) {
-							shipping_calc = "$7.99";
-						}
-						else if(subtotal_calc > 40) {
-							shipping_calc = "$6.99";
-						}
-						else {
-							shipping_calc = "$5.99";
-						}
-					}
-					else {
-						if(subtotal_calc > 49) {
-							shipping_calc = "FREE";
-						}
-						else {
-							if(brand.equalsIgnoreCase("JLoBeauty")) {
-								shipping_calc = "$4.99";
+					jloShippingSelect = jloShippingOptions[rnd];
+					
+					if(currentCategory.equalsIgnoreCase("Product")) {
+						if(jloShippingSelect.equals("Free Shipping")) {
+							if(subtotal_calc > 49) {
+								shipping_calc = "FREE";
 							}
-							else if(brand.equalsIgnoreCase("CrepeErase")){
-								shipping_calc = "$5.99";
-							}		
 							else {
 								shipping_calc = "$4.99";
 							}
 						}
-					} 
+						else if(jloShippingSelect.equals("Two Day Shipping")) {
+							if(subtotal_calc >= 49) {
+								shipping_calc = "$5.99";
+							}
+							else {
+								shipping_calc = "$9.99";
+							}
+						}
+					}
+					else if(currentCategory.equalsIgnoreCase("SubscribeandSave")) {
+						if(jloShippingSelect.equals("Free Shipping")) {
+							shipping_calc = "FREE";
+						}
+						else if(jloShippingSelect.equals("Two Day Shipping")) {
+							if(subtotal_calc > 49) {
+								shipping_calc = "$5.99";
+							}
+							else {
+								shipping_calc = "$9.99";
+							}
+						}
+					}					
 				}
+				else {
+					if((category_list.contains("Kit")) || (category_list.contains("SubscribeandSave")) || (category_list.contains("ShopKit"))) {
+						shipping_calc = "FREE";
+					}
+					else {						
+						if(brand.equalsIgnoreCase("MeaningfulBeauty")) {
+							if(subtotal_calc > 89) {
+								shipping_calc = "$8.99";
+							}
+							else if(subtotal_calc > 59) {
+								shipping_calc = "$7.99";
+							}
+							else if(subtotal_calc > 40) {
+								shipping_calc = "$6.99";
+							}
+							else {
+								shipping_calc = "$5.99";
+							}
+						}
+						else {
+							if(subtotal_calc > 49) {
+								shipping_calc = "FREE";
+							}
+							else {
+								if(brand.equalsIgnoreCase("JLoBeauty")) {
+									shipping_calc = "$4.99";
+								}
+								else if(brand.equalsIgnoreCase("CrepeErase")){
+									shipping_calc = "$5.99";
+								}		
+								else {
+									shipping_calc = "$4.99";
+								}
+							}
+						} 
+					}
+				}				
 				
 				shipping_list.add(shipping_calc);
 				if((currentCategory.equalsIgnoreCase("SubscribeandSave")) || (currentCategory.equalsIgnoreCase("ShopKit"))) {
@@ -824,6 +868,19 @@ public class BuyflowValidation {
 				}					
 			}
 		}		
+		
+		// JLoBeauty - select shipping
+		// {"Free Shipping","Two Day Shipping"};
+		Select sel_element = new Select(driver.findElement(By.xpath("//select[@id='dwfrm_singleshipping_shippingAddress_shippingMethodID']")));
+		System.out.println("Selected Shipping : " + jloShippingSelect);
+		if(jloShippingSelect.equalsIgnoreCase("Free Shipping")){
+			sel_element.selectByValue("Standard");
+		}
+		else {
+			sel_element.selectByValue("TwoDay");
+		}
+		driver.findElement(By.xpath("//div[@class='shippinglist-section clearfix']//div[1]")).click();
+		Thread.sleep(2000);
 				
 		// Validate Checkout pricing		
 		// Get Actual Checkout Price
@@ -841,10 +898,23 @@ public class BuyflowValidation {
 			checkout_total = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Paypal Review Total");
 		}
 		else {
-			checkout_subtotal = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Subtotal");
-			checkout_shipping = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Shipping");
-			checkout_salestax = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Salestax");
-			checkout_total = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Total");
+			if((cc.equalsIgnoreCase("Paypal")) && (brand.equalsIgnoreCase("JLoBeauty"))) {
+				checkout_subtotal = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Subtotal");
+				checkout_shipping = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Paypal Shipping");
+				checkout_salestax = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Salestax");
+				checkout_total = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Total");
+			}
+			else {
+				checkout_subtotal = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Subtotal");
+				if(brand.equalsIgnoreCase("JLoBeauty")) {
+					checkout_shipping = sel_element.getFirstSelectedOption().getText();
+				}
+				else{
+					checkout_shipping = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Shipping");
+				}				
+				checkout_salestax = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Salestax");
+				checkout_total = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Total");
+			}			
 		}			
 		System.out.println("Checkout Pricing fetched : " + checkout_subtotal + "," + checkout_shipping + "," + checkout_salestax + "," + checkout_total);
 				
@@ -862,6 +932,9 @@ public class BuyflowValidation {
 		
 		// Calculate Expected Checkout - Shipping Price
 		String expected_shipping = bf_obj.CalculateTotalPrice(shipping_list);
+		checkout_shipping = checkout_shipping.replace("Standard","");
+		checkout_shipping = checkout_shipping.replace("Two Day Shipping","");
+		checkout_shipping = checkout_shipping.replace("\n","");
 		
 		if(expected_shipping.contains("0.0")) {
 			if((checkout_shipping.contains("0.0")) || (checkout_shipping.equalsIgnoreCase("FREE"))) {

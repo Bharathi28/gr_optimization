@@ -119,10 +119,10 @@ public class MerchandisingUtilities {
 			
 			String supplementalcartlanguage =  offerdata.get("Supplementary Cart Language").trim();
 			if(Expshipfreq.contains("30")) {
-				supplementalcartlanguage = supplementalcartlanguage.replace("90", "30");
+				supplementalcartlanguage = supplementalcartlanguage.replace(" 90", " 30");
 			}
 			else if(Expshipfreq.contains("60")) {
-				supplementalcartlanguage = supplementalcartlanguage.replace("90", "60");
+				supplementalcartlanguage = supplementalcartlanguage.replace(" 90", " 60");
 			}
 			expectedofferdata.put("Supplemental Cart Language", supplementalcartlanguage);
 			
