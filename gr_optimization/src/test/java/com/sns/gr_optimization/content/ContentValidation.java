@@ -107,6 +107,7 @@ public class ContentValidation {
 		HashMap<String, String> kit_offerdata_d = null;
 		HashMap<String, String> SAS_offerdata = null;
 		HashMap<String, String> Checkout_offerdata = null;
+		HashMap<String, String> pre_upsell_page = null;
 
 		System.out.println(env);
 		List<String> category_list = Arrays.asList("Kit".split(","));
@@ -246,32 +247,33 @@ public class ContentValidation {
 		}
 
 		// Go to Terms Conditions
-		// output_row = new ArrayList<String>();
-		// output_row.add(env);
-		// output_row.add(brand);
-		// output_row.add(campaign);
-		// output_row.add("Terms & Conditions : ");
-		List<Map<String, Object>> Terms_Conditions_locator = null;
-		Terms_Conditions_locator = content_obj.get_terms_conditions(brand, campaign, "Terms & Conditions", null);
-		String elementvalue = Terms_Conditions_locator.get(0).get("ELEMENTVALUE").toString();
-		String elementlocator = Terms_Conditions_locator.get(0).get("ELEMENTLOCATOR").toString();
 
-		WebElement kit_elmt = comm_obj.find_webelement(driver, elementlocator, elementvalue);
-		comm_obj.waitUntilElementAppears(driver, elementvalue);
-		Thread.sleep(1000);
-		try {
-			kit_elmt.isDisplayed();
-			if (driver.findElements(By.xpath(elementvalue)).size() != 0) {
-				// output_row.add(pass);
-			} else {
-				// output_row.add(fail);
-			}
+		content_obj.clickaelement(driver, env, brand, campaign, "Terms & Conditions");
 
-		} catch (NoSuchElementException e) {
-			throw new RuntimeException("Terms & Conditions link not available");
-		}
-		kit_elmt.click();
-		// output.add(output_row);
+		// List<Map<String, Object>> Terms_Conditions_locator = null;
+		// Terms_Conditions_locator = content_obj.get_terms_conditions(brand, campaign,
+		// "Terms & Conditions", null);
+		// String elementvalue =
+		// Terms_Conditions_locator.get(0).get("ELEMENTVALUE").toString();
+		// String elementlocator =
+		// Terms_Conditions_locator.get(0).get("ELEMENTLOCATOR").toString();
+		//
+		// WebElement kit_elmt = comm_obj.find_webelement(driver, elementlocator,
+		// elementvalue);
+		// comm_obj.waitUntilElementAppears(driver, elementvalue);
+		// Thread.sleep(1000);
+		// try {
+		// kit_elmt.isDisplayed();
+		// if (driver.findElements(By.xpath(elementvalue)).size() != 0) {
+		//
+		// } else {
+		//
+		// }
+		//
+		// } catch (NoSuchElementException e) {
+		// throw new RuntimeException("Terms & Conditions link not available");
+		// }
+		// kit_elmt.click();
 
 		// Check Content T & C - English
 		List<Map<String, Object>> Terms_Conditions_Content = null;
@@ -337,7 +339,14 @@ public class ContentValidation {
 		output.add(output_row);
 
 		// Click T & C Spanish
-		content_obj.clickaelement(driver, env, brand, campaign, "Terms & Conditions Español");
+
+		if (brand.equalsIgnoreCase("MallyBeauty") || brand.equalsIgnoreCase("DrDenese") == true) {
+			content_obj.clickaelement_top(driver, env, brand, campaign, "Terms & Conditions Español");
+
+		} else {
+
+			content_obj.clickaelement(driver, env, brand, campaign, "Terms & Conditions Español");
+		}
 
 		// Terms Conditions Español
 		List<Map<String, Object>> Terms_Conditions_locator_Es = null;
@@ -406,10 +415,12 @@ public class ContentValidation {
 		output_row.add(result_S);
 		output.add(output_row);
 
-		// Click English Version
-
-		content_obj.clickaelement(driver, env, brand, campaign, "Terms & Conditions English");
-
+		// Click English Version of T & C
+		if (brand.equalsIgnoreCase("MallyBeauty") || brand.equalsIgnoreCase("DrDenese") == true) {
+			content_obj.clickaelement_top(driver, env, brand, campaign, "Terms & Conditions English");
+		} else {
+			content_obj.clickaelement(driver, env, brand, campaign, "Terms & Conditions English");
+		}
 		if (brand.equalsIgnoreCase("JLoBeauty") == true) {
 
 			content_obj.clickaelement(driver, env, brand, campaign, "CloseTermsConditions");
@@ -596,10 +607,13 @@ public class ContentValidation {
 				"Validate Phone Number in Customer Service "));
 		output.add(content_obj.Check_Available(driver, env, brand, campaign, "live chat",
 				"Validate chat link in Customer Service "));
-		output.add(content_obj.Check_Available(driver, env, brand, campaign, "Accessibility Interface",
-				"Validate AccessiBe tool "));
 
-		content_obj.clickaelement(driver, env, brand, campaign, "Accessibility Interface");
+		if (brand.equalsIgnoreCase("DrDenese") != true) {
+			output.add(content_obj.Check_Available(driver, env, brand, campaign, "Accessibility Interface",
+					"Validate AccessiBe tool "));
+			content_obj.clickaelement(driver, env, brand, campaign, "Accessibility Interface");
+		}
+
 		//
 
 		driver.get(url);
@@ -751,9 +765,51 @@ public class ContentValidation {
 		expectedofferdata_kit.put("Gift PPID", arrOfStr[0]);
 		System.out.println("Selected Gift : " + arrOfStr[0]);
 
-		// Select offer
+		if (brand.equalsIgnoreCase("CrepeErase") && prepu.equalsIgnoreCase("Yes")) {
+			// Select offer
 
-		sas_obj.select_offer(driver, expectedofferdata_kit, "Kit");
+			// content_obj.select_offer(driver, expectedofferdata_kit, "Kit",
+			// pre_upsell_page, seoData);
+
+			content_obj.select_fragrance(driver, brand, campaign, expectedofferdata_kit);
+			content_obj.select_kit(driver, brand, campaign, expectedofferdata_kit);
+			content_obj.select_gift(driver, brand, campaign, expectedofferdata_kit);
+			Boolean Title_Tag_result = content_obj.select_prepu(driver, brand, campaign, expectedofferdata_kit,
+					pre_upsell_page, seoData);
+			if (Title_Tag_result == true) {
+				System.out.println(" Pre-upsell page : " + pass);
+				output.add(content_obj.add_result(env, brand, campaign, "Pre-upsell page : Validate Title Tag ", pass));
+			} else {
+
+				System.out.println(" Pre-upsell page : " + fail);
+				output.add(content_obj.add_result(env, brand, campaign, "Pre-upsell page : Validate Title Tag ", fail));
+			}
+
+//			content_obj.select_kitshade(driver, brand, campaign, expectedofferdata_kit);
+//			content_obj.select_giftshade(driver, brand, campaign, expectedofferdata_kit);
+//			content_obj.select_product(driver, brand, campaign, expectedofferdata_kit);
+//			content_obj.select_shade(driver, brand, campaign, expectedofferdata_kit);
+//			content_obj.select_onetime(driver, brand, campaign, expectedofferdata_kit);
+//			content_obj.select_subscribe(driver, brand, campaign, expectedofferdata_kit);
+
+			content_obj.add_product_to_cart(driver, brand, campaign, "Kit");
+		}
+
+		else
+
+		{
+			content_obj.select_offer2(driver, expectedofferdata_kit, "Kit");
+
+		}
+		// Check Pre-upsell page &
+//		if (brand.equalsIgnoreCase("CrepeErase") && prepu.equalsIgnoreCase("Yes")) {
+//			pre_upsell_page = content_obj.getProdRowfromCatalog(seoData, "Pre-upsell page");
+//			String pre_upsell_Tag = pre_upsell_page.get("Title Tag");
+//
+//			System.out.println(prepu);
+//			System.out.println(pre_upsell_Tag);
+//			System.out.println("URL name : " + driver.getCurrentUrl());
+//		}
 
 		// Check DND on SAS Page
 		output.add(content_obj.donotsell(driver, env, brand, campaign, "SASPage"));
@@ -800,11 +856,41 @@ public class ContentValidation {
 
 		bf_obj.move_to_checkout(driver, brand, campaigncategory, "Kit");
 
+		if (brand.equalsIgnoreCase("CrepeErase")) {
+			String pageSource_Co = driver.getPageSource();
+			Checkout_offerdata = content_obj.getProdRowfromCatalog(seoData, "Checkout Page");
+			String Checkout_Tag = Checkout_offerdata.get("Title Tag");
+			String Checkout_MDTag1 = Checkout_offerdata.get("Meta description");
+
+			Boolean Checkout_result = pageSource_Co.contains(Checkout_Tag);
+			Boolean CheckoutMD_result = pageSource_Co.contains(Checkout_MDTag1);
+			// if (homepage.trim().contains(pageSource.trim())) {
+			if (Checkout_result == true) {
+				System.out.println(" Checkout Page Exp : " + pass);
+				output.add(content_obj.add_result(env, brand, campaign, "Checkout Page : Validate Title Tag ", pass));
+			} else {
+
+				System.out.println(" Checkout Page Exp : " + fail);
+				output.add(content_obj.add_result(env, brand, campaign, "Checkout Page : Validate Title Tag ", fail));
+			}
+
+			if (CheckoutMD_result == true) {
+				System.out.println(" Checkout Page Exp : " + pass);
+				output.add(content_obj.add_result(env, brand, campaign, "Checkout Page : Validate Meta description ",
+						pass));
+			} else {
+
+				System.out.println(" Checkout Page Exp : " + fail);
+				output.add(content_obj.add_result(env, brand, campaign, "Checkout Page : Validate Meta description ",
+						fail));
+			}
+
+		}
 		// Check DND on Checkout Page
 		output.add(content_obj.donotsell(driver, env, brand, campaign, "CheckoutPage"));
 
 		output.add(content_obj.Check_Available(driver, env, brand, campaign, "Terms & Conditions Checkout",
-				"Click open Terms & Conditions popup in Checkout page"));
+				"Checkout page : Click open Terms & Conditions popup"));
 
 		content_obj.clickaelement(driver, env, brand, campaign, "Terms & Conditions Checkout");
 
@@ -936,4 +1022,17 @@ public class ContentValidation {
 		}
 	}
 
+	public void get_upsell_content(WebDriver driver, String brand, String prepu,
+			HashMap<String, String> pre_upsell_page, String[][] seoData) {
+
+		// Check Pre-upsell page &
+		if (brand.equalsIgnoreCase("CrepeErase") && prepu.equalsIgnoreCase("Yes")) {
+			pre_upsell_page = content_obj.getProdRowfromCatalog(seoData, "Pre-upsell page");
+			String pre_upsell_Tag = pre_upsell_page.get("Title Tag");
+
+			System.out.println(prepu);
+			System.out.println(pre_upsell_Tag);
+			System.out.println("URL name : " + driver.getCurrentUrl());
+		}
+	}
 }
