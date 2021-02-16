@@ -533,19 +533,19 @@ public class BuyflowValidation {
 				
 				subtotal_list.add(expectedofferdata_product.get("Price"));
 				
-				if(currentCategory.equalsIgnoreCase("Product")) {
+//				if(currentCategory.equalsIgnoreCase("Product")) {
 					subtotal_list_forshippingcalc.add(expectedofferdata_product.get("Price"));
-				}				
+//				}				
 				
 				String shipping_calc = "";
 				String subtotal_str = bf_obj.CalculateTotalPrice(subtotal_list_forshippingcalc);
 				double subtotal_calc = Double.parseDouble(subtotal_str);  
 				if(brand.equalsIgnoreCase("JLoBeauty")) {
 					String[] jloShippingOptions= {"Free Shipping","Two Day Shipping"};
+//					String[] jloShippingOptions= {"Free Shipping"};
 					int rnd = new Random().nextInt(jloShippingOptions.length);
 					
 					jloShippingSelect = jloShippingOptions[rnd];
-					
 					if(currentCategory.equalsIgnoreCase("Product")) {
 						if(jloShippingSelect.equals("Free Shipping")) {
 							if(subtotal_calc > 49) {
@@ -569,7 +569,7 @@ public class BuyflowValidation {
 							shipping_calc = "FREE";
 						}
 						else if(jloShippingSelect.equals("Two Day Shipping")) {
-							if(subtotal_calc > 49) {
+							if(subtotal_calc >= 49) {
 								shipping_calc = "$5.99";
 							}
 							else {
@@ -686,6 +686,22 @@ public class BuyflowValidation {
 			offer_postpurchase = "No";
 			supplysize = "30";
 		}	
+		
+		// JLoBeauty - select shipping
+				// {"Free Shipping","Two Day Shipping"};
+		if(brand.equalsIgnoreCase("JLoBeauty")) {
+			Select sel_element = new Select(driver.findElement(By.xpath("//select[@id='dwfrm_singleshipping_shippingAddress_shippingMethodID']")));
+			System.out.println("Selected Shipping : " + jloShippingSelect);
+			if(jloShippingSelect.equalsIgnoreCase("Free Shipping")){
+				sel_element.selectByValue("Standard");
+			}
+			else {
+				sel_element.selectByValue("TwoDay");
+			}
+			Thread.sleep(2000);
+			driver.findElement(By.xpath("//div[@class='shippinglist-section clearfix']//div[1]")).click();
+			Thread.sleep(2000);
+		}				
 		
 		// Fill out form
 		String email = "";
@@ -869,18 +885,7 @@ public class BuyflowValidation {
 			}
 		}		
 		
-		// JLoBeauty - select shipping
-		// {"Free Shipping","Two Day Shipping"};
-		Select sel_element = new Select(driver.findElement(By.xpath("//select[@id='dwfrm_singleshipping_shippingAddress_shippingMethodID']")));
-		System.out.println("Selected Shipping : " + jloShippingSelect);
-		if(jloShippingSelect.equalsIgnoreCase("Free Shipping")){
-			sel_element.selectByValue("Standard");
-		}
-		else {
-			sel_element.selectByValue("TwoDay");
-		}
-		driver.findElement(By.xpath("//div[@class='shippinglist-section clearfix']//div[1]")).click();
-		Thread.sleep(2000);
+		
 				
 		// Validate Checkout pricing		
 		// Get Actual Checkout Price
@@ -907,6 +912,7 @@ public class BuyflowValidation {
 			else {
 				checkout_subtotal = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Subtotal");
 				if(brand.equalsIgnoreCase("JLoBeauty")) {
+					Select sel_element = new Select(driver.findElement(By.xpath("//select[@id='dwfrm_singleshipping_shippingAddress_shippingMethodID']")));
 					checkout_shipping = sel_element.getFirstSelectedOption().getText();
 				}
 				else{
@@ -935,6 +941,7 @@ public class BuyflowValidation {
 		checkout_shipping = checkout_shipping.replace("Standard","");
 		checkout_shipping = checkout_shipping.replace("Two Day Shipping","");
 		checkout_shipping = checkout_shipping.replace("\n","");
+		checkout_shipping = checkout_shipping.replace("$","");
 		
 		if(expected_shipping.contains("0.0")) {
 			if((checkout_shipping.contains("0.0")) || (checkout_shipping.equalsIgnoreCase("FREE"))) {

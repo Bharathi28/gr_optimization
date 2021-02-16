@@ -109,20 +109,20 @@ public class MerchandisingUtilities {
 			
 			String cartlanguage =  offerdata.get("Cart Language").trim();
 			if(Expshipfreq.contains("30")) {
-				cartlanguage = cartlanguage.replace("90", "30");
+				cartlanguage = cartlanguage.replace("90 days", "30 days");
 			}
 			else if(Expshipfreq.contains("60")) {
-				cartlanguage = cartlanguage.replace("90", "60");
+				cartlanguage = cartlanguage.replace("90 days", "60 days");
 			}
 			expectedofferdata.put("Cart Language", cartlanguage);
 			
 			
 			String supplementalcartlanguage =  offerdata.get("Supplementary Cart Language").trim();
 			if(Expshipfreq.contains("30")) {
-				supplementalcartlanguage = supplementalcartlanguage.replace(" 90", " 30");
+				supplementalcartlanguage = supplementalcartlanguage.replace("90 days", "30 days");
 			}
 			else if(Expshipfreq.contains("60")) {
-				supplementalcartlanguage = supplementalcartlanguage.replace(" 90", " 60");
+				supplementalcartlanguage = supplementalcartlanguage.replace("90 days", "60 days");
 			}
 			expectedofferdata.put("Supplemental Cart Language", supplementalcartlanguage);
 			
@@ -820,14 +820,14 @@ public class MerchandisingUtilities {
 		
 		for(int i=0; i<shipFreqData[0].length; i++) {
 			String colName = shipFreqData[0][i];
-			System.out.println(colName);
+//			System.out.println(colName);
 			if((colName != null) && (colName.equalsIgnoreCase("PPID"))) {
 				ppidcolumn = i;
 			}
 		}
 		for(int i=0; i<shipFreqData.length; i++) {	
 			String ppidinrow = shipFreqData[i][ppidcolumn].replaceAll("\\s+", "");
-			System.out.println(ppidinrow);
+//			System.out.println(ppidinrow);
 			if(ppidinrow.trim().equalsIgnoreCase(ppid.trim())){
 				for(int j=0; j<shipFreqData[0].length; j++) {
 					if(shipFreqData[0][j] != null) {
@@ -836,7 +836,7 @@ public class MerchandisingUtilities {
 				}
 			}
 		}		
-		System.out.println(shipfreqdata);
+//		System.out.println(shipfreqdata);
 		return shipfreqdata;
 	}
 	

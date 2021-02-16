@@ -983,8 +983,7 @@ public class ContentValidation {
 		// List<String> attachmentList = new ArrayList<String>();
 		attachmentList.add(file);
 
-		// mailObj.sendEmail("Content Validation Results", sendReportTo,
-		// attachmentList);
+		mailObj.sendEmail("Content Validation Results", sendReportTo, attachmentList);
 	}
 
 	public void mkdir() {
@@ -1022,17 +1021,4 @@ public class ContentValidation {
 		}
 	}
 
-	public void get_upsell_content(WebDriver driver, String brand, String prepu,
-			HashMap<String, String> pre_upsell_page, String[][] seoData) {
-
-		// Check Pre-upsell page &
-		if (brand.equalsIgnoreCase("CrepeErase") && prepu.equalsIgnoreCase("Yes")) {
-			pre_upsell_page = content_obj.getProdRowfromCatalog(seoData, "Pre-upsell page");
-			String pre_upsell_Tag = pre_upsell_page.get("Title Tag");
-
-			System.out.println(prepu);
-			System.out.println(pre_upsell_Tag);
-			System.out.println("URL name : " + driver.getCurrentUrl());
-		}
-	}
 }

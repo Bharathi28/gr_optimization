@@ -310,7 +310,7 @@ public class ContentUtilities {
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		// js.executeScript("arguments[0].scrollIntoView();", Element);
 		js.executeScript("window.scrollBy(0,0)", 0);
-		System.out.println(kit_elmt_Customer_Service);
+		// System.out.println(kit_elmt_Customer_Service);
 		Thread.sleep(2000);
 		kit_elmt_Customer_Service.click();
 	}
@@ -355,13 +355,13 @@ public class ContentUtilities {
 				ppidcolumn = i;
 			}
 		}
-		System.out.println(ppidcolumn);
+		// System.out.println(ppidcolumn);
 
 		for (int i = 0; i < catalogData.length; i++) {
 			String ppidinrow = "";
 			if (ppidinrow != null) {
 				ppidinrow = catalogData[i][ppidcolumn];
-				System.out.println("ppidinrow :" + ppidinrow);
+				// System.out.println("ppidinrow :" + ppidinrow);
 				// ppidinrow = catalogData[i][ppidcolumn].replaceAll("\\s+", "");
 			}
 
@@ -605,7 +605,7 @@ public class ContentUtilities {
 		String pre_upsell_Tag = pre_upsell_page.get("Title Tag");
 		Boolean Title_Tag_result = pageSource.contains(pre_upsell_Tag);
 		// System.out.println(prepu);
-		System.out.println(pre_upsell_Tag);
+		// System.out.println(pre_upsell_Tag);
 		// System.out.println("URL name : " + driver.getCurrentUrl() + " Title Name is :
 		// " + driver.getTitle());
 
