@@ -55,16 +55,6 @@ public class MerchandisingUtilities {
 			expectedofferdata.put("Master PPID", offerdata.get("Master Product").trim());
 		}		
 		
-		expectedofferdata.put("Product PPID", offerdata.get("PPID").trim());
-		if(offerdata.get("90 Day PPID") != null) {
-			if(kitppid.equalsIgnoreCase(offerdata.get("90 Day PPID").trim())) {
-				expectedofferdata.put("Product PPID", offerdata.get("90 Day PPID").trim());
-			}
-			else {
-				expectedofferdata.put("Product PPID", offerdata.get("PPID").trim());
-			}
-		}		
-		
 		expectedofferdata.put("Product Name", offerdata.get("Product Name").trim());
 		
 		String shade = "No Shade";
@@ -75,7 +65,14 @@ public class MerchandisingUtilities {
 		
 		if(offerdata.get("Size") != null) {
 			expectedofferdata.put("Size", offerdata.get("Size").trim());
-		}			
+		}
+		
+		String ProductPPID = "";
+		String Price = "";
+		String RenewalPlanID = "";
+		String CartLanguage = "";
+		String SupplementalCartLanguage = "";				
+					
 		String onetime_subscribe_option = "";
 		if((offerdata.get("Subscribe and Save price") == null) || (offerdata.get("Subscribe and Save price").trim().equalsIgnoreCase(" ")) ||
 				(offerdata.get("Acq One Time price") == null) || (offerdata.get("Acq One Time price").trim().equalsIgnoreCase(" "))) {
@@ -87,9 +84,45 @@ public class MerchandisingUtilities {
 		
 		String pagepattern = generatePagePattern(category, shade, brand, onetime_subscribe_option);
 		expectedofferdata.put("PagePattern", pagepattern);
+		
+		if((offerdata.get("Post Purchase PPID") != null) && (kitppid.equalsIgnoreCase(offerdata.get("Post Purchase PPID").trim()))) {
+//			if(kitppid.equalsIgnoreCase(offerdata.get("Post Purchase PPID").trim())) {
+				ProductPPID = offerdata.get("Post Purchase PPID").trim();
+				Price = offerdata.get("Post Purchase Price").trim();
+				RenewalPlanID = offerdata.get("Post Purchase Renewal Plan ID").trim();
+				CartLanguage = offerdata.get("Post Purchase Cart Language").trim();
+				SupplementalCartLanguage = offerdata.get("Post Purchase Supplemental Cart Language").trim();
+				
+				expectedofferdata.put("Offer Post-Purchase", "Yes");
+				expectedofferdata.put("SupplySize", "90");
+//			}
+		}	
+		else {
+			ProductPPID = offerdata.get("PPID").trim();
+			if(category.equalsIgnoreCase("Product")) {
+				Price = offerdata.get("Acq One Time price").trim();
+			}
+			else if(category.equalsIgnoreCase("SubscribeandSave")) {
+				if(offerdata.get("Subscribe and Save price") != null) {
+					Price = offerdata.get("Subscribe and Save price").trim();
+				}	
+			}
+			else if(category.equalsIgnoreCase("ShopKit")) {
+				Price = offerdata.get("Entry-Continuity Pricebook").trim();
+			}
+			
+			RenewalPlanID = offerdata.get("Renewal Plan ID").trim();
+			CartLanguage = offerdata.get("Cart Language").trim();
+			SupplementalCartLanguage = offerdata.get("Supplementary Cart Language").trim();
+			
+			expectedofferdata.put("Offer Post-Purchase", "No");
+			expectedofferdata.put("SupplySize", "30");
+		}
+		
+		expectedofferdata.put("Product PPID", ProductPPID);
+		
 		if(category.equalsIgnoreCase("Product")) {
-
-			expectedofferdata.put("Price", offerdata.get("Acq One Time price").trim());
+			expectedofferdata.put("Price", Price);
 			expectedofferdata.put("Renewal Plan Id", "No Renewal Plan Id");
 			expectedofferdata.put("Cart Language", "No Cart Language");
 			expectedofferdata.put("Supplemental Cart Language", "No Supplemental Cart Language");
@@ -98,35 +131,33 @@ public class MerchandisingUtilities {
 			expectedofferdata.put("Price Book Id", CatalogPriceBookIDs.get("Acq One Time price"));
 		}
 		else if(category.equalsIgnoreCase("SubscribeandSave")) {
-
-			if(offerdata.get("Subscribe and Save price") != null) {
-				expectedofferdata.put("Price", offerdata.get("Subscribe and Save price").trim());
-			}			
-			expectedofferdata.put("Shipping Frequency", Expshipfreq);
-			
-			String ShipFreqCol = Expshipfreq + " RP";
-			expectedofferdata.put("Renewal Plan Id", ProductShipFreq.get(ShipFreqCol).trim());
-			
-			String cartlanguage =  offerdata.get("Cart Language").trim();
-			if(Expshipfreq.contains("30")) {
-				cartlanguage = cartlanguage.replace("90 days", "30 days");
+//			if(offerdata.get("Subscribe and Save price") != null) {
+				expectedofferdata.put("Price", Price);
+//			}			
+						
+			if(brand.equalsIgnoreCase("JLoBeauty")) {
+				expectedofferdata.put("Shipping Frequency", Expshipfreq);
+				
+				String ShipFreqCol = Expshipfreq + " RP";
+				expectedofferdata.put("Renewal Plan Id", ProductShipFreq.get(ShipFreqCol).trim());				
+				
+				if(Expshipfreq.contains("30")) {
+					CartLanguage = CartLanguage.replace("90 days", "30 days");
+					SupplementalCartLanguage = SupplementalCartLanguage.replace("90 days", "30 days");
+				}
+				else if(Expshipfreq.contains("60")) {
+					CartLanguage = CartLanguage.replace("90 days", "60 days");
+					SupplementalCartLanguage = SupplementalCartLanguage.replace("90 days", "60 days");
+				}				
 			}
-			else if(Expshipfreq.contains("60")) {
-				cartlanguage = cartlanguage.replace("90 days", "60 days");
+			else {
+				expectedofferdata.put("Renewal Plan Id", RenewalPlanID);
 			}
-			expectedofferdata.put("Cart Language", cartlanguage);
+			expectedofferdata.put("Cart Language", CartLanguage);			
+			expectedofferdata.put("Supplemental Cart Language", SupplementalCartLanguage);
 			
-			
-			String supplementalcartlanguage =  offerdata.get("Supplementary Cart Language").trim();
-			if(Expshipfreq.contains("30")) {
-				supplementalcartlanguage = supplementalcartlanguage.replace("90 days", "30 days");
-			}
-			else if(Expshipfreq.contains("60")) {
-				supplementalcartlanguage = supplementalcartlanguage.replace("90 days", "60 days");
-			}
-			expectedofferdata.put("Supplemental Cart Language", supplementalcartlanguage);
-			
-			String[] lang_price_arr = lang_obj.parse_cart_language(offerdata.get("Cart Language").trim());			
+//			String[] lang_price_arr = lang_obj.parse_cart_language(offerdata.get("Cart Language").trim());	
+			String[] lang_price_arr = lang_obj.parse_cart_language(CartLanguage);
 			String cart_lang_price = lang_price_arr[1];
 			String cart_lang_shipping = lang_price_arr[2];	
 			expectedofferdata.put("Continuity Pricing", cart_lang_price);
@@ -136,12 +167,12 @@ public class MerchandisingUtilities {
 		}		
 		else if(category.equalsIgnoreCase("ShopKit")) {
 
-			expectedofferdata.put("Price", offerdata.get("Entry-Continuity Pricebook").trim());
-			expectedofferdata.put("Renewal Plan Id", offerdata.get("Renewal Plan ID").trim());
-			expectedofferdata.put("Cart Language", offerdata.get("Cart Language").trim());
-			expectedofferdata.put("Supplemental Cart Language", offerdata.get("Supplementary Cart Language").trim());
+			expectedofferdata.put("Price", Price);
+			expectedofferdata.put("Renewal Plan Id", RenewalPlanID);
+			expectedofferdata.put("Cart Language", CartLanguage);
+			expectedofferdata.put("Supplemental Cart Language", SupplementalCartLanguage);
 
-			String[] lang_price_arr = lang_obj.parse_cart_language(offerdata.get("Cart Language").trim());			
+			String[] lang_price_arr = lang_obj.parse_cart_language(CartLanguage);			
 			String cart_lang_price = lang_price_arr[1];
 			String cart_lang_shipping = lang_price_arr[2];	
 			expectedofferdata.put("Continuity Pricing", cart_lang_price);
@@ -776,74 +807,124 @@ public class MerchandisingUtilities {
 		return CatalogPriceBookIDs;
 	}
 	
-	public HashMap<String, String> getProdRowfromCatalog(String[][] catalogData, String ppid) {
+	public HashMap<String, String> getProdRowfromCatalog(String[][] catalogData, String ppid, String category) {
 		LinkedHashMap<String, String> productdata = new LinkedHashMap<String, String>();
 		
 		int ppidcolumn = 0;
+		int categorycolumn = 0;
+		int contppidcolumn = 0;
 
 		for(int i=0; i<catalogData[0].length; i++) {
 			String colName = catalogData[0][i];
-			if((colName != null) && (colName.equalsIgnoreCase("PPID"))) {
-				ppidcolumn = i;
+			if(colName != null) {
+				if(colName.equalsIgnoreCase("PPID")) {
+					ppidcolumn = i;
+				}
+				if(colName.equalsIgnoreCase("Kit or Single")) {
+					categorycolumn = i;
+				}
+				if(colName.equalsIgnoreCase("Post Purchase PPID")) {
+					contppidcolumn = i;
+				}
 			}
 		}
 		
 		for(int i=0; i<catalogData.length; i++) {	
 			String ppidinrow = catalogData[i][ppidcolumn].replaceAll("\\s+", "");
-
-			if(ppidinrow.trim().equalsIgnoreCase(ppid.trim())){
-				for(int j=0; j<catalogData[0].length; j++) {
-					if(catalogData[0][j] != null) {
-						if(catalogData[0][j].contains("Acq One Time price")) {
-							productdata.put("Acq One Time price", catalogData[i][j]);
+			String categoryinrow = catalogData[i][categorycolumn].replaceAll("\\s+", "");
+			String contppidinrow = null;
+			if(catalogData[i][contppidcolumn] != null) {
+				contppidinrow = catalogData[i][contppidcolumn].replaceAll("\\s+", "");
+			}			 
+			
+			if(category.equalsIgnoreCase("ShopKit")) {
+				if(categoryinrow.equalsIgnoreCase("Kit")) {
+					if(((ppidinrow != null) && (ppidinrow.trim().equalsIgnoreCase(ppid.trim()))) || ((contppidinrow != null) && (contppidinrow.trim().equalsIgnoreCase(ppid.trim())))) {
+						for(int j=0; j<catalogData[0].length; j++) {
+							if(catalogData[0][j] != null) {
+								if(catalogData[0][j].contains("Entry-Continuity Pricebook")) {
+									productdata.put("Entry-Continuity Pricebook", catalogData[i][j]);
+								}
+								else {
+									productdata.put(catalogData[0][j].trim(), catalogData[i][j]);
+								}		
+							}
 						}
-						else if(catalogData[0][j].contains("Subscribe and Save price")) {
-							productdata.put("Subscribe and Save price", catalogData[i][j]);
+						break;
+					}
+				}				
+			}
+			else {
+				if(categoryinrow.equalsIgnoreCase("Single")) {
+					if(((ppidinrow != null) && (ppidinrow.trim().equalsIgnoreCase(ppid.trim()))) || ((contppidinrow != null) && (contppidinrow.trim().equalsIgnoreCase(ppid.trim())))) {
+						for(int j=0; j<catalogData[0].length; j++) {
+							if(catalogData[0][j] != null) {
+								if(catalogData[0][j].contains("Acq One Time price")) {
+									productdata.put("Acq One Time price", catalogData[i][j]);
+								}
+								else if(catalogData[0][j].contains("Subscribe and Save price")) {
+									productdata.put("Subscribe and Save price", catalogData[i][j]);
+								}
+								else {
+									productdata.put(catalogData[0][j].trim(), catalogData[i][j]);
+								}		
+							}
 						}
-						else if(catalogData[0][j].contains("Entry-Continuity Pricebook")) {
-							productdata.put("Entry-Continuity Pricebook", catalogData[i][j]);
-						}
-						else {
-							productdata.put(catalogData[0][j].trim(), catalogData[i][j]);
-						}							
+						break;
 					}
 				}
-				break;
 			}
+
+//			if(ppidinrow.trim().equalsIgnoreCase(ppid.trim())){
+//				for(int j=0; j<catalogData[0].length; j++) {
+//					if(catalogData[0][j] != null) {
+//						if(catalogData[0][j].contains("Acq One Time price")) {
+//							productdata.put("Acq One Time price", catalogData[i][j]);
+//						}
+//						else if(catalogData[0][j].contains("Subscribe and Save price")) {
+//							productdata.put("Subscribe and Save price", catalogData[i][j]);
+//						}
+//						else if(catalogData[0][j].contains("Entry-Continuity Pricebook")) {
+//							productdata.put("Entry-Continuity Pricebook", catalogData[i][j]);
+//						}
+//						else {
+//							productdata.put(catalogData[0][j].trim(), catalogData[i][j]);
+//						}							
+//					}
+//				}
+//				break;
+//			}
 		}
 		return productdata;
 	}
 	
 	public HashMap<String, String> getProdShippingFrequency(String[][] shipFreqData, String ppid) {
-		LinkedHashMap<String, String> shipfreqdata = new LinkedHashMap<String, String>();
+		LinkedHashMap<String, String> shipfreqmap = new LinkedHashMap<String, String>();
 		int ppidcolumn = 0;
-		
+			
 		for(int i=0; i<shipFreqData[0].length; i++) {
 			String colName = shipFreqData[0][i];
-//			System.out.println(colName);
 			if((colName != null) && (colName.equalsIgnoreCase("PPID"))) {
 				ppidcolumn = i;
 			}
 		}
 		for(int i=0; i<shipFreqData.length; i++) {	
 			String ppidinrow = shipFreqData[i][ppidcolumn].replaceAll("\\s+", "");
-//			System.out.println(ppidinrow);
 			if(ppidinrow.trim().equalsIgnoreCase(ppid.trim())){
 				for(int j=0; j<shipFreqData[0].length; j++) {
 					if(shipFreqData[0][j] != null) {
-						shipfreqdata.put(shipFreqData[0][j].trim(), shipFreqData[i][j]);
+						shipfreqmap.put(shipFreqData[0][j].trim(), shipFreqData[i][j]);
 					}
 				}
 			}
 		}		
-//		System.out.println(shipfreqdata);
-		return shipfreqdata;
+		return shipfreqmap;		
 	}
 	
-	public String checkShopKitPostPU(HashMap<String, String> offerdata, String brand) throws ClassNotFoundException, SQLException {
+	public String checkShopPostPU(HashMap<String, String> offerdata, String brand) throws ClassNotFoundException, SQLException {
 		String PostPU;
-		if(offerdata.get("90 Day PPID") != null) {
-			String postpuppid = offerdata.get("90 Day PPID").trim();
+		if(offerdata.get("Post Purchase PPID") != null) {
+			String postpuppid = offerdata.get("Post Purchase PPID").trim();
 			
 			String brandcode = db_obj.get_sourceproductlinecode(brand); 
 			
@@ -931,5 +1012,115 @@ public class MerchandisingUtilities {
 		}
 
 		return randsingles;
+	}
+	
+	public String calculateShippingforProduct(String brand, List<String> subtotal_list, String jloShippingSelect, String currentCategory, List<String> category_list) {
+		String shipping_calc = "";
+		
+		String subtotal_str = bf_obj.CalculateTotalPrice(subtotal_list);
+		double subtotal_calc = Double.parseDouble(subtotal_str); 
+		
+		if(brand.equalsIgnoreCase("JLoBeauty")) {
+						
+			if(currentCategory.equalsIgnoreCase("Product")) {
+				if(jloShippingSelect.equals("Free Shipping")) {
+					if(subtotal_calc > 50) {
+						shipping_calc = "FREE";
+					}
+					else {
+						shipping_calc = "$4.99";
+					}
+				}
+				else if(jloShippingSelect.equals("Two Day Shipping")) {
+					if(subtotal_calc > 50) {
+						shipping_calc = "$5.99";
+					}
+					else {
+						shipping_calc = "$9.99";
+					}
+				}
+			}
+			else if(currentCategory.equalsIgnoreCase("SubscribeandSave")) {
+				if(jloShippingSelect.equals("Free Shipping")) {
+					shipping_calc = "FREE";
+				}
+				else if(jloShippingSelect.equals("Two Day Shipping")) {
+					if(subtotal_calc > 50) {
+						shipping_calc = "$5.99";
+					}
+					else {
+						shipping_calc = "$9.99";
+					}
+				}
+			}					
+		}
+		else {
+			if((category_list.contains("Kit")) || (category_list.contains("SubscribeandSave")) || (category_list.contains("ShopKit"))) {
+				shipping_calc = "FREE";
+			}
+			else {						
+				if(brand.equalsIgnoreCase("MeaningfulBeauty")) {
+					if(subtotal_calc > 89) {
+						shipping_calc = "$8.99";
+					}
+					else if(subtotal_calc > 59) {
+						shipping_calc = "$7.99";
+					}
+					else if(subtotal_calc > 40) {
+						shipping_calc = "$6.99";
+					}
+					else {
+						shipping_calc = "$5.99";
+					}
+				}
+				else {
+					if(subtotal_calc > 49) {
+						shipping_calc = "FREE";
+					}
+					else {
+						if(brand.equalsIgnoreCase("JLoBeauty")) {
+							shipping_calc = "$4.99";
+						}
+						else if(brand.equalsIgnoreCase("CrepeErase")){
+							shipping_calc = "$5.99";
+						}		
+						else {
+							shipping_calc = "$4.99";
+						}
+					}
+				} 
+			}
+		}
+		return shipping_calc;
+	}
+	
+	public List<String> getPostPU(List<String> subtotal_list, List<String> category_list, List<String> supplysize_list, List<String> offer_postpurchase_list) {
+		String postPUCategory = category_list.get(0);
+		String SupplySize = supplysize_list.get(0);
+		String OfferPostPurchase = offer_postpurchase_list.get(0);
+		
+		Double highPrice = Double.valueOf(subtotal_list.get(0));
+		for(int i=1; i<subtotal_list.size(); i++) {
+			Double priceValue = Double.valueOf(subtotal_list.get(i));
+			if(priceValue > highPrice) {
+				highPrice = priceValue;
+				postPUCategory = category_list.get(i);
+				SupplySize = supplysize_list.get(i);
+				OfferPostPurchase = offer_postpurchase_list.get(i);
+			}			
+		}				
+		
+		if((postPUCategory.equalsIgnoreCase("Kit")) || (postPUCategory.equalsIgnoreCase("ShopKit"))) {
+			postPUCategory = "PostPU";
+		}
+		else if((postPUCategory.equalsIgnoreCase("Product")) || (postPUCategory.equalsIgnoreCase("SubscribeandSave"))) {
+			postPUCategory = "ProductPostPU";
+		}
+		
+		List<String> PostPU_data = new ArrayList<String>();
+		PostPU_data.add(postPUCategory);
+		PostPU_data.add(SupplySize);
+		PostPU_data.add(OfferPostPurchase);
+		return PostPU_data;		
 	}
 }

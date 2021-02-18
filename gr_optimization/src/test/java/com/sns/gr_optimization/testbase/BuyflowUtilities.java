@@ -131,16 +131,16 @@ public class BuyflowUtilities {
 		}	
 	}
 	
-	public void upsell_confirmation(WebDriver driver, String brand, String campaign, String upsell) throws InterruptedException, ClassNotFoundException, SQLException {
+	public void upsell_confirmation(WebDriver driver, String brand, String campaign, String upsell, String PostPUPage) throws InterruptedException, ClassNotFoundException, SQLException {
 		Thread.sleep(4000);
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		
 		List<Map<String, Object>> locator = null;
 		
-		locator = get_element_locator(brand, campaign, "PostPU", upsell);
+		locator = get_element_locator(brand, campaign, PostPUPage, upsell);
 		
 		if(locator.size() == 0) {
-			locator = get_element_locator(brand, null, "PostPU", upsell);
+			locator = get_element_locator(brand, null, PostPUPage, upsell);
 		}		
 			
 		String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
