@@ -660,6 +660,7 @@ public class BuyflowValidation {
 		
 		// Decide on which PostPU
 		List<String> PostPUdetails = merch_obj.getPostPU(subtotal_list, category_list, supplysize_list, offer_postpurchase_list);
+		System.out.println("PostPUDetails: " + PostPUdetails);
 		String PostPUPage = PostPUdetails.get(0);
 		String supplysize  = PostPUdetails.get(1);
 		String offer_postpurchase  = PostPUdetails.get(2);
@@ -679,7 +680,7 @@ public class BuyflowValidation {
 		}
 		else {
 //			if(((categorylist.contains("Kit")) || (categorylist.contains("ShopKit"))) && (offer_postpurchase.equalsIgnoreCase("Yes"))) {
-			if(postpu.equalsIgnoreCase("Yes")) {
+			if(offer_postpurchase.equalsIgnoreCase("Yes")) {
 				email = bf_obj.fill_out_form(driver, brand, campaigncategory, "VISA", "same", "90");
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver, pixelStr);
 				console_obj.analyzeLog(driver, "CheckoutPage");			
@@ -1005,7 +1006,7 @@ public class BuyflowValidation {
 		if(postpu.equalsIgnoreCase("Yes")) {
 			if((supplysize.equalsIgnoreCase("30")) || (cc.equalsIgnoreCase("Paypal"))) {
 				pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");
-				bf_obj.upsell_confirmation(driver, brand, campaigncategory, expectedofferdata_kit.get("Offer Post-Purchase"), PostPUPage);
+				bf_obj.upsell_confirmation(driver, brand, campaigncategory, offer_postpurchase, PostPUPage);
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver, pixelStr);
 				 console_obj.analyzeLog(driver, "ConfirmationPage");	
 			}

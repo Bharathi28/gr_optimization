@@ -111,9 +111,17 @@ public class MerchandisingUtilities {
 				Price = offerdata.get("Entry-Continuity Pricebook").trim();
 			}
 			
-			RenewalPlanID = offerdata.get("Renewal Plan ID").trim();
-			CartLanguage = offerdata.get("Cart Language").trim();
-			SupplementalCartLanguage = offerdata.get("Supplementary Cart Language").trim();
+			if(offerdata.get("Renewal Plan ID") != null) {
+				RenewalPlanID = offerdata.get("Renewal Plan ID").trim();
+			}					
+			
+			if(offerdata.get("Cart Language") != null) {
+				CartLanguage = offerdata.get("Cart Language").trim();
+			}
+			
+			if(offerdata.get("Supplementary Cart Language") != null) {
+				SupplementalCartLanguage = offerdata.get("Supplementary Cart Language").trim();
+			}			
 			
 			expectedofferdata.put("Offer Post-Purchase", "No");
 			expectedofferdata.put("SupplySize", "30");
