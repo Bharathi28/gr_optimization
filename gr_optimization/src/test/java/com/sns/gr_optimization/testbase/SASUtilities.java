@@ -370,7 +370,7 @@ public class SASUtilities {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		jse.executeScript("window.scrollBy(0,100)", 0);
 	
-		String ppid = offerdata.get("Product PPID");
+		String ppid = offerdata.get("30 Day PPID");
 		
 		Thread.sleep(1000);
 		driver.findElement(By.xpath("//input[@name='dwopt_" + ppid + "_entryKit']/../../..//label[contains(@for,'entryKit-auto-renew')]")).click();

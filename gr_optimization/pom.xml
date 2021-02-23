@@ -178,10 +178,23 @@
 	</dependency>
 	
 	<dependency>
-    <groupId>io.github.bonigarcia</groupId>
-    <artifactId>webdrivermanager</artifactId>
-    <version>4.2.2</version>
-    <scope>test</scope>
-</dependency>
+    	<groupId>io.github.bonigarcia</groupId>
+    	<artifactId>webdrivermanager</artifactId>
+    	<version>4.2.2</version>
+    	<scope>test</scope>
+    </dependency>
+    
+    <dependency>
+		<groupId>com.google.guava</groupId>
+		<artifactId>guava</artifactId>
+		<version>27.0-jre</version>
+	</dependency>
+
+	<dependency>
+		<groupId>com.browserstack</groupId>
+		<artifactId>browserstack-local-java</artifactId>
+		<version>1.0.2</version>
+	</dependency>
+
   </dependencies>
 </project>

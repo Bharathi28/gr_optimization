@@ -90,6 +90,9 @@ public class BuyflowValidation {
 	final String AUTOMATE_KEY = "hFN19RHbQmGyeL8Z47Ls";
 	final String URL = "https://" + USERNAME + ":" + AUTOMATE_KEY + "@hub-cloud.browserstack.com/wd/hub";
 	
+	BrowserMobProxy proxy;
+	DesiredCapabilities capabilities;
+	
 	@BeforeSuite
 	public void getEmailId() {
 //		System.setProperty("email", "aaqil@searchnscore.com,manibharathi@searchnscore.com");
@@ -101,7 +104,56 @@ public class BuyflowValidation {
 	}
 	
 	@DataProvider(name="buyflowInput", parallel=true)
-	public Object[][] testData() {
+	public Object[][] testData() throws Exception {
+		
+		// start the proxy
+		proxy = new BrowserMobProxyServer();
+
+		proxy.setTrustAllServers(true);
+		proxy.start(12345);
+		System.out.println("Started proxy server at: " + proxy.getPort());
+			    
+		Local l = new Local();
+		Map<String, String> l_options = new HashMap<String, String>();
+		l_options.put("key", AUTOMATE_KEY);
+
+		l_options.put("v", "true");
+		l_options.put("force", "true");
+		l_options.put("onlyAutomate", "true");
+
+		l_options.put("forcelocal", "true");
+		l_options.put("forceproxy", "true");
+
+		l_options.put("localProxyHost", "localhost");
+		l_options.put("localProxyPort", "12345");
+		l_options.put("localIdentifier", "Test1");
+
+		l.start(l_options);
+
+		// get the Selenium proxy object
+		Proxy seleniumProxy = ClientUtil.createSeleniumProxy(proxy);	
+
+		ChromeOptions options = new ChromeOptions();
+		options.setProxy(seleniumProxy);
+		options.setAcceptInsecureCerts(true);	   
+		options.addArguments("--ignore-certificate-errors");
+		options.addArguments("--disable-backgrounding-occluded-windows");
+			    
+		capabilities = new DesiredCapabilities();
+		capabilities.setCapability(ChromeOptions.CAPABILITY, options);	    
+		capabilities.setCapability("os", "Windows");
+		capabilities.setCapability("os_version", "10");
+		capabilities.setCapability("browser_version", "80");	    
+			    
+		capabilities.setCapability("browser", "Chrome");
+		capabilities.setCapability("browserstack.local", "true");
+		capabilities.setCapability("browserstack.debug", "true");
+		capabilities.setCapability("name", "Buyflow Execution");
+		capabilities.setCapability("browserstack.networkLogs", "true");
+		capabilities.setCapability("browserstack.acceptInsecureCerts", "true");
+		capabilities.setCapability("browserstack.local", "true");
+		capabilities.setCapability("browserstack.localIdentifier", "Test1");
+				
 		Calendar calendar = Calendar.getInstance();
 		int day = calendar.get(Calendar.DAY_OF_WEEK);
 //		System.out.println(day);
@@ -162,47 +214,6 @@ public class BuyflowValidation {
 		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Screenshots", brand);
 		newDirectory.mkdir();
 		
-		// start the proxy
-	    BrowserMobProxy proxy = new BrowserMobProxyServer();
-
-	    proxy.setTrustAllServers(true);
-	    proxy.start(0);
-	    System.out.println("Started proxy server at: " + proxy.getPort());
-	    
-//	    Local l = new Local();
-//		Map<String, String> l_options = new HashMap<String, String>();
-//		l_options.put("key", AUTOMATE_KEY);
-//
-//		l_options.put("v", "true");
-//		l_options.put("force", "true");
-//		l_options.put("onlyAutomate", "true");
-//
-//		l_options.put("forcelocal", "true");
-//		l_options.put("forceproxy", "true");
-//
-//		l_options.put("localProxyHost", "localhost");
-//		l_options.put("localProxyPort", "1234");
-//		l_options.put("localIdentifier", "Test1");
-//
-//		l.start(l_options);
-
-	    // get the Selenium proxy object
-	    Proxy seleniumProxy = ClientUtil.createSeleniumProxy(proxy);	
-
-	    ChromeOptions options = new ChromeOptions();
-	    options.setProxy(seleniumProxy);
-	    options.setAcceptInsecureCerts(true);	   
-	    options.addArguments("--ignore-certificate-errors");
-	    options.addArguments("--disable-backgrounding-occluded-windows");
-	    
-	    DesiredCapabilities capabilities = new DesiredCapabilities();
-	    capabilities.setCapability(ChromeOptions.CAPABILITY, options);	    
-//	    capabilities.setCapability("os", "Windows");
-//	    capabilities.setCapability("os_version", "10");
-//	    capabilities.setCapability("browser", "Chrome");
-//	    capabilities.setCapability("browser_version", "80");	    
-//	    capabilities.setCapability("name", "manibharathikaru1's First Test");
-
 		// Get Source Code Information - Campaign Category
 		String campaigncategory = db_obj.checkcampaigncategory(brand, campaign);
 		if(campaigncategory.equalsIgnoreCase("n/a")) {
@@ -546,7 +557,9 @@ public class BuyflowValidation {
 				}
 				
 				// Check if Post Purchase Upsell Page exists
-				postpu = merch_obj.checkShopPostPU(product_offerdata, brand);
+				if(currentCategory.equalsIgnoreCase("SubscribeandSave")) {
+					postpu = merch_obj.checkShopPostPU(product_offerdata, brand);
+				}				
 				
 				// Collect current Offer related details from Merchandising Input file
 				expectedofferdata_product = merch_obj.generateExpectedOfferDataForProduct(product_offerdata, product_shippingfrequency, ppid, giftppid, postpu, brand, campaigncategory, currentCategory, catalogPriceBookIDs);
@@ -900,7 +913,7 @@ public class BuyflowValidation {
 		// Calculate Expected Checkout - Shipping Price
 		String expected_shipping = bf_obj.CalculateTotalPrice(shipping_list);
 		checkout_shipping = checkout_shipping.replace("Standard - ","");
-		checkout_shipping = checkout_shipping.replace("Two Day - ","");
+		checkout_shipping = checkout_shipping.replace("Two Day -","");
 		checkout_shipping = checkout_shipping.replace("\n","");
 		checkout_shipping = checkout_shipping.replace("$","");
 		
@@ -1385,6 +1398,7 @@ public class BuyflowValidation {
 	
 	@AfterSuite
 	public void populateExcel() throws IOException {
+		proxy.stop();
 		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Run Output\\");
 
 		attachmentList.add(file);

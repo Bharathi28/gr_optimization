@@ -68,6 +68,7 @@ public class MerchandisingUtilities {
 		}
 		
 		String ProductPPID = "";
+		String PPID30Day = "";
 		String Price = "";
 		String RenewalPlanID = "";
 		String CartLanguage = "";
@@ -88,6 +89,7 @@ public class MerchandisingUtilities {
 		if((offerdata.get("Post Purchase PPID") != null) && (kitppid.equalsIgnoreCase(offerdata.get("Post Purchase PPID").trim()))) {
 //			if(kitppid.equalsIgnoreCase(offerdata.get("Post Purchase PPID").trim())) {
 				ProductPPID = offerdata.get("Post Purchase PPID").trim();
+				PPID30Day  = offerdata.get("PPID").trim();
 				Price = offerdata.get("Post Purchase Price").trim();
 				RenewalPlanID = offerdata.get("Post Purchase Renewal Plan ID").trim();
 				CartLanguage = offerdata.get("Post Purchase Cart Language").trim();
@@ -99,6 +101,7 @@ public class MerchandisingUtilities {
 		}	
 		else {
 			ProductPPID = offerdata.get("PPID").trim();
+			PPID30Day  = offerdata.get("PPID").trim();
 			if(category.equalsIgnoreCase("Product")) {
 				Price = offerdata.get("Acq One Time price").trim();
 			}
@@ -128,6 +131,7 @@ public class MerchandisingUtilities {
 		}
 		
 		expectedofferdata.put("Product PPID", ProductPPID);
+		expectedofferdata.put("30 Day PPID", PPID30Day);
 		
 		if(category.equalsIgnoreCase("Product")) {
 			expectedofferdata.put("Price", Price);
@@ -345,16 +349,16 @@ public class MerchandisingUtilities {
 					expectedprepuproduct = offerdata.get("Pre-Purchase Entry Promotion 2").trim();
 				}
 				
-//				if(!(offerdata.get("Pre-Purchase Entry Renewal Plan").equalsIgnoreCase("-"))) {
+				if(offerdata.get("Pre-Purchase Entry Renewal Plan") != null) {
 					expectedrenewalplanid = offerdata.get("Pre-Purchase Entry Renewal Plan");
-//				}				
+				}				
 				
-//				if(!(offerdata.get("Pre Purchase Entry Cart Language").equalsIgnoreCase("-"))) {
+				if(offerdata.get("Pre Purchase Entry Cart Language") != null) {
 					expectedcartlanguage = offerdata.get("Pre Purchase Entry Cart Language");
-//				}							
-//				if(!(offerdata.get("Pre Purchase Entry Supplemental Cart Language").equalsIgnoreCase("-"))) {
+				}							
+				if(offerdata.get("Pre Purchase Entry Supplemental Cart Language") != null) {
 					expectedsuppcartlanguage = offerdata.get("Pre Purchase Entry Supplemental Cart Language");
-//				}			
+				}			
 				
 				// Continuity Pricing and Shipping
 				if((brand.equalsIgnoreCase("Smileactives")) && (campaign.equalsIgnoreCase("core2"))) {
@@ -407,17 +411,17 @@ public class MerchandisingUtilities {
 				if(offerdata.get("Entry Promotion 1") != null) {
 					expectedcampaigngifts = offerdata.get("Entry Promotion 1").trim();
 				}				
-//				if(!(offerdata.get("Entry Cart Language").equalsIgnoreCase("-"))) {
+				if(offerdata.get("Entry Cart Language") != null) {
 					expectedcartlanguage = offerdata.get("Entry Cart Language");
-//				}
+				}
 				
-//				if(!(offerdata.get("Entry Supplemental Cart Language").equalsIgnoreCase("-"))) {
+				if(offerdata.get("Entry Supplemental Cart Language") != null) {
 					expectedsuppcartlanguage = offerdata.get("Entry Supplemental Cart Language");
-//				}				
+				}				
 				
-//				if(!(offerdata.get("Entry Renewal Plan").equalsIgnoreCase("-"))) {
+				if(offerdata.get("Entry Renewal Plan") != null) {
 					expectedrenewalplanid = offerdata.get("Entry Renewal Plan");
-//				}												
+				}												
 								
 				// Continuity Pricing and Shipping
 				if((brand.equalsIgnoreCase("Smileactives")) && (campaign.equalsIgnoreCase("core2"))) {
@@ -479,17 +483,17 @@ public class MerchandisingUtilities {
 			if(offerdata.get("Post Purchase Upsell Promotion 3") != null) {
 				expectedpostpuproduct = offerdata.get("Post Purchase Upsell Promotion 3").trim();
 			}
-//			if(!(offerdata.get("Post Purchase Cart Language").equalsIgnoreCase("-"))) {
+			if(offerdata.get("Post Purchase Cart Language") != null) {
 				expectedcartlanguage = offerdata.get("Post Purchase Cart Language");
-//			}
+			}
 			
-//			if(!(offerdata.get("Post Purchase Supplemental Cart Language").equalsIgnoreCase("-"))) {
+			if(offerdata.get("Post Purchase Supplemental Cart Language") != null) {
 				expectedsuppcartlanguage = offerdata.get("Post Purchase Supplemental Cart Language");
-//			}			
+			}			
 			
-//			if(!(offerdata.get("Post Purchase Renewal Plan").equalsIgnoreCase("-"))) {
+			if(offerdata.get("Post Purchase Renewal Plan") != null) {
 				expectedrenewalplanid = offerdata.get("Post Purchase Renewal Plan");
-//			}			
+			}			
 			
 			if(offerdata.get("Post Purchase Upsell Payment Plan (Installment)") != null) {
 				expectedinstallmentplanid = offerdata.get("Post Purchase Upsell Payment Plan (Installment)").trim();
@@ -538,6 +542,21 @@ public class MerchandisingUtilities {
 				}
 			}
 		}		
+		else {
+			// If no seperate lineitem, then no GiftPPID
+			if(giftseperatelineitem.equalsIgnoreCase("Yes")) {
+				if((expectedcampaigngifts != null) && (!(expectedcampaigngifts.equals("-"))) && (!(expectedcampaigngifts.equals(""))) && (!(expectedcampaigngifts.equalsIgnoreCase("Free gift")))) {
+					giftppid = String.join(",", bf_obj.getPPIDfromString(brand, expectedcampaigngifts));
+					expectedofferdata.put("Gift PPID", giftppid);
+				}
+				else if((expectedcampaigngifts == null) || (expectedcampaigngifts.equals("-")) || (expectedcampaigngifts.equals("")) || (expectedcampaigngifts.equalsIgnoreCase("Free gift"))){
+					expectedofferdata.put("Gift PPID", "No Gift");
+				}
+			}
+			else {
+				expectedofferdata.put("Gift PPID", "No Gift");
+			}
+		}
 		
 		expectedEntryPrice = expectedEntryPrice.replace("$", "");
 		expectedofferdata.put("Entry Pricing", expectedEntryPrice);
