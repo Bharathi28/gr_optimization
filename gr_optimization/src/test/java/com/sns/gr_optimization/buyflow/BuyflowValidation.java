@@ -557,7 +557,7 @@ public class BuyflowValidation {
 				}
 				
 				// Check if Post Purchase Upsell Page exists
-				if(currentCategory.equalsIgnoreCase("SubscribeandSave")) {
+				if((currentCategory.equalsIgnoreCase("SubscribeandSave")) ||  (currentCategory.equalsIgnoreCase("ShopKit"))){
 					postpu = merch_obj.checkShopPostPU(product_offerdata, brand);
 				}				
 				
@@ -575,6 +575,21 @@ public class BuyflowValidation {
 				product_lineitem.add(expectedofferdata_product.get("Continuity Shipping"));
 				product_lineitem.add(expectedofferdata_product.get("Supplemental Cart Language"));
 				expected_lineitems.add(product_lineitem);
+				
+				// Add Gift PPIDs to lineitem list	
+				if(currentCategory.equalsIgnoreCase("ShopKit")) {
+					if(!(expectedofferdata_product.get("Gift").contains("No Gift"))) {
+						List<String> gift_lineitem = new ArrayList<String>();
+						gift_lineitem.add("Gift");
+						gift_lineitem.add(expectedofferdata_product.get("Gift"));
+						gift_lineitem.add("FREE");
+						gift_lineitem.add("No Cart Language");
+						gift_lineitem.add("No Continuity Pricing");
+						gift_lineitem.add("No Continuity Shipping");
+						gift_lineitem.add("No Supplemental Cart Language");
+						expected_lineitems.add(gift_lineitem);
+					}	
+				}							
 				
 				subtotal_list.add(expectedofferdata_product.get("Price"));
 				supplysize_list.add(expectedofferdata_product.get("SupplySize"));
@@ -629,7 +644,7 @@ public class BuyflowValidation {
 			}
 		}
 		
-		if((category_list.contains("Product")) || (category_list.contains("SubscribeandSave"))) {
+		if((category_list.contains("Product")) || (category_list.contains("SubscribeandSave")) || (category_list.contains("ShopKit"))) {
 			campaignpages.add("ShopPage");
 			campaignpages.add("PDPage");
 		}
@@ -912,7 +927,7 @@ public class BuyflowValidation {
 		
 		// Calculate Expected Checkout - Shipping Price
 		String expected_shipping = bf_obj.CalculateTotalPrice(shipping_list);
-		checkout_shipping = checkout_shipping.replace("Standard - ","");
+		checkout_shipping = checkout_shipping.replace("Standard -","");
 		checkout_shipping = checkout_shipping.replace("Two Day -","");
 		checkout_shipping = checkout_shipping.replace("\n","");
 		checkout_shipping = checkout_shipping.replace("$","");

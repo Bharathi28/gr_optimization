@@ -33,24 +33,6 @@ public class MerchandisingUtilities {
 		expectedofferdata.put("Brand", brand);
 		expectedofferdata.put("Campaign", campaign);
 		
-//		// Check PostPU for current offercode
-//		if(PostPU.equalsIgnoreCase("Yes")) {
-//			String offerpostpu = offerdata.get("90 Day PPID").trim();
-//			offerpostpu = offerpostpu.replaceAll("\\s+", "");
-//			if(offerpostpu.contains(kitppid)) {
-//				expectedofferdata.put("Offer Post-Purchase", "Yes");	
-//				expectedofferdata.put("SupplySize", "90");
-//			}
-//			else {
-//				expectedofferdata.put("Offer Post-Purchase", "No");	
-//				expectedofferdata.put("SupplySize", "30");
-//			}					
-//		}		
-//		else {
-//			expectedofferdata.put("Offer Post-Purchase", "No");
-//			expectedofferdata.put("SupplySize", "30");
-//		}		
-		
 		if(offerdata.get("Master Product") != null) {
 			expectedofferdata.put("Master PPID", offerdata.get("Master Product").trim());
 		}		
@@ -72,7 +54,7 @@ public class MerchandisingUtilities {
 		String Price = "";
 		String RenewalPlanID = "";
 		String CartLanguage = "";
-		String SupplementalCartLanguage = "";				
+		String SupplementalCartLanguage = "";		
 					
 		String onetime_subscribe_option = "";
 		if((offerdata.get("Subscribe and Save price") == null) || (offerdata.get("Subscribe and Save price").trim().equalsIgnoreCase(" ")) ||
@@ -148,6 +130,9 @@ public class MerchandisingUtilities {
 //			}			
 						
 			if(brand.equalsIgnoreCase("JLoBeauty")) {
+				if(Expshipfreq.equalsIgnoreCase("-")) {
+					Expshipfreq = "30 Day";
+				}
 				expectedofferdata.put("Shipping Frequency", Expshipfreq);
 				
 				String ShipFreqCol = Expshipfreq + " RP";
@@ -179,6 +164,14 @@ public class MerchandisingUtilities {
 		}		
 		else if(category.equalsIgnoreCase("ShopKit")) {
 
+			if(offerdata.get("Gift") != null) {
+				List<String> gifts = bf_obj.getPPIDfromString(brand, offerdata.get("Gift").trim());
+				System.out.println("Gifts from PPID String : " + gifts.get(0));
+				expectedofferdata.put("Gift", gifts.get(0));				
+			}
+			else {
+				expectedofferdata.put("Gift", "No Gift");
+			}
 			expectedofferdata.put("Price", Price);
 			expectedofferdata.put("Renewal Plan Id", RenewalPlanID);
 			expectedofferdata.put("Cart Language", CartLanguage);
@@ -245,7 +238,7 @@ public class MerchandisingUtilities {
 		// No gift for MeaningfulBeauty - one-shot campaign
 		// And GiftPPID will carry Pre-Purchase value
 		String offerprepu = "";
-		if((brand.equalsIgnoreCase("MeaningfulBeauty")) && (campaign.equalsIgnoreCase("os"))) {
+		if(((brand.equalsIgnoreCase("MeaningfulBeauty")) && (campaign.equalsIgnoreCase("os"))) || ((brand.equalsIgnoreCase("CrepeErase")) && (campaign.equalsIgnoreCase("advanced-one")))){
 			if(giftppid.equalsIgnoreCase("Yes")) {
 				offerprepu="Yes";
 			}
@@ -413,12 +406,10 @@ public class MerchandisingUtilities {
 				}				
 				if(offerdata.get("Entry Cart Language") != null) {
 					expectedcartlanguage = offerdata.get("Entry Cart Language");
-				}
-				
+				}				
 				if(offerdata.get("Entry Supplemental Cart Language") != null) {
 					expectedsuppcartlanguage = offerdata.get("Entry Supplemental Cart Language");
-				}				
-				
+				}								
 				if(offerdata.get("Entry Renewal Plan") != null) {
 					expectedrenewalplanid = offerdata.get("Entry Renewal Plan");
 				}												
@@ -520,7 +511,7 @@ public class MerchandisingUtilities {
 		// Gift ppid
 		// No gift for MeaningfulBeauty - one-shot campaign
 		// And GiftPPID will carry Pre-Purchase value
-		if(!(campaign.equalsIgnoreCase("os"))) {
+		if((!(campaign.equalsIgnoreCase("os"))) && (!(campaign.equalsIgnoreCase("advanced-one")))) {
 			// There is a gift choice - so giftppid will be mentioned in run_input
 			if(!(giftppid.equalsIgnoreCase("-"))) {
 				expectedofferdata.put("Gift PPID", giftppid);

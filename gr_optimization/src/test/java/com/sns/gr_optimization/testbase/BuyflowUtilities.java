@@ -466,6 +466,7 @@ public class BuyflowUtilities {
 //				email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
 //			}
 			
+			Thread.sleep(10000);
 			driver.switchTo().frame(0);
 	
 			if(driver.findElements(By.xpath("//div[@id='login_emaildiv']//div//input")).size() != 0) {
@@ -632,7 +633,7 @@ public class BuyflowUtilities {
 		Thread.sleep(5000);
 		// Agree and Continue
 		jse.executeScript("window.scrollBy(0,500)", 0);
-		Thread.sleep(2000);
+		Thread.sleep(3000);
 		driver.findElement(By.xpath("//button[@class='btn full confirmButton continueButton']")).click();
 		Thread.sleep(2000);
 		driver.findElement(By.xpath("//input[@id='confirmButtonTop']")).click();

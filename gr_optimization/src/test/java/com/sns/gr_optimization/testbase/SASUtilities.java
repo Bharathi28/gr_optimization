@@ -170,7 +170,7 @@ public class SASUtilities {
 
 	public void select_prepu(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
 		moveto_prepu(driver, brand, campaign);
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 		
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		jse.executeScript("window.scrollBy(0,200)", 0);
@@ -186,9 +186,12 @@ public class SASUtilities {
 		
 		String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
 		String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();
+		System.out.println(elementvalue);
 			
 		WebElement prepu_elmt = comm_obj.find_webelement(driver, elementlocator, elementvalue);
+		System.out.println(prepu_elmt.isDisplayed());
 		comm_obj.waitUntilElementAppears(driver, elementvalue);
+		Thread.sleep(2000);
 		prepu_elmt.click();
 		Thread.sleep(1000);
 	}
@@ -248,8 +251,8 @@ public class SASUtilities {
 	
 	public void select_giftshade(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
-		jse.executeScript("window.scrollBy(0,500)", 0);
-		
+		jse.executeScript("window.scrollBy(0,800)", 0);
+		Thread.sleep(4000);
 		String giftshade = offerdata.get("GiftShade");
 		
 		if(!(giftshade.equalsIgnoreCase("No"))) {
@@ -266,7 +269,7 @@ public class SASUtilities {
 			if(!(elementvalue.equalsIgnoreCase("n/a"))) {
 				WebElement shade_elmt = comm_obj.find_webelement(driver, elementlocator, elementvalue);
 				comm_obj.waitUntilElementAppears(driver, elementvalue);
-				Thread.sleep(3000);
+				Thread.sleep(4000);
 				shade_elmt.click();
 				Thread.sleep(1000);
 			}			
@@ -277,7 +280,12 @@ public class SASUtilities {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		jse.executeScript("window.scrollBy(0,100)", 0);
 	
-		String ppid = offerdata.get("Product PPID");
+		String masterPPID = "";
+		if(offerdata.get("Master PPID") != null){
+			masterPPID = offerdata.get("Master PPID");
+		}
+		 
+		String ppid = offerdata.get("30 Day PPID");
 		String name = offerdata.get("Product Name").trim();
 		String pagepattern = offerdata.get("PagePattern");
 
@@ -291,8 +299,20 @@ public class SASUtilities {
 				xpath = "(//h3[contains(@class,'product-name')]//a[contains(text(),'" + name + "')])[1]";
 			}
 			else if(brand.equalsIgnoreCase("CrepeErase")){
-				xpath = "//h4[contains(@class,'product-name')]//a[contains(text(),'" + name + "')]";
+				
+				if(masterPPID.equalsIgnoreCase("")) {
+					xpath = "//div[@data-itemid='" + ppid + "']//div//h4//a";
+				}
+				else {
+					xpath = "//div[@data-itemid='" + masterPPID + "']//div//h4//a";
+				}
+//				xpath = "//h4[contains(@class,'product-name')]//a[contains(text(),'" + name + "')]";
+				//div[@data-itemid='MT2A3540']//div//div//h3//a
 			}	
+			else if(brand.equalsIgnoreCase("MeaningfulBeauty")){
+				xpath = "//div[@data-itemid='" + ppid + "']//div//div//h3//a";
+				System.out.println(xpath);
+			}
 			else {				
 				xpath = "//h3[contains(@class,'product-name')]//a[contains(text(),'" + name + "')]";
 			}
