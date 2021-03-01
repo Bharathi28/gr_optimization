@@ -70,8 +70,14 @@ public class SASUtilities {
 		if((category.equalsIgnoreCase("Product")) || (category.equalsIgnoreCase("ShopKit")) || (category.equalsIgnoreCase("SubscribeandSave"))) {
 //			if(brand.equalsIgnoreCase("JLoBeauty")) {
 //				if(driver.findElements(By.xpath("//a[@class='button mini-cart-link-checkout small-12']")).size() == 0) {
+				if(driver.findElements(By.id("dwfrm_cart_billing_billingAddress_email_emailAddress")).size() != 0) {
+				
+				}
+				else {
 					Thread.sleep(3000);
 					driver.findElement(By.xpath("//button[@id='add-to-cart']")).click();
+				}
+					
 //				}
 //			}
 		}
@@ -313,6 +319,16 @@ public class SASUtilities {
 				xpath = "//div[@data-itemid='" + ppid + "']//div//div//h3//a";
 				System.out.println(xpath);
 			}
+			else if((brand.equalsIgnoreCase("WestmoreBeauty")) || (brand.equalsIgnoreCase("MallyBeauty")) || (brand.equalsIgnoreCase("Smileactives"))){
+				
+				if(masterPPID.equalsIgnoreCase("")) {
+					xpath = "//div[@data-itemid='" + ppid + "']//div//div[4]//h3//a";
+				}
+				else {					
+					xpath = "//div[@data-itemid='" + masterPPID + "']//div//div[4]//h3//a";
+				}
+				System.out.println(xpath);
+			}
 			else {				
 				xpath = "//h3[contains(@class,'product-name')]//a[contains(text(),'" + name + "')]";
 			}
@@ -331,6 +347,19 @@ public class SASUtilities {
 			product_elmt.click();
 		}		
 		
+		if(brand.equalsIgnoreCase("MallyBeauty")) {
+			Thread.sleep(2000);
+			driver.findElement(By.xpath("(//button[@class='button primary next-section'])[1]")).click();
+			
+			if(offerdata.get("Product Name").contains("Kit")){
+				if(offerdata.get("PagePattern").equalsIgnoreCase("product")) {
+					Thread.sleep(4000);
+					driver.findElement(By.xpath("//a[@id='no-upgrade']")).click();
+				}
+			}
+			
+			
+		}
 //		if(brand.equalsIgnoreCase("JLoBeauty")) {
 //			if(!(pagepattern.contains("shade"))) {
 //				Thread.sleep(4000);
@@ -344,7 +373,7 @@ public class SASUtilities {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 //		jse.executeScript("window.scrollBy(0,300)", 0);
 	
-		String ppid = offerdata.get("Product PPID");
+		String ppid = offerdata.get("30 Day PPID");
 		
 		if(brand.equalsIgnoreCase("CrepeErase")) {
 			Select sel_element = new Select(driver.findElement(By.xpath("//ul[@class='variations-section clearfix']//li//div[3]//select")));
@@ -352,20 +381,39 @@ public class SASUtilities {
 		}
 		else {
 			String xpath = "";
-			if((brand.equalsIgnoreCase("Smileactives")) || (brand.equalsIgnoreCase("WestmoreBeauty")) || (brand.equalsIgnoreCase("MallyBeauty"))){
+			if(brand.equalsIgnoreCase("MallyBeauty")) {
+				if(offerdata.get("Product Name").contains("Kit")){
+					xpath = "//div[@data-valuepackid='" + ppid + "']//div//div[2]//a//img";
+				}
+				else {
+					xpath = "//li[@data-variantid='" + ppid + "']";
+				}		
+				if(offerdata.get("Shade").contains("Fair")) {
+					xpath = "";
+				}
+				System.out.println(xpath);
+			}
+			else if((brand.equalsIgnoreCase("Smileactives")) || (brand.equalsIgnoreCase("WestmoreBeauty"))){
 				xpath = "//li[@data-variantid='" + ppid + "']";
 			}
 			else {
 				xpath = "(//li[@data-variantid='" + ppid + "'])[3]";
 			}
-			WebElement shade_elmt = driver.findElement(By.xpath(xpath));
-			comm_obj.waitUntilElementAppears(driver, xpath);
-			Thread.sleep(2000);
-			if(!(shade_elmt.getAttribute("class").contains("selected"))) {
-				shade_elmt.click();
-			}		
-			Thread.sleep(1000);	
+			if(!(xpath.equalsIgnoreCase(""))) {
+				WebElement shade_elmt = driver.findElement(By.xpath(xpath));
+				comm_obj.waitUntilElementAppears(driver, xpath);
+				Thread.sleep(2000);
+				if(!(shade_elmt.getAttribute("class").contains("selected"))) {
+					shade_elmt.click();
+				}		
+				Thread.sleep(1000);
+			}				
 		}		
+		
+		if(brand.equalsIgnoreCase("MallyBeauty")) {
+			Thread.sleep(2000);	
+			driver.findElement(By.xpath("//a[@id='upgrade']")).click();
+		}
 		
 //		if(brand.equalsIgnoreCase("JLoBeauty")) {
 //			Thread.sleep(4000);
