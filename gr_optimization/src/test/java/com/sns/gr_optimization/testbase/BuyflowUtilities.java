@@ -472,7 +472,6 @@ public class BuyflowUtilities {
 				Thread.sleep(10000);
 				while(driver.findElements(By.xpath("//div[@id='loginSection']//div//div[2]//a")).size() == 0) {
 //				while(driver.findElements(By.xpath("//div[@id='login_emaildiv']//div//input")).size() == 0) {	
-					System.out.println(driver.findElement(By.xpath("//div[@id='passwordSection']//input[@id='email']")).isDisplayed());
 					if(driver.findElements(By.xpath("//section[@id='genericError']//div//div[2]")).size() != 0) {
 						driver.close();
 						driver.switchTo().window(winHandleBefore);

@@ -65,7 +65,12 @@ public class MerchandisingUtilities {
 			onetime_subscribe_option = "Yes";
 		}
 		
-		String pagepattern = generatePagePattern(category, shade, brand, onetime_subscribe_option);
+		String size_option = "No";
+		if(offerdata.get("Product Name").trim().equalsIgnoreCase("THAT JLO GLOW™")) {
+			size_option = "Yes";
+		}
+		
+		String pagepattern = generatePagePattern(category, shade, brand, onetime_subscribe_option, size_option);
 		expectedofferdata.put("PagePattern", pagepattern);
 		
 		if((offerdata.get("Post Purchase PPID") != null) && (kitppid.equalsIgnoreCase(offerdata.get("Post Purchase PPID").trim()))) {
@@ -184,16 +189,29 @@ public class MerchandisingUtilities {
 			expectedofferdata.put("Continuity Shipping", cart_lang_shipping);
 			
 			expectedofferdata.put("Price Book Id", CatalogPriceBookIDs.get("Entry-Continuity Pricebook"));
+			
+			if(offerdata.containsKey("Post Purchase Product")) {
+				if(offerdata.get("Post Purchase Product") != null) {								
+					String PostPUProduct = String.join(",", bf_obj.getPPIDfromString(brand, offerdata.get("Post Purchase Product").trim()));
+					expectedofferdata.put("Post Purchase Product", PostPUProduct);
+				}
+			}
 		}
 		
 		return expectedofferdata;
 	}
 	
-	public String generatePagePattern(String category, String shade, String brand, String subscribe_option) {
+	public String generatePagePattern(String category, String shade, String brand, String subscribe_option, String size_option) {
 		String pagepattern = "product-";
 		
 		if(!(shade.equalsIgnoreCase("No Shade"))) {
 			pagepattern = pagepattern + "shade-";
+		}
+		
+		if(brand.equalsIgnoreCase("JLoBeauty")) {
+			if(size_option.equalsIgnoreCase("Yes")) {
+				pagepattern = pagepattern + "size-";
+			}
 		}
 		
 		if(subscribe_option.equalsIgnoreCase("Yes")) {
@@ -208,6 +226,11 @@ public class MerchandisingUtilities {
 				}
 			}
 		}					
+		else {
+			if(brand.equalsIgnoreCase("JLoBeauty")) {
+				pagepattern = pagepattern + "-frequency";
+			}
+		}
 		
 		String last_char = pagepattern.substring(pagepattern.length() - 1);
 		if(last_char.equalsIgnoreCase("-")) {

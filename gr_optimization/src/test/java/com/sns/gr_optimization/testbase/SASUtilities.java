@@ -58,7 +58,10 @@ public class SASUtilities {
 	    		break;
 	    	case "frequency":
 	    		select_frequency(driver, brand, campaign, offerdata);
-	    		break;	    		
+	    		break;	 
+	    	case "size":
+	    		select_size(driver, brand, campaign, offerdata);
+	    		break;
 			}
 		}	
 		add_product_to_cart(driver, brand, campaign, category);
@@ -180,6 +183,7 @@ public class SASUtilities {
 		
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		jse.executeScript("window.scrollBy(0,200)", 0);
+		Thread.sleep(2000);
 		
 		String prepu = offerdata.get("Offer Pre-Purchase");
 		
@@ -295,7 +299,7 @@ public class SASUtilities {
 		String name = offerdata.get("Product Name").trim();
 		String pagepattern = offerdata.get("PagePattern");
 
-		if(ppid.equalsIgnoreCase("JL2A0136")) {
+		if(ppid.equalsIgnoreCase("JL2A0196")) {
 			driver.findElement(By.xpath("(//a[@class='button-text sd-cta'])[2]")).click();
 			Thread.sleep(1000);
 		}
@@ -452,5 +456,14 @@ public class SASUtilities {
 		Select sel_element = new Select(driver.findElement(By.xpath("//select[@id='shippingFrequencySelector']")));
 		sel_element.selectByVisibleText(shipfreq.toLowerCase() + "s");
 		Thread.sleep(2000);
+	}
+	
+	public void select_size(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
+		
+		String ppid = offerdata.get("30 Day PPID");
+		
+		Thread.sleep(1000);
+		driver.findElement(By.xpath("(//li[@data-variantid='" + ppid +"'])[3]")).click();
+		Thread.sleep(1000);
 	}
 }

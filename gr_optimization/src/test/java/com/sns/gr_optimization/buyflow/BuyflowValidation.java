@@ -90,8 +90,10 @@ public class BuyflowValidation {
 	final String AUTOMATE_KEY = "hFN19RHbQmGyeL8Z47Ls";
 	final String URL = "https://" + USERNAME + ":" + AUTOMATE_KEY + "@hub-cloud.browserstack.com/wd/hub";
 	
+//	WebDriver driver;
 	BrowserMobProxy proxy;
 	DesiredCapabilities capabilities;
+	Local l;
 	
 	@BeforeSuite
 	public void getEmailId() {
@@ -113,7 +115,8 @@ public class BuyflowValidation {
 		proxy.start(12345);
 		System.out.println("Started proxy server at: " + proxy.getPort());
 			    
-		Local l = new Local();
+		l = new Local();
+	
 		Map<String, String> l_options = new HashMap<String, String>();
 		l_options.put("key", AUTOMATE_KEY);
 
@@ -574,10 +577,10 @@ public class BuyflowValidation {
 				product_lineitem.add(expectedofferdata_product.get("Continuity Pricing"));
 				product_lineitem.add(expectedofferdata_product.get("Continuity Shipping"));
 				product_lineitem.add(expectedofferdata_product.get("Supplemental Cart Language"));
-				expected_lineitems.add(product_lineitem);
+				expected_lineitems.add(product_lineitem);				
 				
-				// Add Gift PPIDs to lineitem list	
 				if(currentCategory.equalsIgnoreCase("ShopKit")) {
+					// Add Gift PPIDs to lineitem list	
 					if(!(expectedofferdata_product.get("Gift").contains("No Gift"))) {
 						List<String> gift_lineitem = new ArrayList<String>();
 						gift_lineitem.add("Gift");
@@ -589,6 +592,25 @@ public class BuyflowValidation {
 						gift_lineitem.add("No Supplemental Cart Language");
 						expected_lineitems.add(gift_lineitem);
 					}	
+					
+					// Add PostPU Products to lineitem list
+					if(expectedofferdata_product.get("Offer Post-Purchase").equalsIgnoreCase("Yes")) {
+						if(expectedofferdata_product.containsKey("Post Purchase Product")) {
+							String postpu_ppid = expectedofferdata_product.get("Post Purchase Product");
+							String[] postpuppidarr = postpu_ppid.split(",");	
+							for (String postpuprod : postpuppidarr) {
+								List<String> postpu_lineitem = new ArrayList<String>();
+								postpu_lineitem.add("PostPU");
+								postpu_lineitem.add(postpuprod);
+								postpu_lineitem.add("-");
+								postpu_lineitem.add("No Cart Language");
+								postpu_lineitem.add("No Continuity Pricing");
+								postpu_lineitem.add("No Continuity Shipping");
+								postpu_lineitem.add("No Supplemental Cart Language");
+								expected_lineitems.add(postpu_lineitem);
+							}
+						}
+					}					
 				}							
 				
 				subtotal_list.add(expectedofferdata_product.get("Price"));
@@ -1403,7 +1425,7 @@ public class BuyflowValidation {
 		output_row.add(remarks);
 		output.add(output_row);
 		
-		driver.close();
+		driver.quit();
 	
 		if(!(pixelStr.equalsIgnoreCase("-"))) {
 			HashMap<Integer, HashMap> overallOutput = pixel_obj.validatePixels(pixelStr, pattern, brand, campaign, env, campaignpages);
@@ -1412,8 +1434,11 @@ public class BuyflowValidation {
 	}
 	
 	@AfterSuite
-	public void populateExcel() throws IOException {
+	public void populateExcel() throws Exception {
 		proxy.stop();
+		l.stop();
+//		driver.quit();
+		
 		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Run Output\\");
 
 		attachmentList.add(file);
@@ -1427,7 +1452,7 @@ public class BuyflowValidation {
 			attachmentList.add(System.getProperty("user.dir") + "\\target\\surefire-reports\\emailable-report.html");
 		}	
 		
-		mailObj.sendEmail("Buyflow Results", sendReportTo, attachmentList);
+		mailObj.sendEmail("Buyflow Results", sendReportTo, attachmentList);		
 	}	
 }
 
