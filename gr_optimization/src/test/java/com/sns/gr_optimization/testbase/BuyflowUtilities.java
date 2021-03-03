@@ -124,7 +124,7 @@ public class BuyflowUtilities {
 
 			if(!(elementvalue.equalsIgnoreCase("n/a"))) {
 				WebElement element = comm_obj.find_webelement(driver, elementlocator, elementvalue);	
-				Thread.sleep(3000);
+				Thread.sleep(2000);
 				element.click();
 				Thread.sleep(2000);
 			}						

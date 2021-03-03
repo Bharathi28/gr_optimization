@@ -201,7 +201,7 @@ public class SASUtilities {
 		WebElement prepu_elmt = comm_obj.find_webelement(driver, elementlocator, elementvalue);
 		System.out.println(prepu_elmt.isDisplayed());
 		comm_obj.waitUntilElementAppears(driver, elementvalue);
-		Thread.sleep(2000);
+		Thread.sleep(4000);
 		prepu_elmt.click();
 		Thread.sleep(1000);
 	}
@@ -351,16 +351,16 @@ public class SASUtilities {
 			product_elmt.click();
 		}		
 		
-		if(brand.equalsIgnoreCase("MallyBeauty")) {
+		if((brand.equalsIgnoreCase("MallyBeauty")) && (offerdata.get("Product Name").contains("Kit"))){
 			Thread.sleep(2000);
 			driver.findElement(By.xpath("(//button[@class='button primary next-section'])[1]")).click();
 			
-			if(offerdata.get("Product Name").contains("Kit")){
+//			if(offerdata.get("Product Name").contains("Kit")){
 				if(offerdata.get("PagePattern").equalsIgnoreCase("product")) {
 					Thread.sleep(4000);
 					driver.findElement(By.xpath("//a[@id='no-upgrade']")).click();
 				}
-			}
+//			}
 			
 			
 		}
@@ -388,13 +388,14 @@ public class SASUtilities {
 			if(brand.equalsIgnoreCase("MallyBeauty")) {
 				if(offerdata.get("Product Name").contains("Kit")){
 					xpath = "//div[@data-valuepackid='" + ppid + "']//div//div[2]//a//img";
+					if(offerdata.get("Shade").contains("Fair")) {
+						xpath = "";
+					}
 				}
 				else {
 					xpath = "//li[@data-variantid='" + ppid + "']";
 				}		
-				if(offerdata.get("Shade").contains("Fair")) {
-					xpath = "";
-				}
+				
 				System.out.println(xpath);
 			}
 			else if((brand.equalsIgnoreCase("Smileactives")) || (brand.equalsIgnoreCase("WestmoreBeauty"))){
@@ -403,10 +404,12 @@ public class SASUtilities {
 			else {
 				xpath = "(//li[@data-variantid='" + ppid + "'])[3]";
 			}
+			System.out.println(xpath);
 			if(!(xpath.equalsIgnoreCase(""))) {
 				WebElement shade_elmt = driver.findElement(By.xpath(xpath));
 				comm_obj.waitUntilElementAppears(driver, xpath);
 				Thread.sleep(2000);
+				System.out.println(shade_elmt.isDisplayed());
 				if(!(shade_elmt.getAttribute("class").contains("selected"))) {
 					shade_elmt.click();
 				}		
@@ -414,7 +417,7 @@ public class SASUtilities {
 			}				
 		}		
 		
-		if(brand.equalsIgnoreCase("MallyBeauty")) {
+		if((brand.equalsIgnoreCase("MallyBeauty")) && (offerdata.get("Product Name").contains("Kit"))){
 			Thread.sleep(2000);	
 			driver.findElement(By.xpath("//a[@id='upgrade']")).click();
 		}
