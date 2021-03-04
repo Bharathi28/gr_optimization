@@ -145,7 +145,7 @@ public class BuyflowValidation {
 		l_options.put("localProxyPort", "12345");
 		l_options.put("localIdentifier", "Test1");
 
-//		l.start(l_options);
+		l.start(l_options);
 
 		// get the Selenium proxy object
 		Proxy seleniumProxy = ClientUtil.createSeleniumProxy(proxy);	
