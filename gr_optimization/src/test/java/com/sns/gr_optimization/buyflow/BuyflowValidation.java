@@ -91,6 +91,9 @@ public class BuyflowValidation {
 	String buildName = System.getenv("BROWSERSTACK_BUILD_NAME");
 	final String URL = "https://" + username + ":" + accessKey + "@hub-cloud.browserstack.com/wd/hub";
 	
+	
+	
+	
 //	final String USERNAME = "manibharathikaru1";
 //	final String AUTOMATE_KEY = "hFN19RHbQmGyeL8Z47Ls";
 //	final String URL = "https://" + USERNAME + ":" + AUTOMATE_KEY + "@hub-cloud.browserstack.com/wd/hub";
@@ -112,6 +115,11 @@ public class BuyflowValidation {
 	
 	@DataProvider(name="buyflowInput", parallel=true)
 	public Object[][] testData() throws Exception {
+		
+		System.out.println(username);
+		System.out.println(accessKey);
+		System.out.println(buildName);
+		System.out.println(URL);
 		
 		// start the proxy
 		proxy = new BrowserMobProxyServer();
