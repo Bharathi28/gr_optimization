@@ -618,6 +618,7 @@ public class BuyflowUtilities {
 		driver.findElement(By.xpath("//div[@id='login_passworddiv']//div//input")).sendKeys("123456789");
 						
 		// Login button
+		Thread.sleep(2000);
 		driver.findElement(By.xpath("//button[@class='button actionContinue scTrack:unifiedlogin-login-submit']")).click();	
 				
 		Thread.sleep(5000);
