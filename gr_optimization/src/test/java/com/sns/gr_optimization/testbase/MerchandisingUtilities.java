@@ -150,7 +150,12 @@ public class MerchandisingUtilities {
 				else if(Expshipfreq.contains("60")) {
 					CartLanguage = CartLanguage.replace("90 days", "60 days");
 					SupplementalCartLanguage = SupplementalCartLanguage.replace("90 days", "60 days");
-				}				
+				}		
+				
+				// Pre-Purchase Upsell for Star Power Duo
+				if(offerdata.get("Product Name").trim().equalsIgnoreCase("Star Power Duo")) {
+					expectedofferdata.put("Offer Pre-Purchase", offerdata.get("Pre-Purchase").trim());
+				}
 			}
 			else {
 				expectedofferdata.put("Renewal Plan Id", RenewalPlanID);

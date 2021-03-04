@@ -86,9 +86,14 @@ public class BuyflowValidation {
 	
 	static String Output_foldername = monthStr + dayStr + yearStr;
 	
-	final String USERNAME = "manibharathikaru1";
-	final String AUTOMATE_KEY = "hFN19RHbQmGyeL8Z47Ls";
-	final String URL = "https://" + USERNAME + ":" + AUTOMATE_KEY + "@hub-cloud.browserstack.com/wd/hub";
+	String username = System.getenv("BROWSERSTACK_USERNAME");
+	String accessKey = System.getenv("BROWSERSTACK_ACCESS_KEY");
+	String buildName = System.getenv("BROWSERSTACK_BUILD_NAME");
+	final String URL = "https://" + username + ":" + accessKey + "@hub-cloud.browserstack.com/wd/hub";
+	
+//	final String USERNAME = "manibharathikaru1";
+//	final String AUTOMATE_KEY = "hFN19RHbQmGyeL8Z47Ls";
+//	final String URL = "https://" + USERNAME + ":" + AUTOMATE_KEY + "@hub-cloud.browserstack.com/wd/hub";
 	
 //	WebDriver driver;
 	BrowserMobProxy proxy;
@@ -100,9 +105,9 @@ public class BuyflowValidation {
 //		System.setProperty("email", "aaqil@searchnscore.com,manibharathi@searchnscore.com");
 //		System.setProperty("testset", "Top 3");
 //		
-		sendReportTo = System.getProperty("email");
-		testSet = System.getProperty("testset");
-		testSuite = System.getProperty("testsuite");
+//		sendReportTo = System.getProperty("email");
+//		testSet = System.getProperty("testset");
+//		testSuite = System.getProperty("testsuite");
 	}
 	
 	@DataProvider(name="buyflowInput", parallel=true)
@@ -118,7 +123,8 @@ public class BuyflowValidation {
 		l = new Local();
 	
 		Map<String, String> l_options = new HashMap<String, String>();
-		l_options.put("key", AUTOMATE_KEY);
+//		l_options.put("key", AUTOMATE_KEY);
+		l_options.put("key", accessKey);
 
 		l_options.put("v", "true");
 		l_options.put("force", "true");
@@ -163,35 +169,36 @@ public class BuyflowValidation {
 		
 		Object[][] arrayObject = null;
 		
-		if(day == 7) {
-			arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Saturday", 1);
-		}
-		else if(day == 1) {
-			arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Sunday", 1);
-		}
-		else {
-			if(testSuite.equalsIgnoreCase("Buyflow")) {
-				if(testSet.equalsIgnoreCase("Core")) {
-					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Core", 1);
-				}
-				else if(testSet.equalsIgnoreCase("Top 3")){
-					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Top 3", 1);
-				}
-				else if(testSet.equalsIgnoreCase("All active")){
-					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "All active", 1);
-				}
-			}
-			else if(testSuite.equalsIgnoreCase("Pixel")) {
-				if(day == 6) {
-					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "AllPixels", 1);
-				}
-				else {
-					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "FBPixels", 1);
-				}
-			}
-		}
+//		if(day == 7) {
+//			arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Saturday", 1);
+//		}
+//		else if(day == 1) {
+//			arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Sunday", 1);
+//		}
+//		else {
+//			if(testSuite.equalsIgnoreCase("Buyflow")) {
+//				if(testSet.equalsIgnoreCase("Core")) {
+//					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Core", 1);
+//				}
+//				else if(testSet.equalsIgnoreCase("Top 3")){
+//					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Top 3", 1);
+//				}
+//				else if(testSet.equalsIgnoreCase("All active")){
+//					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "All active", 1);
+//				}
+//			}
+//			else if(testSuite.equalsIgnoreCase("Pixel")) {
+//				if(day == 6) {
+//					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "AllPixels", 1);
+//				}
+//				else {
+//					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "FBPixels", 1);
+//				}
+//			}
+//		}
 		
 //	arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
+	arrayObject = comm_obj.getExcelData("C:/Automation/Automation Input and Output/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
 		return arrayObject;
 	}	
 	
@@ -296,8 +303,8 @@ public class BuyflowValidation {
 		ListIterator<String> categoryIterator = categorylist.listIterator();		
 		
 		// Launch Browser
-//		WebDriver driver = new RemoteWebDriver(new java.net.URL(URL), capabilities);
-		WebDriver driver = new ChromeDriver(capabilities);
+		WebDriver driver = new RemoteWebDriver(new java.net.URL(URL), capabilities);
+//		WebDriver driver = new ChromeDriver(capabilities);
 		driver.manage().window().maximize();
 		
 		// enable more detailed HAR capture, if desired (see CaptureType for the complete list)
@@ -648,6 +655,10 @@ public class BuyflowValidation {
 				// Move to Checkout
 				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
 				bf_obj.move_to_checkout(driver, brand, campaigncategory, currentCategory);
+				
+				if((brand.equalsIgnoreCase("JLoBeauty")) && (expectedofferdata_product.get("Product Name").equalsIgnoreCase("Star Power Duo"))) {
+					sas_obj.select_prepu(driver, brand, campaign, expectedofferdata_product);
+				}
 			}
 						
 			if(offerIterator.hasNext() && categoryIterator.hasNext()) {
@@ -1439,8 +1450,9 @@ public class BuyflowValidation {
 		l.stop();
 //		driver.quit();
 		
-		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Run Output\\");
-
+//		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Run Output\\");
+		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", "C:\\Automation\\Automation Input and Output\\Input_Output\\BuyflowValidation\\Input_Output\\BuyflowValidation\\Run Output\\");
+		
 		attachmentList.add(file);
 		
 		Path testoutput_path = Paths.get(System.getProperty("user.dir") + "\\test-output\\emailable-report.html");
