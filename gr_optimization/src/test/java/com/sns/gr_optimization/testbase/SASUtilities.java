@@ -299,7 +299,7 @@ public class SASUtilities {
 		String name = offerdata.get("Product Name").trim();
 		String pagepattern = offerdata.get("PagePattern");
 
-		if(ppid.equalsIgnoreCase("JL2A0196")) {
+		if(name.equalsIgnoreCase("Star Power Duo")) {
 			driver.findElement(By.xpath("(//a[@class='button-text sd-cta'])[2]")).click();
 			Thread.sleep(1000);
 		}

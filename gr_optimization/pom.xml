@@ -32,6 +32,8 @@
             	<suiteXmlFiles>
             		<suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
                	</suiteXmlFiles>
+               	<forkCount>5</forkCount>
+         		<reuseForks>true</reuseForks>
             </configuration>
          </plugin>
       </plugins>

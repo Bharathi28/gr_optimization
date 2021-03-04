@@ -86,17 +86,17 @@ public class BuyflowValidation {
 	
 	static String Output_foldername = monthStr + dayStr + yearStr;
 	
-	String username = System.getenv("BROWSERSTACK_USERNAME");
-	String accessKey = System.getenv("BROWSERSTACK_ACCESS_KEY");
-	String buildName = System.getenv("BROWSERSTACK_BUILD_NAME");
-	final String URL = "https://" + username + ":" + accessKey + "@hub-cloud.browserstack.com/wd/hub";
+//	String username = System.getenv("BROWSERSTACK_USERNAME");
+//	String accessKey = System.getenv("BROWSERSTACK_ACCESS_KEY");
+//	String buildName = System.getenv("BROWSERSTACK_BUILD_NAME");
+//	final String URL = "https://" + username + ":" + accessKey + "@hub-cloud.browserstack.com/wd/hub";
 	
 	
 	
 	
-//	final String USERNAME = "manibharathikaru1";
-//	final String AUTOMATE_KEY = "hFN19RHbQmGyeL8Z47Ls";
-//	final String URL = "https://" + USERNAME + ":" + AUTOMATE_KEY + "@hub-cloud.browserstack.com/wd/hub";
+	final String USERNAME = "manibharathikaru1";
+	final String AUTOMATE_KEY = "hFN19RHbQmGyeL8Z47Ls";
+	final String URL = "https://" + USERNAME + ":" + AUTOMATE_KEY + "@hub-cloud.browserstack.com/wd/hub";
 	
 //	WebDriver driver;
 	BrowserMobProxy proxy;
@@ -116,10 +116,10 @@ public class BuyflowValidation {
 	@DataProvider(name="buyflowInput", parallel=true)
 	public Object[][] testData() throws Exception {
 		
-		System.out.println(username);
-		System.out.println(accessKey);
-		System.out.println(buildName);
-		System.out.println(URL);
+//		System.out.println(username);
+//		System.out.println(accessKey);
+//		System.out.println(buildName);
+//		System.out.println(URL);
 		
 		// start the proxy
 		proxy = new BrowserMobProxyServer();
@@ -131,8 +131,8 @@ public class BuyflowValidation {
 		l = new Local();
 	
 		Map<String, String> l_options = new HashMap<String, String>();
-//		l_options.put("key", AUTOMATE_KEY);
-		l_options.put("key", accessKey);
+		l_options.put("key", AUTOMATE_KEY);
+//		l_options.put("key", accessKey);
 
 		l_options.put("v", "true");
 		l_options.put("force", "true");
@@ -205,14 +205,14 @@ public class BuyflowValidation {
 //			}
 //		}
 		
-//	arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
-	arrayObject = comm_obj.getExcelData("C:/Automation/Automation Input and Output/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
+	arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
+//	arrayObject = comm_obj.getExcelData("C:/Automation/Automation Input and Output/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
 		return arrayObject;
 	}	
 	
 	@Test(dataProvider="buyflowInput")
 	public void buyflow(String env, String brand, String campaign, String category, String kitppid, String giftppid, String shipbill, String cc, String browser, String pixelStr) throws Exception {	
-		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver.exe");
+//		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver.exe");
 //		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver");
 //		System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver");
 		
@@ -1458,8 +1458,8 @@ public class BuyflowValidation {
 		l.stop();
 //		driver.quit();
 		
-//		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Run Output\\");
-		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", "C:\\Automation\\Automation Input and Output\\Input_Output\\BuyflowValidation\\Run Output\\");
+		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Run Output\\");
+//		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", "C:\\Automation\\Automation Input and Output\\Input_Output\\BuyflowValidation\\Run Output\\");
 		
 		attachmentList.add(file);
 		

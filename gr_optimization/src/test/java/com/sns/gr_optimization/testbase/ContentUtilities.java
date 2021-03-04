@@ -11,19 +11,12 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
-
-import com.sns.gr_optimization.content.ContentValidation;
 
 public class ContentUtilities {
 
@@ -579,6 +572,8 @@ public class ContentUtilities {
 	public Boolean select_prepu(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata,
 			HashMap<String, String> pre_upsell_page, String[][] seoData)
 			throws ClassNotFoundException, SQLException, InterruptedException {
+
+		Boolean Title_Tag_result = null;
 		moveto_prepu(driver, brand, campaign);
 		Thread.sleep(1000);
 
@@ -603,7 +598,13 @@ public class ContentUtilities {
 
 		pre_upsell_page = getProdRowfromCatalog(seoData, "Pre-upsell page");
 		String pre_upsell_Tag = pre_upsell_page.get("Title Tag");
-		Boolean Title_Tag_result = pageSource.contains(pre_upsell_Tag);
+		System.out.println("pre_upsell_Tag : " + pre_upsell_Tag);
+		if (pre_upsell_Tag != null) {
+			Title_Tag_result = pageSource.contains(pre_upsell_Tag);
+		} else {
+			Title_Tag_result = false;
+		}
+
 		// System.out.println(prepu);
 		// System.out.println(pre_upsell_Tag);
 		// System.out.println("URL name : " + driver.getCurrentUrl() + " Title Name is :
@@ -616,6 +617,7 @@ public class ContentUtilities {
 
 		prepu_elmt.click();
 		Thread.sleep(1000);
+
 		return Title_Tag_result;
 	}
 
@@ -691,7 +693,9 @@ public class ContentUtilities {
 		WebElement frag_elmt = comm_obj.find_webelement(driver, elementlocator, elementvalue);
 		comm_obj.waitUntilElementAppears(driver, elementvalue);
 
-		frag_elmt.click();
+		if (locator.size() != 0) {
+			frag_elmt.click();
+		}
 		Thread.sleep(1000);
 	}
 
@@ -860,5 +864,164 @@ public class ContentUtilities {
 				"//input[@name='dwopt_" + ppid + "_entryKit']/../../..//label[contains(@for,'entryKit-auto-renew')]"))
 				.click();
 		Thread.sleep(1000);
+	}
+
+	public HashMap<String, String> getProdRowfromCatalog_buy(String[][] catalogData, String ppid) {
+		LinkedHashMap<String, String> productdata = new LinkedHashMap<String, String>();
+
+		int ppidcolumn = 0;
+
+		System.out.println("catalogData for content data : " + catalogData[0].length);
+		for (int i = 0; i < catalogData[0].length; i++) {
+			String colName = catalogData[0][i];
+			if ((colName != null) && (colName.equalsIgnoreCase("PPID"))) {
+				ppidcolumn = i;
+			}
+		}
+
+		for (int i = 0; i < catalogData.length; i++) {
+			String ppidinrow = catalogData[i][ppidcolumn].replaceAll("\\s+", "");
+
+			if (ppidinrow.trim().equalsIgnoreCase(ppid.trim())) {
+				for (int j = 0; j < catalogData[0].length; j++) {
+					if (catalogData[0][j] != null) {
+						if (catalogData[0][j].contains("Acq One Time price")) {
+							productdata.put("Acq One Time price", catalogData[i][j]);
+						} else if (catalogData[0][j].contains("Subscribe and Save price")) {
+							productdata.put("Subscribe and Save price", catalogData[i][j]);
+						} else if (catalogData[0][j].contains("Entry-Continuity Pricebook")) {
+							productdata.put("Entry-Continuity Pricebook", catalogData[i][j]);
+						} else {
+							productdata.put(catalogData[0][j].trim(), catalogData[i][j]);
+						}
+					}
+				}
+				break;
+			}
+		}
+		return productdata;
+	}
+
+	public HashMap<String, String> getProdRowfromCatalog(String[][] catalogData, String ppid, String category) {
+		LinkedHashMap<String, String> productdata = new LinkedHashMap<String, String>();
+
+		int ppidcolumn = 0;
+		int categorycolumn = 0;
+		int contppidcolumn = 0;
+
+		for (int i = 0; i < catalogData[0].length; i++) {
+			String colName = catalogData[0][i];
+			if (colName != null) {
+				if (colName.equalsIgnoreCase("PPID")) {
+					ppidcolumn = i;
+				}
+				if (colName.equalsIgnoreCase("Kit or Single")) {
+					categorycolumn = i;
+				}
+				if (colName.equalsIgnoreCase("Post Purchase PPID")) {
+					contppidcolumn = i;
+				}
+			}
+		}
+
+		for (int i = 0; i < catalogData.length; i++) {
+			String ppidinrow = catalogData[i][ppidcolumn].replaceAll("\\s+", "");
+			String categoryinrow = catalogData[i][categorycolumn].replaceAll("\\s+", "");
+			String contppidinrow = null;
+			if (catalogData[i][contppidcolumn] != null) {
+				contppidinrow = catalogData[i][contppidcolumn].replaceAll("\\s+", "");
+			}
+
+			if (category.equalsIgnoreCase("ShopKit")) {
+				if (categoryinrow.equalsIgnoreCase("Kit")) {
+					if (((ppidinrow != null) && (ppidinrow.trim().equalsIgnoreCase(ppid.trim())))
+							|| ((contppidinrow != null) && (contppidinrow.trim().equalsIgnoreCase(ppid.trim())))) {
+						for (int j = 0; j < catalogData[0].length; j++) {
+							if (catalogData[0][j] != null) {
+								if (catalogData[0][j].contains("Entry-Continuity Pricebook")) {
+									productdata.put("Entry-Continuity Pricebook", catalogData[i][j]);
+								} else {
+									productdata.put(catalogData[0][j].trim(), catalogData[i][j]);
+								}
+							}
+						}
+						break;
+					}
+				}
+			} else {
+				if (categoryinrow.equalsIgnoreCase("Single")) {
+					if (((ppidinrow != null) && (ppidinrow.trim().equalsIgnoreCase(ppid.trim())))
+							|| ((contppidinrow != null) && (contppidinrow.trim().equalsIgnoreCase(ppid.trim())))) {
+						for (int j = 0; j < catalogData[0].length; j++) {
+							if (catalogData[0][j] != null) {
+								if (catalogData[0][j].contains("Acq One Time price")) {
+									productdata.put("Acq One Time price", catalogData[i][j]);
+								} else if (catalogData[0][j].contains("Subscribe and Save price")) {
+									productdata.put("Subscribe and Save price", catalogData[i][j]);
+								} else {
+									productdata.put(catalogData[0][j].trim(), catalogData[i][j]);
+								}
+							}
+						}
+						break;
+					}
+				}
+			}
+
+//			if(ppidinrow.trim().equalsIgnoreCase(ppid.trim())){
+//				for(int j=0; j<catalogData[0].length; j++) {
+//					if(catalogData[0][j] != null) {
+//						if(catalogData[0][j].contains("Acq One Time price")) {
+//							productdata.put("Acq One Time price", catalogData[i][j]);
+//						}
+//						else if(catalogData[0][j].contains("Subscribe and Save price")) {
+//							productdata.put("Subscribe and Save price", catalogData[i][j]);
+//						}
+//						else if(catalogData[0][j].contains("Entry-Continuity Pricebook")) {
+//							productdata.put("Entry-Continuity Pricebook", catalogData[i][j]);
+//						}
+//						else {
+//							productdata.put(catalogData[0][j].trim(), catalogData[i][j]);
+//						}							
+//					}
+//				}
+//				break;
+//			}
+		}
+		return productdata;
+	}
+
+	public String check_seo_content(HashMap<String, String> kit_offerdata_d, String Tag, String pageSource) {
+		Boolean Title_Tag_result = null;
+		String Title_Tag = kit_offerdata_d.get(Tag);// "Title Tag");
+		String Result = null;
+		System.out.println("Data from " + Title_Tag);
+		if (Title_Tag != null) {
+			if (Title_Tag != "-") {
+				Title_Tag_result = pageSource.contains(Title_Tag);
+				if (Title_Tag_result == true) {
+					System.out.println(Tag + " " + pass);
+					// content_obj.add_result(env, brand, campaign, "Homepage : Validate Title Tag
+					// ", pass);
+					Result = pass;
+				} else if (Title_Tag_result == false) {
+
+					System.out.println(Tag + " " + fail);
+					// content_obj.add_result(env, brand, campaign, "Homepage : Validate Title Tag
+					// ", fail);
+					Result = fail;
+
+				}
+
+			} else {
+				Result = "-";
+			}
+		} else {
+			System.out.println(Tag + fail);
+			// content_obj.add_result(env, brand, campaign, "Homepage : Validate Title Tag
+			// ", null);
+			Result = null;
+		}
+		return Result;
 	}
 }
