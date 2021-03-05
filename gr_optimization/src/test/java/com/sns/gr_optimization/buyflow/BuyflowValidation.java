@@ -86,17 +86,17 @@ public class BuyflowValidation {
 	
 	static String Output_foldername = monthStr + dayStr + yearStr;
 	
-//	String username = System.getenv("BROWSERSTACK_USERNAME");
-//	String accessKey = System.getenv("BROWSERSTACK_ACCESS_KEY");
-//	String buildName = System.getenv("BROWSERSTACK_BUILD_NAME");
-//	final String URL = "https://" + username + ":" + accessKey + "@hub-cloud.browserstack.com/wd/hub";
+	String username = System.getenv("BROWSERSTACK_USERNAME");
+	String accessKey = System.getenv("BROWSERSTACK_ACCESS_KEY");
+	String buildName = System.getenv("BROWSERSTACK_BUILD_NAME");
+	final String URL = "https://" + username + ":" + accessKey + "@hub-cloud.browserstack.com/wd/hub";
 	
 	
 	
 	
-	final String USERNAME = "manibharathikaru1";
-	final String AUTOMATE_KEY = "hFN19RHbQmGyeL8Z47Ls";
-	final String URL = "https://" + USERNAME + ":" + AUTOMATE_KEY + "@hub-cloud.browserstack.com/wd/hub";
+//	final String USERNAME = "manibharathikaru1";
+//	final String AUTOMATE_KEY = "hFN19RHbQmGyeL8Z47Ls";
+//	final String URL = "https://" + USERNAME + ":" + AUTOMATE_KEY + "@hub-cloud.browserstack.com/wd/hub";
 	
 //	WebDriver driver;
 	BrowserMobProxy proxy;
@@ -128,24 +128,24 @@ public class BuyflowValidation {
 		proxy.start(12345);
 		System.out.println("Started proxy server at: " + proxy.getPort());
 			    
-		l = new Local();
-	
-		Map<String, String> l_options = new HashMap<String, String>();
-		l_options.put("key", AUTOMATE_KEY);
+//		l = new Local();
+//	
+//		Map<String, String> l_options = new HashMap<String, String>();
+////		l_options.put("key", AUTOMATE_KEY);
 //		l_options.put("key", accessKey);
-
-		l_options.put("v", "true");
-		l_options.put("force", "true");
-		l_options.put("onlyAutomate", "true");
-
-		l_options.put("forcelocal", "true");
-		l_options.put("forceproxy", "true");
-
-		l_options.put("localProxyHost", "localhost");
-		l_options.put("localProxyPort", "12345");
-		l_options.put("localIdentifier", "Test1");
-
-		l.start(l_options);
+//
+//		l_options.put("v", "true");
+//		l_options.put("force", "true");
+//		l_options.put("onlyAutomate", "true");
+//
+//		l_options.put("forcelocal", "true");
+//		l_options.put("forceproxy", "true");
+//
+//		l_options.put("localProxyHost", "localhost");
+//		l_options.put("localProxyPort", "12345");
+//		l_options.put("localIdentifier", "Test1");
+//
+//		l.start(l_options);
 
 		// get the Selenium proxy object
 		Proxy seleniumProxy = ClientUtil.createSeleniumProxy(proxy);	
