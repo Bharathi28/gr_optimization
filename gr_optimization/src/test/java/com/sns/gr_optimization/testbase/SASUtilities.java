@@ -446,10 +446,16 @@ public class SASUtilities {
 		jse.executeScript("window.scrollBy(0,100)", 0);
 	
 		String ppid = offerdata.get("30 Day PPID");
+		String name = offerdata.get("Product Name").trim();
 		
-		Thread.sleep(1000);
-		driver.findElement(By.xpath("//input[@name='dwopt_" + ppid + "_entryKit']/../../..//label[contains(@for,'entryKit-auto-renew')]")).click();
-		Thread.sleep(1000);
+		if((brand.equalsIgnoreCase("JLoBeauty")) && (name.equalsIgnoreCase("Star Power Duo"))) {
+			
+		}
+		else {
+			Thread.sleep(1000);
+			driver.findElement(By.xpath("//input[@name='dwopt_" + ppid + "_entryKit']/../../..//label[contains(@for,'entryKit-auto-renew')]")).click();
+			Thread.sleep(1000);
+		}		
 	}
 	
 	public void select_frequency(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
