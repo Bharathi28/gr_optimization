@@ -116,10 +116,10 @@ public class BuyflowValidation {
 	@DataProvider(name="buyflowInput", parallel=true)
 	public Object[][] testData() throws Exception {
 		
-//		System.out.println(username);
-//		System.out.println(accessKey);
-//		System.out.println(buildName);
-//		System.out.println(URL);
+		System.out.println(username);
+		System.out.println(accessKey);
+		System.out.println(buildName);
+		System.out.println(URL);
 		
 		// start the proxy
 		proxy = new BrowserMobProxyServer();
