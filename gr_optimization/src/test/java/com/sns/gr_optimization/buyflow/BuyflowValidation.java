@@ -209,7 +209,7 @@ public class BuyflowValidation {
 	
 	@Test(dataProvider="buyflowInput")
 	public void buyflow(String env, String brand, String campaign, String category, String kitppid, String giftppid, String shipbill, String cc, String browser, String pixelStr) throws Exception {	
-//		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver.exe");
+		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver.exe");
 //		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver");
 //		System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver");
 		
