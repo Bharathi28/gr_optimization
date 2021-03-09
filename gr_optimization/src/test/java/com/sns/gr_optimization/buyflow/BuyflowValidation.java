@@ -71,6 +71,8 @@ public class BuyflowValidation {
 	MerchandisingUtilities merch_obj = new MerchandisingUtilities();
 	PixelUtilities pixel_obj = new PixelUtilities();
 	ConsoleUtilities console_obj = new ConsoleUtilities();
+	
+	Scanner in = new Scanner(System.in);	
 
 	static List<String> attachmentList = new ArrayList<String>();
 	
@@ -108,6 +110,9 @@ public class BuyflowValidation {
 //		sendReportTo = System.getProperty("email");
 //		testSet = System.getProperty("testset");
 //		testSuite = System.getProperty("testsuite");
+		
+//		System.out.println("Enter Email id : ");
+//		sendReportTo = in.next();
 	}
 	
 	@DataProvider(name="buyflowInput", parallel=true)
@@ -308,8 +313,8 @@ public class BuyflowValidation {
 		ListIterator<String> categoryIterator = categorylist.listIterator();		
 		
 		// Launch Browser
-//		WebDriver driver = new RemoteWebDriver(new java.net.URL(URL), capabilities);
-		WebDriver driver = new ChromeDriver(capabilities);
+		WebDriver driver = new RemoteWebDriver(new java.net.URL(URL), capabilities);
+//		WebDriver driver = new ChromeDriver(capabilities);
 		driver.manage().window().maximize();
 		
 		// enable more detailed HAR capture, if desired (see CaptureType for the complete list)
@@ -354,8 +359,6 @@ public class BuyflowValidation {
 		String postpu = "No";
 		String prepu = "No";		
 		String jloShippingSelect = "";
-		String whichPostPU = "Kit";
-		String highPrice = "";
 		
 		while(offerIterator.hasNext() && categoryIterator.hasNext()) {
 			String ppid = offerIterator.next();			
@@ -404,7 +407,7 @@ public class BuyflowValidation {
 				// Collect current Offer related details from Merchandising Input file
 				if(!(brand.equalsIgnoreCase("JloBeauty"))) {
 					expectedofferdata_kit = merch_obj.generateExpectedOfferDataForKit(kit_offerdata, PPUSection, postpu, ppid, giftppid, brand, campaigncategory);
-					System.out.println(expectedofferdata_kit);
+//					System.out.println(expectedofferdata_kit);
 				}
 								
 				// Add Kit PPID to lineitem list
@@ -522,10 +525,10 @@ public class BuyflowValidation {
 				bf_obj.click_cta(driver, brand, campaign, "Ordernow");
 				
 				// DrDenese - FB - AddToCart event will fire only after selecting the kit (After clicking on "Add To cart")
-				if(!(brand.equalsIgnoreCase("DrDenese"))) {
+//				if(!(brand.equalsIgnoreCase("DrDenese"))) {
 					pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver, pixelStr);
 					console_obj.analyzeLog(driver, "SASPage");	
-				}				
+//				}				
 				
 				// Gift Validation
 				String expectedcampaigngifts = expectedofferdata_kit.get("Campaign Gifts");
@@ -540,11 +543,11 @@ public class BuyflowValidation {
 				}				
 				sas_obj.select_offer(driver, expectedofferdata_kit, currentCategory);
 				
-				if(brand.equalsIgnoreCase("DrDenese")) {
-					pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver, pixelStr);
-					console_obj.analyzeLog(driver, "SASPage");	
-					pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
-				}
+//				if(brand.equalsIgnoreCase("DrDenese")) {
+//					pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver, pixelStr);
+//					console_obj.analyzeLog(driver, "SASPage");	
+//					pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
+//				}
 				
 				// Move to Checkout
 				bf_obj.move_to_checkout(driver, brand, campaigncategory, category);
@@ -553,7 +556,7 @@ public class BuyflowValidation {
 								
 				// Get the product data from Web Catalog
 				HashMap<String, String> product_offerdata = merch_obj.getProdRowfromCatalog(catalogData, ppid, currentCategory);
-				System.out.println(product_offerdata);
+//				System.out.println(product_offerdata);
 				
 				// Get Shipping Frequency
 				HashMap<String, String> product_shippingfrequency = null;
@@ -578,7 +581,7 @@ public class BuyflowValidation {
 				
 				// Collect current Offer related details from Merchandising Input file
 				expectedofferdata_product = merch_obj.generateExpectedOfferDataForProduct(product_offerdata, product_shippingfrequency, ppid, giftppid, postpu, brand, campaigncategory, currentCategory, catalogPriceBookIDs);
-				System.out.println(expectedofferdata_product);
+//				System.out.println(expectedofferdata_product);
 				
 				// Add Product PPID to lineitem list
 				List<String> product_lineitem = new ArrayList<String>();
@@ -696,8 +699,8 @@ public class BuyflowValidation {
 //		}		
 		campaignpages.add("ConfirmationPage");
 		
-		System.out.println("Subtotal list : " + subtotal_list);
-		System.out.println("Category list : " + category_list);
+//		System.out.println("Subtotal list : " + subtotal_list);
+//		System.out.println("Category list : " + category_list);
 		
 		
 //		if(category_list.contains("Kit")) {
@@ -712,7 +715,7 @@ public class BuyflowValidation {
 		// JLoBeauty - select shipping
 		if(brand.equalsIgnoreCase("JLoBeauty")) {
 			Select sel_element = new Select(driver.findElement(By.xpath("//select[@id='dwfrm_singleshipping_shippingAddress_shippingMethodID']")));
-			System.out.println("Selected Shipping : " + jloShippingSelect);
+//			System.out.println("Selected Shipping : " + jloShippingSelect);
 			if(jloShippingSelect.equalsIgnoreCase("Free Shipping")){
 				sel_element.selectByValue("Standard");
 			}
@@ -726,7 +729,7 @@ public class BuyflowValidation {
 		
 		// Decide on which PostPU
 		List<String> PostPUdetails = merch_obj.getPostPU(subtotal_list, category_list, supplysize_list, offer_postpurchase_list);
-		System.out.println("PostPUDetails: " + PostPUdetails);
+//		System.out.println("PostPUDetails: " + PostPUdetails);
 		String PostPUPage = PostPUdetails.get(0);
 		String supplysize  = PostPUdetails.get(1);
 		String offer_postpurchase  = PostPUdetails.get(2);
@@ -1369,8 +1372,8 @@ public class BuyflowValidation {
 				
 		List<String> actual_price_book_list = Arrays.asList(actualpricebookid.split("\\s*,\\s*"));
 		
-		System.out.println("Actual:" + actual_price_book_list);
-		System.out.println("Expected:" + pricebook_id_list);
+//		System.out.println("Actual:" + actual_price_book_list);
+//		System.out.println("Expected:" + pricebook_id_list);
 				
 		if(pricebook_id_list.contains("No expected PriceBookID")) {
 			PriceBookIdResult = "Could not validate";		
@@ -1452,7 +1455,7 @@ public class BuyflowValidation {
 	@AfterSuite
 	public void populateExcel() throws Exception {
 		proxy.stop();
-		l.stop();
+//		l.stop();
 //		driver.quit();
 		
 		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Run Output\\");
@@ -1472,8 +1475,6 @@ public class BuyflowValidation {
 		mailObj.sendEmail("Buyflow Results", sendReportTo, attachmentList);		
 	}	
 }
-
-
 
 
 //List<HarEntry> entries = proxy.getHar().getLog().getEntries();
