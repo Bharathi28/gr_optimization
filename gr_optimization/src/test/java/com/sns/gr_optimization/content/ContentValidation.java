@@ -774,6 +774,7 @@ public class ContentValidation {
 				content_obj.select_kit(driver, brand, campaign, expectedofferdata_kit);
 
 				if (pagepattern.contains("gift") == true) {
+					System.out.println("pagepattern : " + pagepattern);
 //					if ((brand.equalsIgnoreCase("WestmoreBeauty") != true)
 //						&& (brand.equalsIgnoreCase("Smileactives") != true)) {
 					content_obj.select_gift(driver, brand, campaign, expectedofferdata_kit);
@@ -854,7 +855,7 @@ public class ContentValidation {
 					Boolean Title_Tag_result1 = pageSource.contains(Title_Tag);
 
 					// if (homepage.trim().contains(pageSource.trim())) {
-					if (Title_Tag_result1 != null) {
+					if (Title_Tag != null) {
 						if (Title_Tag_result1 == true) {
 							System.out.println(" SAS Page Exp : " + pass);
 							output.add(content_obj.add_result(env, brand, campaign, "SAS Page : Validate Title Tag ",

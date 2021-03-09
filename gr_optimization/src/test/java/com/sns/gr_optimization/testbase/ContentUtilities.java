@@ -1014,13 +1014,13 @@ public class ContentUtilities {
 				}
 
 			} else {
-				Result = "-";
+				Result = "Not Present";
 			}
 		} else {
 			System.out.println(Tag + fail);
 			// content_obj.add_result(env, brand, campaign, "Homepage : Validate Title Tag
 			// ", null);
-			Result = null;
+			Result = "Not Present";
 		}
 		return Result;
 	}
