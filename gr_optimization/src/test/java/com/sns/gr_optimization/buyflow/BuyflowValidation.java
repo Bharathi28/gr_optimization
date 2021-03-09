@@ -202,7 +202,8 @@ public class BuyflowValidation {
 //			}
 //		}
 		
-	arrayObject = comm_obj.getExcelData("C:/Automation/Automation Input and Output/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
+		arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
+//	arrayObject = comm_obj.getExcelData("C:/Automation/Automation Input and Output/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
 		return arrayObject;
 	}	
 	
@@ -307,8 +308,8 @@ public class BuyflowValidation {
 		ListIterator<String> categoryIterator = categorylist.listIterator();		
 		
 		// Launch Browser
-		WebDriver driver = new RemoteWebDriver(new java.net.URL(URL), capabilities);
-//		WebDriver driver = new ChromeDriver(capabilities);
+//		WebDriver driver = new RemoteWebDriver(new java.net.URL(URL), capabilities);
+		WebDriver driver = new ChromeDriver(capabilities);
 		driver.manage().window().maximize();
 		
 		// enable more detailed HAR capture, if desired (see CaptureType for the complete list)
