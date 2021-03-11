@@ -245,20 +245,26 @@ public class BuyflowUtilities {
 			if(driver.findElements(By.xpath("(//div[contains(@class,'kitproduct')]//div[contains(@class,'continuity-summary')])[" + i + "]")).size() != 0) {
 				String cart_language = driver.findElement(By.xpath("(//div[contains(@class,'kitproduct')]//div[contains(@class,'continuity-summary')])[" + i + "]")).getText();
 				
-				String[] lang_price_arr = lang_obj.parse_cart_language(cart_language);			
-				String cart_lang_price = lang_price_arr[1];
-				String cart_lang_shipping = lang_price_arr[2];	
-								
-				item.add(cart_language);
-				item.add(cart_lang_price);
-				item.add(cart_lang_shipping);
+				if(cart_language.matches(".*\\d.*")) {
+					String[] lang_price_arr = lang_obj.parse_cart_language(cart_language);			
+					String cart_lang_price = lang_price_arr[1];
+					String cart_lang_shipping = lang_price_arr[2];	
+									
+					item.add(cart_language);
+					item.add(cart_lang_price);
+					item.add(cart_lang_shipping);
+				}
+				else {
+					item.add("No Cart Language");
+					item.add("No Continuity Pricing");
+					item.add("No Continuity Shipping");
+				}				
 			}			
 			else {
 				item.add("No Cart Language");
 				item.add("No Continuity Pricing");
 				item.add("No Continuity Shipping");
-			}
-			
+			}			
 			actual_lineitems.add(item);
 		}
 		
