@@ -538,7 +538,8 @@ public class BuyflowUtilities {
 		fill_form_field(driver, realm, "PhoneNumber", "8887878787");					
 		fill_form_field(driver, realm, "FirstName", firstName());
 		fill_form_field(driver, realm, "LastName", lastName());
-		fill_form_field(driver, realm, "AddressLine1", "123 QATest st");
+//		fill_form_field(driver, realm, "AddressLine1", "123 QATest st");
+		fill_form_field(driver, realm, "AddressLine1", "200 N Pacific Coast Hwy");
 
 		if(campaign.equalsIgnoreCase("ca")) {
 			fill_form_field(driver, realm, "City", "Anywhere");
@@ -546,7 +547,8 @@ public class BuyflowUtilities {
 			fill_form_field(driver, realm, "Zip", "E3B7K6");
 		}
 		else {
-			fill_form_field(driver, realm, "City", "El Segundo");
+//			fill_form_field(driver, realm, "City", "El Segundo");
+			fill_form_field(driver, realm, "City", "Los Angeles");
 			fill_form_field(driver, realm, "State", "CA");					
 			
 			if(supply.equalsIgnoreCase("30")) {		
