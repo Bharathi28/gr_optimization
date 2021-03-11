@@ -176,7 +176,6 @@ public class MerchandisingUtilities {
 
 			if(offerdata.get("Gift") != null) {
 				List<String> gifts = bf_obj.getPPIDfromString(brand, offerdata.get("Gift").trim());
-				System.out.println("Gifts from PPID String : " + gifts.get(0));
 				expectedofferdata.put("Gift", gifts.get(0));				
 			}
 			else {
@@ -201,8 +200,7 @@ public class MerchandisingUtilities {
 					expectedofferdata.put("Post Purchase Product", PostPUProduct);
 				}
 			}
-		}
-		
+		}		
 		return expectedofferdata;
 	}
 	
@@ -356,6 +354,10 @@ public class MerchandisingUtilities {
 		String continuitypricing = "";
 		String continuityshipping = "";
 		
+		if(offerdata.containsKey("Free Gift")) {
+			expectedcampaigngifts = offerdata.get("Free Gift");
+		}
+		
 		// Post-Purchase - No
 		if(supplysize.equalsIgnoreCase("30")) {
 			// Pre-Purchase - Yes
@@ -363,11 +365,15 @@ public class MerchandisingUtilities {
 				expectedEntryPrice = offerdata.get("Pre-Purchase Entry Pricing").trim();
 				expectedEntryShipping = offerdata.get("Pre-Purchase Entry Shipping").trim();
 				
-				if(offerdata.get("Pre-Purchase Entry Promotion 1") != null) {
-					expectedcampaigngifts = offerdata.get("Pre-Purchase Entry Promotion 1").trim();
-				}					
-				if(offerdata.get("Pre-Purchase Entry Promotion 2") != null) {
-					expectedprepuproduct = offerdata.get("Pre-Purchase Entry Promotion 2").trim();
+//				if(offerdata.get("Pre-Purchase Entry Promotion 1") != null) {
+//					expectedcampaigngifts = offerdata.get("Pre-Purchase Entry Promotion 1").trim();
+//				}					
+//				if(offerdata.get("Pre-Purchase Entry Promotion 2") != null) {
+//					expectedprepuproduct = offerdata.get("Pre-Purchase Entry Promotion 2").trim();
+//				}
+				
+				if(offerdata.containsKey("PrePU Product")) {
+					expectedprepuproduct = offerdata.get("PrePU Product");
 				}
 				
 				if(offerdata.get("Pre-Purchase Entry Renewal Plan") != null) {
@@ -429,9 +435,9 @@ public class MerchandisingUtilities {
 				expectedEntryPrice = offerdata.get("Entry Pricing").trim();
 				expectedEntryShipping = offerdata.get("Entry Shipping").trim();
 				
-				if(offerdata.get("Entry Promotion 1") != null) {
-					expectedcampaigngifts = offerdata.get("Entry Promotion 1").trim();
-				}				
+//				if(offerdata.get("Entry Promotion 1") != null) {
+//					expectedcampaigngifts = offerdata.get("Entry Promotion 1").trim();
+//				}				
 				if(offerdata.get("Entry Cart Language") != null) {
 					expectedcartlanguage = offerdata.get("Entry Cart Language");
 				}				
@@ -490,18 +496,24 @@ public class MerchandisingUtilities {
 		else {
 			expectedEntryPrice = offerdata.get("Post Purchase Upsell Pricing").trim();	
 			expectedEntryShipping = offerdata.get("Post Purchase Upsell Shipping").trim();	
-			if(offerdata.get("Post Purchase Upsell Promotion 1") != null) {
-				expectedcampaigngifts = offerdata.get("Post Purchase Upsell Promotion 1").trim();
-			}			
+//			if(offerdata.get("Post Purchase Upsell Promotion 1") != null) {
+//				expectedcampaigngifts = offerdata.get("Post Purchase Upsell Promotion 1").trim();
+//			}			
 			if(PPUSection.equalsIgnoreCase("Yes")) {
-				if(offerdata.get("Post Purchase Upsell Promotion 2") != null) {
-					expectedprepuproduct = offerdata.get("Post Purchase Upsell Promotion 2").trim();
+//				if(offerdata.get("Post Purchase Upsell Promotion 2") != null) {
+//					expectedprepuproduct = offerdata.get("Post Purchase Upsell Promotion 2").trim();
+//				}
+				if(offerdata.containsKey("PrePU Product")) {
+					expectedprepuproduct = offerdata.get("PrePU Product");
 				}
 			}
 			
-			if(offerdata.get("Post Purchase Upsell Promotion 3") != null) {
-				expectedpostpuproduct = offerdata.get("Post Purchase Upsell Promotion 3").trim();
+			if(offerdata.containsKey("PostPU Product")) {
+				expectedpostpuproduct = offerdata.get("PostPU Product");
 			}
+//			if(offerdata.get("Post Purchase Upsell Promotion 3") != null) {
+//				expectedpostpuproduct = offerdata.get("Post Purchase Upsell Promotion 3").trim();
+//			}
 			if(offerdata.get("Post Purchase Cart Language") != null) {
 				expectedcartlanguage = offerdata.get("Post Purchase Cart Language");
 			}
@@ -819,11 +831,51 @@ public class MerchandisingUtilities {
 		return offerdata;
 	}
 	
-	public LinkedHashMap<String, String> getCatalogPriceBookIDs(String[][] catalogData) {
+	public LinkedHashMap<String, String> getCatalogPriceBookIDs(String[][] catalogData, String ppid) {
 		
 		LinkedHashMap<String, String> CatalogPriceBookIDs = new LinkedHashMap<String, String>();
+		
+		int ppidcolumn = 0;		
+		int contppidcolumn = 0;
 
 		for(int i=0; i<catalogData[0].length; i++) {
+			String colName = catalogData[0][i];
+			if(colName != null) {
+				if(colName.equalsIgnoreCase("PPID")) {
+					ppidcolumn = i;
+				}				
+				if(colName.equalsIgnoreCase("Post Purchase PPID")) {
+					contppidcolumn = i;
+				}
+			}
+		}
+		
+		String ssheader="";
+		for(int i=0; i<catalogData.length; i++) {	
+			String ppidinrow = catalogData[i][ppidcolumn].replaceAll("\\s+", "");			
+			String contppidinrow = null;
+			if(catalogData[i][contppidcolumn] != null) {
+				contppidinrow = catalogData[i][contppidcolumn].replaceAll("\\s+", "");
+			}			 
+			
+			if(((ppidinrow != null) && (ppidinrow.trim().equalsIgnoreCase(ppid.trim()))) || ((contppidinrow != null) && (contppidinrow.trim().equalsIgnoreCase(ppid.trim())))) {
+				for(int j=0; j<catalogData[0].length; j++) {
+					if(catalogData[0][j].contains("Subscribe and Save")) {
+						if(catalogData[i][j].matches(".*\\d.*")) {
+							ssheader = catalogData[0][j];
+							
+							ssheader = ssheader.replaceAll("Subscribe and Save price", "");
+							ssheader = ssheader.replaceAll("\\s+", "");				
+							ssheader = ssheader.replaceAll("[^a-zA-Z0-9$]+", "");
+
+							CatalogPriceBookIDs.put("Subscribe and Save price", ssheader);
+						}									
+					}
+				}
+			}
+		}		
+
+		for(int i=0; i<catalogData[0].length; i++) {						
 			String colName = catalogData[0][i];
 			if(colName == null) {
 				break;
@@ -835,13 +887,16 @@ public class MerchandisingUtilities {
 
 				CatalogPriceBookIDs.put("Acq One Time price", colName);
 			}
-			else if(colName.contains("Subscribe and Save price")) {
-				colName = colName.replaceAll("Subscribe and Save price", "");
-				colName = colName.replaceAll("\\s+", "");				
-				colName = colName.replaceAll("[^a-zA-Z0-9$]+", "");
-
-				CatalogPriceBookIDs.put("Subscribe and Save price", colName);
-			}			
+//			else if(colName.contains("Subscribe and Save")) {
+////				if(catalogData[i][j].matches(".*\\d.*")) {
+////					
+////				}
+//				colName = colName.replaceAll("Subscribe and Save price", "");
+//				colName = colName.replaceAll("\\s+", "");				
+//				colName = colName.replaceAll("[^a-zA-Z0-9$]+", "");
+//
+//				CatalogPriceBookIDs.put("Subscribe and Save price", colName);
+//			}			
 			else if(colName.contains("Entry-Continuity Pricebook")) {
 				colName = colName.replaceAll("Entry-Continuity Pricebook", "");
 				colName = colName.replaceAll("\\s+", "");				
@@ -908,8 +963,10 @@ public class MerchandisingUtilities {
 								if(catalogData[0][j].contains("Acq One Time price")) {
 									productdata.put("Acq One Time price", catalogData[i][j]);
 								}
-								else if(catalogData[0][j].contains("Subscribe and Save price")) {
-									productdata.put("Subscribe and Save price", catalogData[i][j]);
+								else if(catalogData[0][j].contains("Subscribe and Save")) {
+									if(catalogData[i][j].matches(".*\\d.*")) {
+										productdata.put("Subscribe and Save price", catalogData[i][j]);
+									}									
 								}
 								else {
 									productdata.put(catalogData[0][j].trim(), catalogData[i][j]);
@@ -920,26 +977,6 @@ public class MerchandisingUtilities {
 					}
 				}
 			}
-
-//			if(ppidinrow.trim().equalsIgnoreCase(ppid.trim())){
-//				for(int j=0; j<catalogData[0].length; j++) {
-//					if(catalogData[0][j] != null) {
-//						if(catalogData[0][j].contains("Acq One Time price")) {
-//							productdata.put("Acq One Time price", catalogData[i][j]);
-//						}
-//						else if(catalogData[0][j].contains("Subscribe and Save price")) {
-//							productdata.put("Subscribe and Save price", catalogData[i][j]);
-//						}
-//						else if(catalogData[0][j].contains("Entry-Continuity Pricebook")) {
-//							productdata.put("Entry-Continuity Pricebook", catalogData[i][j]);
-//						}
-//						else {
-//							productdata.put(catalogData[0][j].trim(), catalogData[i][j]);
-//						}							
-//					}
-//				}
-//				break;
-//			}
 		}
 		return productdata;
 	}

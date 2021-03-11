@@ -1053,7 +1053,7 @@ public class ContentValidation {
 			}
 
 			// Get Price Book IDs
-			LinkedHashMap<String, String> catalogPriceBookIDs = merch_obj.getCatalogPriceBookIDs(catalogData);
+			LinkedHashMap<String, String> catalogPriceBookIDs = merch_obj.getCatalogPriceBookIDs(catalogData, ppid);
 
 			// Check if the PPID is present in the campaign
 			if (product_offerdata.size() == 0) {
