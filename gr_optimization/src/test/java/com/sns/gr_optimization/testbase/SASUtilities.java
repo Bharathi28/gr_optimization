@@ -196,10 +196,8 @@ public class SASUtilities {
 		
 		String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
 		String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();
-		System.out.println(elementvalue);
 			
 		WebElement prepu_elmt = comm_obj.find_webelement(driver, elementlocator, elementvalue);
-		System.out.println(prepu_elmt.isDisplayed());
 		comm_obj.waitUntilElementAppears(driver, elementvalue);
 		Thread.sleep(4000);
 		prepu_elmt.click();
@@ -321,7 +319,6 @@ public class SASUtilities {
 			}	
 			else if(brand.equalsIgnoreCase("MeaningfulBeauty")){
 				xpath = "//div[@data-itemid='" + ppid + "']//div//div//h3//a";
-				System.out.println(xpath);
 			}
 			else if((brand.equalsIgnoreCase("WestmoreBeauty")) || (brand.equalsIgnoreCase("MallyBeauty")) || (brand.equalsIgnoreCase("Smileactives"))){
 				
@@ -331,7 +328,6 @@ public class SASUtilities {
 				else {					
 					xpath = "//div[@data-itemid='" + masterPPID + "']//div//div[4]//h3//a";
 				}
-				System.out.println(xpath);
 			}
 			else {				
 				xpath = "//h3[contains(@class,'product-name')]//a[contains(text(),'" + name + "')]";
@@ -395,8 +391,6 @@ public class SASUtilities {
 				else {
 					xpath = "//li[@data-variantid='" + ppid + "']";
 				}		
-				
-				System.out.println(xpath);
 			}
 			else if((brand.equalsIgnoreCase("Smileactives")) || (brand.equalsIgnoreCase("WestmoreBeauty"))){
 				xpath = "//li[@data-variantid='" + ppid + "']";
@@ -404,12 +398,10 @@ public class SASUtilities {
 			else {
 				xpath = "(//li[@data-variantid='" + ppid + "'])[3]";
 			}
-			System.out.println(xpath);
 			if(!(xpath.equalsIgnoreCase(""))) {
 				WebElement shade_elmt = driver.findElement(By.xpath(xpath));
 				comm_obj.waitUntilElementAppears(driver, xpath);
 				Thread.sleep(2000);
-				System.out.println(shade_elmt.isDisplayed());
 				if(!(shade_elmt.getAttribute("class").contains("selected"))) {
 					shade_elmt.click();
 				}		
@@ -463,6 +455,16 @@ public class SASUtilities {
 		String shipfreq = offerdata.get("Shipping Frequency");
 		
 		Select sel_element = new Select(driver.findElement(By.xpath("//select[@id='shippingFrequencySelector']")));
+		
+//		if(shipfreq.contains("30")) {
+//			sel_element.selectByIndex(0);
+//		}
+//		else if(shipfreq.contains("60")) {
+//			sel_element.selectByIndex(1);
+//		}
+//		else if(shipfreq.contains("90")) {
+//			sel_element.selectByIndex(2);
+//		}
 		sel_element.selectByVisibleText(shipfreq.toLowerCase() + "s");
 		Thread.sleep(2000);
 	}

@@ -97,7 +97,6 @@ public class BuyflowValidation {
 //	final String AUTOMATE_KEY = "hFN19RHbQmGyeL8Z47Ls";
 //	final String URL = "https://" + USERNAME + ":" + AUTOMATE_KEY + "@hub-cloud.browserstack.com/wd/hub";
 	
-//	WebDriver driver;
 	BrowserMobProxy proxy;
 	DesiredCapabilities capabilities;
 	Local l;
@@ -107,9 +106,9 @@ public class BuyflowValidation {
 //		System.setProperty("email", "aaqil@searchnscore.com,manibharathi@searchnscore.com");
 //		System.setProperty("testset", "Top 3");
 //		
-//		sendReportTo = System.getProperty("email");
-//		testSet = System.getProperty("testset");
-//		testSuite = System.getProperty("testsuite");
+		sendReportTo = System.getProperty("email");
+		testSet = System.getProperty("testset");
+		testSuite = System.getProperty("testsuite");
 		
 //		System.out.println("Enter Email id : ");
 //		sendReportTo = in.next();
@@ -118,10 +117,10 @@ public class BuyflowValidation {
 	@DataProvider(name="buyflowInput", parallel=true)
 	public Object[][] testData() throws Exception {
 		
-		System.out.println(username);
-		System.out.println(accessKey);
-		System.out.println(buildName);
-		System.out.println(URL);
+//		System.out.println(username);
+//		System.out.println(accessKey);
+//		System.out.println(buildName);
+//		System.out.println(URL);
 		
 		// start the proxy
 		proxy = new BrowserMobProxyServer();
@@ -313,8 +312,8 @@ public class BuyflowValidation {
 		ListIterator<String> categoryIterator = categorylist.listIterator();		
 		
 		// Launch Browser
-		WebDriver driver = new RemoteWebDriver(new java.net.URL(URL), capabilities);
-//		WebDriver driver = new ChromeDriver(capabilities);
+//		WebDriver driver = new RemoteWebDriver(new java.net.URL(URL), capabilities);
+		WebDriver driver = new ChromeDriver(capabilities);
 		driver.manage().window().maximize();
 		
 		// enable more detailed HAR capture, if desired (see CaptureType for the complete list)
@@ -566,7 +565,7 @@ public class BuyflowValidation {
 				}				
 				
 				// Get Price Book IDs
-				LinkedHashMap<String, String> catalogPriceBookIDs = merch_obj.getCatalogPriceBookIDs(catalogData);
+				LinkedHashMap<String, String> catalogPriceBookIDs = merch_obj.getCatalogPriceBookIDs(catalogData, ppid);
 				
 				// Check if the PPID is present in the campaign
 				if(product_offerdata.size() == 0) {
