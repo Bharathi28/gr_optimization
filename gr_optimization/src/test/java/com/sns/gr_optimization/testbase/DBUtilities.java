@@ -50,6 +50,7 @@ public class DBUtilities {
 	
 	public static String checkcampaigncategory(String brand, String campaign) throws ClassNotFoundException, SQLException {
 		String query = "select * from campaign_urls where brand ='" + brand + "' and campaign='" + campaign + "'";
+		System.out.println(query);
 		List<Map<String, Object>> result = DBLibrary.dbAction("fetch", query);
 		String category = result.get(0).get("DWCAMPAIGNCATEGORY").toString();
 		return category;
