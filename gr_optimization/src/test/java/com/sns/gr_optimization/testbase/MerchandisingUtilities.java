@@ -851,8 +851,8 @@ public class MerchandisingUtilities {
 		}
 		
 		String ssheader="";
-		for(int i=0; i<catalogData.length; i++) {	
-			String ppidinrow = catalogData[i][ppidcolumn].replaceAll("\\s+", "");			
+		for(int i=0; i<catalogData.length; i++) {				
+			String ppidinrow = catalogData[i][ppidcolumn].replaceAll("\\s+", "");	
 			String contppidinrow = null;
 			if(catalogData[i][contppidcolumn] != null) {
 				contppidinrow = catalogData[i][contppidcolumn].replaceAll("\\s+", "");
@@ -872,6 +872,7 @@ public class MerchandisingUtilities {
 						}									
 					}
 				}
+				break;
 			}
 		}		
 
