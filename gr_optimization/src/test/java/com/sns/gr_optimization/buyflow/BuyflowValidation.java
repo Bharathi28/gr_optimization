@@ -178,35 +178,35 @@ public class BuyflowValidation {
 		
 		Object[][] arrayObject = null;
 		
-//		if(day == 7) {
-//			arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Saturday", 1);
-//		}
-//		else if(day == 1) {
-//			arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Sunday", 1);
-//		}
-//		else {
-//			if(testSuite.equalsIgnoreCase("Buyflow")) {
-//				if(testSet.equalsIgnoreCase("Core")) {
-//					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Core", 1);
-//				}
-//				else if(testSet.equalsIgnoreCase("Top 3")){
-//					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Top 3", 1);
-//				}
-//				else if(testSet.equalsIgnoreCase("All active")){
-//					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "All active", 1);
-//				}
-//			}
-//			else if(testSuite.equalsIgnoreCase("Pixel")) {
-//				if(day == 6) {
-//					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "AllPixels", 1);
-//				}
-//				else {
-//					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "FBPixels", 1);
-//				}
-//			}
-//		}
+		if(day == 7) {
+			arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Saturday", 1);
+		}
+		else if(day == 1) {
+			arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Sunday", 1);
+		}
+		else {
+			if(testSuite.equalsIgnoreCase("Buyflow")) {
+				if(testSet.equalsIgnoreCase("Core")) {
+					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Core", 1);
+				}
+				else if(testSet.equalsIgnoreCase("Top 3")){
+					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Top 3", 1);
+				}
+				else if(testSet.equalsIgnoreCase("All active")){
+					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "All active", 1);
+				}
+			}
+			else if(testSuite.equalsIgnoreCase("Pixel")) {
+				if(day == 6) {
+					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "AllPixels", 1);
+				}
+				else {
+					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "FBPixels", 1);
+				}
+			}
+		}
 		
-		arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
+//		arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
 //	arrayObject = comm_obj.getExcelData("C:/Automation/Automation Input and Output/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
 		return arrayObject;
 	}	
@@ -542,12 +542,6 @@ public class BuyflowValidation {
 				}				
 				sas_obj.select_offer(driver, expectedofferdata_kit, currentCategory);
 				
-//				if(brand.equalsIgnoreCase("DrDenese")) {
-//					pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver, pixelStr);
-//					console_obj.analyzeLog(driver, "SASPage");	
-//					pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
-//				}
-				
 				// Move to Checkout
 				bf_obj.move_to_checkout(driver, brand, campaigncategory, category);
 			}
@@ -555,7 +549,7 @@ public class BuyflowValidation {
 								
 				// Get the product data from Web Catalog
 				HashMap<String, String> product_offerdata = merch_obj.getProdRowfromCatalog(catalogData, ppid, currentCategory);
-//				System.out.println(product_offerdata);
+				System.out.println(product_offerdata);
 				
 				// Get Shipping Frequency
 				HashMap<String, String> product_shippingfrequency = null;
@@ -565,7 +559,7 @@ public class BuyflowValidation {
 				}				
 				
 				// Get Price Book IDs
-				LinkedHashMap<String, String> catalogPriceBookIDs = merch_obj.getCatalogPriceBookIDs(catalogData, ppid);
+				LinkedHashMap<String, String> catalogPriceBookIDs = merch_obj.getCatalogPriceBookIDs(catalogData, ppid, currentCategory);
 				
 				// Check if the PPID is present in the campaign
 				if(product_offerdata.size() == 0) {
@@ -580,7 +574,7 @@ public class BuyflowValidation {
 				
 				// Collect current Offer related details from Merchandising Input file
 				expectedofferdata_product = merch_obj.generateExpectedOfferDataForProduct(product_offerdata, product_shippingfrequency, ppid, giftppid, postpu, brand, campaigncategory, currentCategory, catalogPriceBookIDs);
-//				System.out.println(expectedofferdata_product);
+				System.out.println(expectedofferdata_product);
 				
 				// Add Product PPID to lineitem list
 				List<String> product_lineitem = new ArrayList<String>();
@@ -593,39 +587,58 @@ public class BuyflowValidation {
 				product_lineitem.add(expectedofferdata_product.get("Supplemental Cart Language"));
 				expected_lineitems.add(product_lineitem);				
 				
-				if(currentCategory.equalsIgnoreCase("ShopKit")) {
+//				if((currentCategory.equalsIgnoreCase("ShopKit")) || (currentCategory.equalsIgnoreCase("SubscribeandSave"))){
 					// Add Gift PPIDs to lineitem list	
-					if(!(expectedofferdata_product.get("Gift").contains("No Gift"))) {
-						List<String> gift_lineitem = new ArrayList<String>();
-						gift_lineitem.add("Gift");
-						gift_lineitem.add(expectedofferdata_product.get("Gift"));
-						gift_lineitem.add("FREE");
-						gift_lineitem.add("No Cart Language");
-						gift_lineitem.add("No Continuity Pricing");
-						gift_lineitem.add("No Continuity Shipping");
-						gift_lineitem.add("No Supplemental Cart Language");
-						expected_lineitems.add(gift_lineitem);
-					}	
+//					if(!(expectedofferdata_product.get("Gift").contains("No Gift"))) {
+//						List<String> gift_lineitem = new ArrayList<String>();
+//						gift_lineitem.add("Gift");
+//						gift_lineitem.add(expectedofferdata_product.get("Gift"));
+//						gift_lineitem.add("FREE");
+//						gift_lineitem.add("No Cart Language");
+//						gift_lineitem.add("No Continuity Pricing");
+//						gift_lineitem.add("No Continuity Shipping");
+//						gift_lineitem.add("No Supplemental Cart Language");
+//						expected_lineitems.add(gift_lineitem);
+//					}	
 					
-					// Add PostPU Products to lineitem list
-					if(expectedofferdata_product.get("Offer Post-Purchase").equalsIgnoreCase("Yes")) {
-						if(expectedofferdata_product.containsKey("Post Purchase Product")) {
-							String postpu_ppid = expectedofferdata_product.get("Post Purchase Product");
-							String[] postpuppidarr = postpu_ppid.split(",");	
-							for (String postpuprod : postpuppidarr) {
-								List<String> postpu_lineitem = new ArrayList<String>();
-								postpu_lineitem.add("PostPU");
-								postpu_lineitem.add(postpuprod);
-								postpu_lineitem.add("-");
-								postpu_lineitem.add("No Cart Language");
-								postpu_lineitem.add("No Continuity Pricing");
-								postpu_lineitem.add("No Continuity Shipping");
-								postpu_lineitem.add("No Supplemental Cart Language");
-								expected_lineitems.add(postpu_lineitem);
-							}
+					String[] giftppidarr = expectedofferdata_product.get("Gift").split(",");
+					if(!(giftppidarr[0].contains("No Gift"))) {
+						for (String gift : giftppidarr) {
+							List<String> gift_lineitem = new ArrayList<String>();
+							gift_lineitem.add("Gift");
+							gift_lineitem.add(gift);
+							gift_lineitem.add("FREE");
+							gift_lineitem.add("No Cart Language");
+							gift_lineitem.add("No Continuity Pricing");
+							gift_lineitem.add("No Continuity Shipping");
+							gift_lineitem.add("No Supplemental Cart Language");
+							expected_lineitems.add(gift_lineitem);
 						}
-					}					
-				}							
+					}		
+					
+					if(currentCategory.equalsIgnoreCase("ShopKit")) {
+						// Add PostPU Products to lineitem list
+						if(expectedofferdata_product.get("Offer Post-Purchase").equalsIgnoreCase("Yes")) {
+							if(expectedofferdata_product.containsKey("Post Purchase Product")) {
+								String postpu_ppid = expectedofferdata_product.get("Post Purchase Product");
+								String[] postpuppidarr = postpu_ppid.split(",");	
+								for (String postpuprod : postpuppidarr) {
+									List<String> postpu_lineitem = new ArrayList<String>();
+									postpu_lineitem.add("PostPU");
+									postpu_lineitem.add(postpuprod);
+									postpu_lineitem.add("-");
+									postpu_lineitem.add("No Cart Language");
+									postpu_lineitem.add("No Continuity Pricing");
+									postpu_lineitem.add("No Continuity Shipping");
+									postpu_lineitem.add("No Supplemental Cart Language");
+									expected_lineitems.add(postpu_lineitem);
+								}
+							}
+						}	
+					}
+							
+									
+//				}							
 				
 				subtotal_list.add(expectedofferdata_product.get("Price"));
 				supplysize_list.add(expectedofferdata_product.get("SupplySize"));
@@ -971,6 +984,7 @@ public class BuyflowValidation {
 		checkout_shipping = checkout_shipping.replace("Two Day -","");
 		checkout_shipping = checkout_shipping.replace("\n","");
 		checkout_shipping = checkout_shipping.replace("$","");
+		checkout_shipping = checkout_shipping.replace(" ","");
 		
 		if(expected_shipping.contains("0.0")) {
 			if((checkout_shipping.contains("0.0")) || (checkout_shipping.equalsIgnoreCase("FREE"))) {

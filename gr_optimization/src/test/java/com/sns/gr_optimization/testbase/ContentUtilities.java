@@ -268,9 +268,44 @@ public class ContentUtilities {
 		Thread.sleep(2000);
 		WebElement Element = driver.findElement(By.xpath(elementvalue_Customer_Service));
 		JavascriptExecutor js = (JavascriptExecutor) driver;
-		js.executeScript("arguments[0].scrollIntoView();", Element);
+		// js.executeScript("arguments[0].scrollIntoView();", Element);
+		js.executeScript("window.scrollBy(0,0)", Element);
 		Thread.sleep(2000);
 		kit_elmt_Customer_Service.click();
+	}
+
+	public void check_element(WebDriver driver, String ev, String bnd, String cpg, String Query_Name)
+			throws Exception, SQLException {
+		List<Map<String, Object>> Customer_Service_Content_S = null;
+		Customer_Service_Content_S = get_terms_conditions(bnd, cpg, Query_Name, null);
+		String elementvalue_Customer_Service = Customer_Service_Content_S.get(0).get("ELEMENTVALUE").toString();
+		String elementlocator_Customer_Service = Customer_Service_Content_S.get(0).get("ELEMENTLOCATOR").toString();
+
+		WebElement kit_elmt_Customer_Service = comm_obj.find_webelement(driver, elementlocator_Customer_Service,
+				elementvalue_Customer_Service);
+		comm_obj.waitUntilElementAppears(driver, elementvalue_Customer_Service);
+		Thread.sleep(1000);
+
+		try {
+			kit_elmt_Customer_Service.isDisplayed();
+			if (driver.findElements(By.xpath(elementvalue_Customer_Service)).size() != 0) {
+				System.out.println(pass);
+				// output_row.add(pass);
+			} else {
+				System.out.println(fail);
+				// output_row.add(fail);
+			}
+
+		} catch (NoSuchElementException e) {
+			throw new RuntimeException(Query_Name + " link not available");
+		}
+		Thread.sleep(2000);
+		WebElement Element = driver.findElement(By.xpath(elementvalue_Customer_Service));
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		// js.executeScript("arguments[0].scrollIntoView();", Element);
+		js.executeScript("window.scrollBy(0,0)", Element);
+		Thread.sleep(2000);
+
 	}
 
 	public void clickaelement_top(WebDriver driver, String ev, String bnd, String cpg, String Query_Name)
@@ -995,18 +1030,22 @@ public class ContentUtilities {
 		Boolean Title_Tag_result = null;
 		String Title_Tag = kit_offerdata_d.get(Tag);// "Title Tag");
 		String Result = null;
-		System.out.println("Data from " + Title_Tag);
+
 		if (Title_Tag != null) {
 			if (Title_Tag != "-") {
+				if (pageSource.contains("&amp;")) {
+					pageSource = pageSource.replaceAll("&amp;", "&");
+					// check_amp(pageSource);
+				}
 				Title_Tag_result = pageSource.contains(Title_Tag);
 				if (Title_Tag_result == true) {
-					System.out.println(Tag + " " + pass);
+					System.out.println(Tag + " " + pass + " " + Title_Tag_result);
 					// content_obj.add_result(env, brand, campaign, "Homepage : Validate Title Tag
 					// ", pass);
 					Result = pass;
 				} else if (Title_Tag_result == false) {
 
-					System.out.println(Tag + " " + fail);
+					System.out.println(Tag + " " + fail + Title_Tag + " result : " + Title_Tag_result);
 					// content_obj.add_result(env, brand, campaign, "Homepage : Validate Title Tag
 					// ", fail);
 					Result = fail;
@@ -1023,5 +1062,10 @@ public class ContentUtilities {
 			Result = "Not Present";
 		}
 		return Result;
+	}
+
+	public String check_amp(String str) {
+		str = str.replaceAll("&amp;", "&");
+		return str;
 	}
 }

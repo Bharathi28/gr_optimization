@@ -32,7 +32,10 @@ public class CartLanguageUtilities {
 //		System.out.println("1 " + language);
 		language = language.replaceAll("[^0-9.$]+", "");
 //		System.out.println("2 " + language);
-		language = language.substring(language.indexOf("$"));
+//		if(language.contains("$")) {
+			language = language.substring(language.indexOf("$"));
+//		}
+		
 //		System.out.println("3 " + language);
 		while(language.endsWith(".")) {
 			language = language.substring(0, language.length() - 1);

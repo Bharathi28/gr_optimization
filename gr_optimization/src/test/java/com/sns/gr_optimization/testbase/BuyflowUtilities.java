@@ -244,8 +244,7 @@ public class BuyflowUtilities {
 			
 			if(driver.findElements(By.xpath("(//div[contains(@class,'kitproduct')]//div[contains(@class,'continuity-summary')])[" + i + "]")).size() != 0) {
 				String cart_language = driver.findElement(By.xpath("(//div[contains(@class,'kitproduct')]//div[contains(@class,'continuity-summary')])[" + i + "]")).getText();
-				
-				if(cart_language.matches(".*\\d.*")) {
+				if((cart_language.contains("month")) || (cart_language.contains("day"))) {
 					String[] lang_price_arr = lang_obj.parse_cart_language(cart_language);			
 					String cart_lang_price = lang_price_arr[1];
 					String cart_lang_shipping = lang_price_arr[2];	
@@ -544,8 +543,8 @@ public class BuyflowUtilities {
 		fill_form_field(driver, realm, "PhoneNumber", "8887878787");					
 		fill_form_field(driver, realm, "FirstName", firstName());
 		fill_form_field(driver, realm, "LastName", lastName());
-//		fill_form_field(driver, realm, "AddressLine1", "123 QATest st");
-		fill_form_field(driver, realm, "AddressLine1", "200 N Pacific Coast Hwy");
+		fill_form_field(driver, realm, "AddressLine1", "123 QATest st");
+//		fill_form_field(driver, realm, "AddressLine1", "200 N Pacific Coast Hwy");
 
 		if(campaign.equalsIgnoreCase("ca")) {
 			fill_form_field(driver, realm, "City", "Anywhere");
@@ -553,8 +552,8 @@ public class BuyflowUtilities {
 			fill_form_field(driver, realm, "Zip", "E3B7K6");
 		}
 		else {
-//			fill_form_field(driver, realm, "City", "El Segundo");
-			fill_form_field(driver, realm, "City", "Los Angeles");
+			fill_form_field(driver, realm, "City", "El Segundo");
+//			fill_form_field(driver, realm, "City", "Los Angeles");
 			fill_form_field(driver, realm, "State", "CA");					
 			
 			if(supply.equalsIgnoreCase("30")) {		

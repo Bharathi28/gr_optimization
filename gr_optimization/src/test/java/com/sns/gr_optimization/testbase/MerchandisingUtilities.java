@@ -57,8 +57,8 @@ public class MerchandisingUtilities {
 		String SupplementalCartLanguage = "";		
 					
 		String onetime_subscribe_option = "";
-		if((offerdata.get("Subscribe and Save price") == null) || (offerdata.get("Subscribe and Save price").trim().equalsIgnoreCase(" ")) ||
-				(offerdata.get("Acq One Time price") == null) || (offerdata.get("Acq One Time price").trim().equalsIgnoreCase(" "))) {
+		if((offerdata.get("Subscribe and Save price") == null) || (offerdata.get("Subscribe and Save price").trim().equalsIgnoreCase(" ")) || (!(offerdata.get("Subscribe and Save price").matches(".*\\d.*"))) ||
+				(offerdata.get("Acq One Time price") == null) || (offerdata.get("Acq One Time price").trim().equalsIgnoreCase(" ")) || (!(offerdata.get("Acq One Time price").matches(".*\\d.*")))) {
 			onetime_subscribe_option = "No";
 		}
 		else {
@@ -120,6 +120,14 @@ public class MerchandisingUtilities {
 		expectedofferdata.put("Product PPID", ProductPPID);
 		expectedofferdata.put("30 Day PPID", PPID30Day);
 		
+		if(offerdata.get("Gift") != null) {
+			String gifts = String.join(",", bf_obj.getPPIDfromString(brand, offerdata.get("Gift").trim()));
+			expectedofferdata.put("Gift", gifts);				
+		}
+		else {
+			expectedofferdata.put("Gift", "No Gift");
+		}
+		
 		if(category.equalsIgnoreCase("Product")) {
 			expectedofferdata.put("Price", Price);
 			expectedofferdata.put("Renewal Plan Id", "No Renewal Plan Id");
@@ -129,7 +137,8 @@ public class MerchandisingUtilities {
 			expectedofferdata.put("Continuity Shipping", "No Continuity Shipping");
 			expectedofferdata.put("Price Book Id", CatalogPriceBookIDs.get("Acq One Time price"));
 		}
-		else if(category.equalsIgnoreCase("SubscribeandSave")) {
+		else if(category.equalsIgnoreCase("SubscribeandSave")) {			
+			
 //			if(offerdata.get("Subscribe and Save price") != null) {
 				expectedofferdata.put("Price", Price);
 //			}			
@@ -174,13 +183,16 @@ public class MerchandisingUtilities {
 		}		
 		else if(category.equalsIgnoreCase("ShopKit")) {
 
-			if(offerdata.get("Gift") != null) {
-				List<String> gifts = bf_obj.getPPIDfromString(brand, offerdata.get("Gift").trim());
-				expectedofferdata.put("Gift", gifts.get(0));				
-			}
-			else {
-				expectedofferdata.put("Gift", "No Gift");
-			}
+//			if(offerdata.get("Gift") != null) {
+////				List<String> gifts = bf_obj.getPPIDfromString(brand, offerdata.get("Gift").trim());
+////				expectedofferdata.put("Gift", gifts.get(0));	
+//				
+//				String gifts = String.join(",", bf_obj.getPPIDfromString(brand, offerdata.get("Gift").trim()));
+//				expectedofferdata.put("Gift", gifts);
+//			}
+//			else {
+//				expectedofferdata.put("Gift", "No Gift");
+//			}
 			expectedofferdata.put("Price", Price);
 			expectedofferdata.put("Renewal Plan Id", RenewalPlanID);
 			expectedofferdata.put("Cart Language", CartLanguage);
@@ -831,81 +843,100 @@ public class MerchandisingUtilities {
 		return offerdata;
 	}
 	
-	public LinkedHashMap<String, String> getCatalogPriceBookIDs(String[][] catalogData, String ppid) {
+	public LinkedHashMap<String, String> getCatalogPriceBookIDs(String[][] catalogData, String ppid, String category) {
 		
 		LinkedHashMap<String, String> CatalogPriceBookIDs = new LinkedHashMap<String, String>();
 		
-		int ppidcolumn = 0;		
-		int contppidcolumn = 0;
+		if(category.equalsIgnoreCase("SubscribeandSave")) {
+			int ppidcolumn = 0;		
+			int categorycolumn = 0;
+			int contppidcolumn = 0;
 
-		for(int i=0; i<catalogData[0].length; i++) {
-			String colName = catalogData[0][i];
-			if(colName != null) {
-				if(colName.equalsIgnoreCase("PPID")) {
-					ppidcolumn = i;
-				}				
-				if(colName.equalsIgnoreCase("Post Purchase PPID")) {
-					contppidcolumn = i;
-				}
-			}
-		}
-		
-		String ssheader="";
-		for(int i=0; i<catalogData.length; i++) {				
-			String ppidinrow = catalogData[i][ppidcolumn].replaceAll("\\s+", "");	
-			String contppidinrow = null;
-			if(catalogData[i][contppidcolumn] != null) {
-				contppidinrow = catalogData[i][contppidcolumn].replaceAll("\\s+", "");
-			}			 
-			
-			if(((ppidinrow != null) && (ppidinrow.trim().equalsIgnoreCase(ppid.trim()))) || ((contppidinrow != null) && (contppidinrow.trim().equalsIgnoreCase(ppid.trim())))) {
-				for(int j=0; j<catalogData[0].length; j++) {
-					if(catalogData[0][j].contains("Subscribe and Save")) {
-						if(catalogData[i][j].matches(".*\\d.*")) {
-							ssheader = catalogData[0][j];
-							
-							ssheader = ssheader.replaceAll("Subscribe and Save price", "");
-							ssheader = ssheader.replaceAll("\\s+", "");				
-							ssheader = ssheader.replaceAll("[^a-zA-Z0-9$]+", "");
-
-							CatalogPriceBookIDs.put("Subscribe and Save price", ssheader);
-						}									
+			for(int i=0; i<catalogData[0].length; i++) {
+				String colName = catalogData[0][i];
+				if(colName != null) {
+					if(colName.equalsIgnoreCase("PPID")) {
+						ppidcolumn = i;
+					}				
+					if(colName.equalsIgnoreCase("Kit or Single")) {
+						categorycolumn = i;
+					}
+					if(colName.equalsIgnoreCase("Post Purchase PPID")) {
+						contppidcolumn = i;
 					}
 				}
-				break;
+			}
+			
+			String ssheader="";
+			for(int i=0; i<catalogData.length; i++) {				
+				String ppidinrow = catalogData[i][ppidcolumn].replaceAll("\\s+", "");	
+				String categoryinrow = catalogData[i][categorycolumn].replaceAll("\\s+", "");
+				String contppidinrow = null;
+				if(catalogData[i][contppidcolumn] != null) {
+					contppidinrow = catalogData[i][contppidcolumn].replaceAll("\\s+", "");
+				}							
+				
+				if(categoryinrow.equalsIgnoreCase("Single")) {
+					if(((ppidinrow != null) && (ppidinrow.trim().equalsIgnoreCase(ppid.trim()))) || ((contppidinrow != null) && (contppidinrow.trim().equalsIgnoreCase(ppid.trim())))) {
+						for(int j=0; j<catalogData[0].length; j++) {
+							if(catalogData[0][j].contains("Subscribe and Save")) {
+								if((catalogData[i][j] != null) && (catalogData[i][j].matches(".*\\d.*"))) {
+									ssheader = catalogData[0][j];
+									
+									ssheader = ssheader.replaceAll("Subscribe and Save price", "");
+									ssheader = ssheader.replaceAll("Subscribe and Save", "");
+									ssheader = ssheader.replaceAll("Pricebook", "");
+									ssheader = ssheader.replaceAll("15% off", "");
+									ssheader = ssheader.replaceAll("20% off", "");
+									ssheader = ssheader.replaceAll("\\s+", "");				
+									ssheader = ssheader.replaceAll("[^a-zA-Z0-9$]+", "");
+									System.out.println(ssheader);
+									CatalogPriceBookIDs.put("Subscribe and Save price", ssheader);
+								}									
+							}
+							if(!(ssheader.equalsIgnoreCase(""))) {
+								break;
+							}
+						}						
+					}
+				}	
+				if(!(ssheader.equalsIgnoreCase(""))) {
+					break;
+				}
+			}		
+		}
+		else {
+			for(int i=0; i<catalogData[0].length; i++) {						
+				String colName = catalogData[0][i];
+				if(colName == null) {
+					break;
+				}
+				if(colName.contains("Acq One Time Pricebook")) {
+					colName = colName.replaceAll("Acq One Time Pricebook", "");
+					colName = colName.replaceAll("\\s+", "");				
+					colName = colName.replaceAll("[^a-zA-Z0-9$]+", "");
+
+					CatalogPriceBookIDs.put("Acq One Time price", colName);
+				}
+//				else if(colName.contains("Subscribe and Save")) {
+////					if(catalogData[i][j].matches(".*\\d.*")) {
+////						
+////					}
+//					colName = colName.replaceAll("Subscribe and Save price", "");
+//					colName = colName.replaceAll("\\s+", "");				
+//					colName = colName.replaceAll("[^a-zA-Z0-9$]+", "");
+	//
+//					CatalogPriceBookIDs.put("Subscribe and Save price", colName);
+//				}			
+				else if(colName.contains("Entry-Continuity Pricebook")) {
+					colName = colName.replaceAll("Entry-Continuity Pricebook", "");
+					colName = colName.replaceAll("\\s+", "");				
+					colName = colName.replaceAll("[^a-zA-Z0-9$]+", "");
+
+					CatalogPriceBookIDs.put("Entry-Continuity Pricebook", colName);
+				}			
 			}
 		}		
-
-		for(int i=0; i<catalogData[0].length; i++) {						
-			String colName = catalogData[0][i];
-			if(colName == null) {
-				break;
-			}
-			if(colName.contains("Acq One Time price")) {
-				colName = colName.replaceAll("Acq One Time price", "");
-				colName = colName.replaceAll("\\s+", "");				
-				colName = colName.replaceAll("[^a-zA-Z0-9$]+", "");
-
-				CatalogPriceBookIDs.put("Acq One Time price", colName);
-			}
-//			else if(colName.contains("Subscribe and Save")) {
-////				if(catalogData[i][j].matches(".*\\d.*")) {
-////					
-////				}
-//				colName = colName.replaceAll("Subscribe and Save price", "");
-//				colName = colName.replaceAll("\\s+", "");				
-//				colName = colName.replaceAll("[^a-zA-Z0-9$]+", "");
-//
-//				CatalogPriceBookIDs.put("Subscribe and Save price", colName);
-//			}			
-			else if(colName.contains("Entry-Continuity Pricebook")) {
-				colName = colName.replaceAll("Entry-Continuity Pricebook", "");
-				colName = colName.replaceAll("\\s+", "");				
-				colName = colName.replaceAll("[^a-zA-Z0-9$]+", "");
-
-				CatalogPriceBookIDs.put("Entry-Continuity Pricebook", colName);
-			}			
-		}
 		return CatalogPriceBookIDs;
 	}
 	
@@ -961,11 +992,11 @@ public class MerchandisingUtilities {
 					if(((ppidinrow != null) && (ppidinrow.trim().equalsIgnoreCase(ppid.trim()))) || ((contppidinrow != null) && (contppidinrow.trim().equalsIgnoreCase(ppid.trim())))) {
 						for(int j=0; j<catalogData[0].length; j++) {
 							if(catalogData[0][j] != null) {
-								if(catalogData[0][j].contains("Acq One Time price")) {
+								if(catalogData[0][j].contains("Acq One Time Pricebook")) {
 									productdata.put("Acq One Time price", catalogData[i][j]);
 								}
 								else if(catalogData[0][j].contains("Subscribe and Save")) {
-									if(catalogData[i][j].matches(".*\\d.*")) {
+									if((catalogData[i][j] != null) && (catalogData[i][j].matches(".*\\d.*"))) {
 										productdata.put("Subscribe and Save price", catalogData[i][j]);
 									}									
 								}

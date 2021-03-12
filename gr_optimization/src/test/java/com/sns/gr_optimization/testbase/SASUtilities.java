@@ -332,7 +332,7 @@ public class SASUtilities {
 			else {				
 				xpath = "//h3[contains(@class,'product-name')]//a[contains(text(),'" + name + "')]";
 			}
-			
+			System.out.println(xpath);
 			while(driver.findElements(By.xpath(xpath)).size() == 0){
 				jse.executeScript("window.scrollBy(0,400)", 0);
 				

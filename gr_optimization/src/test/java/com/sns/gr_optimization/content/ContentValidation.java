@@ -13,6 +13,7 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 
 import org.openqa.selenium.WebDriver;
@@ -59,6 +60,7 @@ public class ContentValidation {
 	String Spanish = "Spanish";
 	String English = "English";
 	String pagepattern;
+
 	// String env = "";
 	// String env = System.getProperty("Environment");
 
@@ -106,6 +108,7 @@ public class ContentValidation {
 		String[][] JLoshipfreq = null;
 		String brandcode = db_obj.get_sourceproductlinecode(brand);
 		String currentCategory = "Product";
+		String pageSource_SAS = null;
 
 		// Read All SEO Page
 		String[][] seoData = null;
@@ -176,6 +179,8 @@ public class ContentValidation {
 		String pixelStr = "-";
 		String giftppid = "-";
 
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+
 		String url = db_obj.getUrl(brand, campaign, env);
 		url = pixel_obj.generateURL(url, pixelStr, brand);
 
@@ -229,6 +234,9 @@ public class ContentValidation {
 
 			// Result_Tag = content_obj.check_seo_content(kit_offerdata_d, "Title Tag",
 			// pageSource);
+			String Title_Tag = kit_offerdata_d.get("Title Tag");
+			Boolean Tag_result = pageSource.contains(Title_Tag);
+			System.out.println("Tag result : " + Tag_result);
 			String Title_Tag_Rs = content_obj.check_seo_content(kit_offerdata_d, "Title Tag", pageSource);
 			String Meta_description_Tag_Rs = content_obj.check_seo_content(kit_offerdata_d, "Meta description",
 					pageSource);
@@ -453,6 +461,18 @@ public class ContentValidation {
 		output_row.add(result_PP);
 		output.add(output_row);
 
+		// Check Yahoo Dashboard link
+		content_obj.clickaelement(driver, env, brand, campaign, "yahoo mydashboard link");
+		for (String winHandle : driver.getWindowHandles()) {
+			ArrayList<String> tabs = new ArrayList<String>(driver.getWindowHandles());
+			System.out.println("Newly window : " + winHandle);
+			driver.switchTo().window(winHandle);
+			Thread.sleep(2000);
+			driver.switchTo().window(tabs.get(0));
+			// driver.manage().window().maximize();
+			System.out.println("No. of tabs: " + tabs.size());
+		}
+
 		// California Privacy Rights
 		output_row = new ArrayList<String>();
 		output_row.add(env);
@@ -507,6 +527,9 @@ public class ContentValidation {
 		} catch (NoSuchElementException e) {
 			throw new RuntimeException("Privacy Policy link not available");
 		}
+		Thread.sleep(2000);
+		// WebElement Element = driver.findElement(By.xpath(elementvalue_PP_Es));
+		js.executeScript("window.scrollTo(0, 0)");
 		Thread.sleep(2000);
 		kit_elmt_PP_Es.click();
 		output.add(output_row);
@@ -773,8 +796,12 @@ public class ContentValidation {
 				}
 				content_obj.select_kit(driver, brand, campaign, expectedofferdata_kit);
 
+				System.out.println("Page Title : " + driver.getTitle());
+				pageSource_SAS = driver.getPageSource();
+
+				content_obj.write_textfile(pageSource_SAS, brand, English, seo, "pageSource_SAS_Page", ".txt");
+
 				if (pagepattern.contains("gift") == true) {
-					System.out.println("pagepattern : " + pagepattern);
 //					if ((brand.equalsIgnoreCase("WestmoreBeauty") != true)
 //						&& (brand.equalsIgnoreCase("Smileactives") != true)) {
 					content_obj.select_gift(driver, brand, campaign, expectedofferdata_kit);
@@ -785,7 +812,8 @@ public class ContentValidation {
 
 				if (Title_Tag_result == null) {
 					System.out.println("Title Tag Exp : " + null);
-					output.add(content_obj.add_result(env, brand, campaign, "Homepage : Validate Title Tag ", null));
+					output.add(content_obj.add_result(env, brand, campaign, "Homepage : Validate Title Tag ",
+							"Not Present"));
 				}
 				if (Title_Tag_result != null) {
 					if (Title_Tag_result == true) {
@@ -801,7 +829,7 @@ public class ContentValidation {
 					else {
 						System.out.println(" Pre-upsell page : " + null);
 						output.add(content_obj.add_result(env, brand, campaign, "Pre-upsell page : Validate Title Tag ",
-								null));
+								"Not Present"));
 					}
 				}
 
@@ -831,6 +859,8 @@ public class ContentValidation {
 //			System.out.println("URL name : " + driver.getCurrentUrl());
 //		}
 
+			// System.out.println("Page Title : " + driver.getTitle());
+
 			// Check DND on SAS Page
 			output.add(content_obj.donotsell(driver, env, brand, campaign, "SASPage"));
 
@@ -841,10 +871,6 @@ public class ContentValidation {
 				String Meta_description = null;
 				// System.out.println("Page Source Data : " + SAS_offerdata);
 
-				String pageSource = driver.getPageSource();
-
-				content_obj.write_textfile(pageSource, brand, English, seo, "pageSource_SAS_Page", ".txt");
-
 				Title_Tag = SAS_offerdata.get("Title Tag");
 				Meta_description = SAS_offerdata.get("Meta description");
 
@@ -852,10 +878,10 @@ public class ContentValidation {
 				System.out.println(" SAS Page Data : " + Meta_description);
 
 				if (Title_Tag != null) {
-					Boolean Title_Tag_result1 = pageSource.contains(Title_Tag);
+					Boolean Title_Tag_result1 = pageSource_SAS.contains(Title_Tag);
 
 					// if (homepage.trim().contains(pageSource.trim())) {
-					if (Title_Tag != null) {
+					if (Title_Tag_result1 != null) {
 						if (Title_Tag_result1 == true) {
 							System.out.println(" SAS Page Exp : " + pass);
 							output.add(content_obj.add_result(env, brand, campaign, "SAS Page : Validate Title Tag ",
@@ -872,7 +898,7 @@ public class ContentValidation {
 								"Not Present"));
 					}
 					if (Meta_description != null) {
-						Boolean Meta_description_result = pageSource.contains(Meta_description);
+						Boolean Meta_description_result = pageSource_SAS.contains(Meta_description);
 						if (Meta_description_result == true) {
 							System.out.println(" SAS Page Exp : " + pass);
 							output.add(content_obj.add_result(env, brand, campaign,
@@ -889,7 +915,7 @@ public class ContentValidation {
 								"Not Present"));
 					}
 				}
-				String Title_Tag_Rs = content_obj.check_seo_content(SAS_offerdata, "Title Tag", pageSource);
+				String Title_Tag_Rs = content_obj.check_seo_content(SAS_offerdata, "Title Tag", pageSource_SAS);
 				output.add(
 						content_obj.add_result(env, brand, campaign, "SAS Page : Validate Title Tag ", Title_Tag_Rs));
 
@@ -935,10 +961,10 @@ public class ContentValidation {
 								"Checkout Page : Validate Meta description ", fail));
 					}
 				} else {
-					output.add(
-							content_obj.add_result(env, brand, campaign, "Checkout Page : Validate Title Tag ", null));
+					output.add(content_obj.add_result(env, brand, campaign, "Checkout Page : Validate Title Tag ",
+							"Not Present"));
 					output.add(content_obj.add_result(env, brand, campaign,
-							"Checkout Page : Validate Meta description ", null));
+							"Checkout Page : Validate Meta description ", "Not Present"));
 				}
 
 			}
@@ -1053,7 +1079,8 @@ public class ContentValidation {
 			}
 
 			// Get Price Book IDs
-			LinkedHashMap<String, String> catalogPriceBookIDs = merch_obj.getCatalogPriceBookIDs(catalogData, ppid);
+			LinkedHashMap<String, String> catalogPriceBookIDs = merch_obj.getCatalogPriceBookIDs(catalogData, ppid,
+					currentCategory);
 
 			// Check if the PPID is present in the campaign
 			if (product_offerdata.size() == 0) {
@@ -1136,7 +1163,8 @@ public class ContentValidation {
 		// List<String> attachmentList = new ArrayList<String>();
 		attachmentList.add(file);
 
-		mailObj.sendEmail("Content Validation Results", sendReportTo, attachmentList);
+		// mailObj.sendEmail("Content Validation Results", sendReportTo,
+		// attachmentList);
 	}
 
 	public void mkdir() {
