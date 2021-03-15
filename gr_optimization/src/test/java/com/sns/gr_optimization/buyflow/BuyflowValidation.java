@@ -106,9 +106,9 @@ public class BuyflowValidation {
 //		System.setProperty("email", "aaqil@searchnscore.com,manibharathi@searchnscore.com");
 //		System.setProperty("testset", "Top 3");
 //		
-		sendReportTo = System.getProperty("email");
-		testSet = System.getProperty("testset");
-		testSuite = System.getProperty("testsuite");
+//		sendReportTo = System.getProperty("email");
+//		testSet = System.getProperty("testset");
+//		testSuite = System.getProperty("testsuite");
 		
 //		System.out.println("Enter Email id : ");
 //		sendReportTo = in.next();
@@ -178,35 +178,35 @@ public class BuyflowValidation {
 		
 		Object[][] arrayObject = null;
 		
-		if(day == 7) {
-			arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Saturday", 1);
-		}
-		else if(day == 1) {
-			arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Sunday", 1);
-		}
-		else {
-			if(testSuite.equalsIgnoreCase("Buyflow")) {
-				if(testSet.equalsIgnoreCase("Core")) {
-					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Core", 1);
-				}
-				else if(testSet.equalsIgnoreCase("Top 3")){
-					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Top 3", 1);
-				}
-				else if(testSet.equalsIgnoreCase("All active")){
-					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "All active", 1);
-				}
-			}
-			else if(testSuite.equalsIgnoreCase("Pixel")) {
-				if(day == 6) {
-					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "AllPixels", 1);
-				}
-				else {
-					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "FBPixels", 1);
-				}
-			}
-		}
+//		if(day == 7) {
+//			arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Saturday", 1);
+//		}
+//		else if(day == 1) {
+//			arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Sunday", 1);
+//		}
+//		else {
+//			if(testSuite.equalsIgnoreCase("Buyflow")) {
+//				if(testSet.equalsIgnoreCase("Core")) {
+//					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Core", 1);
+//				}
+//				else if(testSet.equalsIgnoreCase("Top 3")){
+//					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Top 3", 1);
+//				}
+//				else if(testSet.equalsIgnoreCase("All active")){
+//					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "All active", 1);
+//				}
+//			}
+//			else if(testSuite.equalsIgnoreCase("Pixel")) {
+//				if(day == 6) {
+//					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "AllPixels", 1);
+//				}
+//				else {
+//					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "FBPixels", 1);
+//				}
+//			}
+//		}
 		
-//		arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
+		arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
 //	arrayObject = comm_obj.getExcelData("C:/Automation/Automation Input and Output/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
 		return arrayObject;
 	}	
@@ -365,7 +365,18 @@ public class BuyflowValidation {
 			
 			if(currentCategory.equalsIgnoreCase("Kit")) {
 				// Get column in which the PPID is present and check if the PPID belongs to Pre-Purchase Entry Kit
-				int PPIDcolumn = merch_obj.getPPIDColumn(merchData, ppid);
+				int PPIDcolumn = 0;
+				if((brand.equalsIgnoreCase("Smileactives")) && (campaign.equalsIgnoreCase("specialoffer2"))) {
+					if(giftppid.equalsIgnoreCase("entrykit")) {
+						PPIDcolumn = 1;
+					}
+					else {
+						PPIDcolumn = 2;
+					}
+				}
+				else {
+					PPIDcolumn = merch_obj.getPPIDColumn(merchData, ppid);
+				}				
 				String PPUSection = merch_obj.IsPrePurchase(merchData, ppid);
 				
 				if(((brand.equalsIgnoreCase("MeaningfulBeauty")) && (campaign.equalsIgnoreCase("os"))) || ((brand.equalsIgnoreCase("CrepeErase")) && (campaign.equalsIgnoreCase("advanced-one"))) || ((brand.equalsIgnoreCase("CrepeErase")) && (campaign.equalsIgnoreCase("order30fsh2b")))){
@@ -406,7 +417,7 @@ public class BuyflowValidation {
 				// Collect current Offer related details from Merchandising Input file
 				if(!(brand.equalsIgnoreCase("JloBeauty"))) {
 					expectedofferdata_kit = merch_obj.generateExpectedOfferDataForKit(kit_offerdata, PPUSection, postpu, ppid, giftppid, brand, campaigncategory);
-//					System.out.println(expectedofferdata_kit);
+					System.out.println(expectedofferdata_kit);
 				}
 								
 				// Add Kit PPID to lineitem list
@@ -523,12 +534,9 @@ public class BuyflowValidation {
 				pixel_obj.defineNewHar(proxy, brand + "SASPage");	  
 				bf_obj.click_cta(driver, brand, campaign, "Ordernow");
 				
-				// DrDenese - FB - AddToCart event will fire only after selecting the kit (After clicking on "Add To cart")
-//				if(!(brand.equalsIgnoreCase("DrDenese"))) {
-					pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver, pixelStr);
-					console_obj.analyzeLog(driver, "SASPage");	
-//				}				
-				
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver, pixelStr);
+				console_obj.analyzeLog(driver, "SASPage");	
+							
 				// Gift Validation
 				String expectedcampaigngifts = expectedofferdata_kit.get("Campaign Gifts");
 				if((expectedcampaigngifts != null) && (!(expectedcampaigngifts.equals("-"))) && (!(expectedcampaigngifts.equals("")))) {
@@ -838,16 +846,20 @@ public class BuyflowValidation {
 							}
 									
 							// Continuity Pricing
-							if(expected_item.get(4).equalsIgnoreCase(actual_continuity_price)) {
+							String continuity_price_result = bf_obj.assertPrice(actual_continuity_price, expected_item.get(4));
+							
+							if(continuity_price_result.equalsIgnoreCase("PASS")) {
 								ContinuityPriceResult = "PASS";
 							}
 							else {
 								ContinuityPriceResult = "FAIL";
 								remarks = remarks + "Checkout Cart - " + expected_item.get(0) + " - " + expected_item.get(1) + " Continuity Pricing Mismatch. Expected - " + expected_item.get(4) + " , Actual - " + actual_continuity_price + " ; ";
 							}
-									
+																
 							// Continuity Shipping
-							if(expected_item.get(5).equalsIgnoreCase(actual_continuity_shipping)) {
+							String continuity_ship_result = bf_obj.assertPrice(actual_continuity_shipping, expected_item.get(5));
+							
+							if(continuity_ship_result.equalsIgnoreCase("PASS")) {
 								ContinuityPriceResult = "PASS";
 							}
 							else {
@@ -1329,7 +1341,7 @@ public class BuyflowValidation {
 		// Installment Plan Validation
 		String actualinstallmentplanid = "";
 		if(category_list.contains("Kit")) {
-			if(!(expectedofferdata_kit.get("Installment Plan Id").equalsIgnoreCase("No Installment Plan"))) {
+			if((!(expectedofferdata_kit.get("Installment Plan Id").equalsIgnoreCase("No Installment Plan"))) && (!(expectedofferdata_kit.get("Installment Plan Id").equalsIgnoreCase("-")))) {
 				actualinstallmentplanid = comm_obj.getFromVariableMap(driver, "paymentPlanId");
 				if(offer_postpurchase.equalsIgnoreCase("Yes")) {					
 					if(!(actualinstallmentplanid.contains(expectedofferdata_kit.get("Installment Plan Id")))) {

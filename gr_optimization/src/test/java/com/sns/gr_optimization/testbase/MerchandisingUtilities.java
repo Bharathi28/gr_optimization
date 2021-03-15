@@ -563,7 +563,7 @@ public class MerchandisingUtilities {
 		// Gift ppid
 		// No gift for MeaningfulBeauty - one-shot campaign
 		// And GiftPPID will carry Pre-Purchase value
-		if((!(campaign.equalsIgnoreCase("os"))) && (!(campaign.equalsIgnoreCase("advanced-one")))) {
+		if((!(campaign.equalsIgnoreCase("os"))) && (!(campaign.equalsIgnoreCase("advanced-one"))) && (!(campaign.equalsIgnoreCase("specialoffer2")))) {
 			// There is a gift choice - so giftppid will be mentioned in run_input
 			if(!(giftppid.equalsIgnoreCase("-"))) {
 				expectedofferdata.put("Gift PPID", giftppid);
@@ -613,7 +613,7 @@ public class MerchandisingUtilities {
 		expectedofferdata.put("Cart Language", expectedcartlanguage);
 		expectedofferdata.put("Supplemental Cart Language", expectedsuppcartlanguage);
 		expectedofferdata.put("Renewal Plan Id", expectedrenewalplanid);
-		expectedofferdata.put("Installment Plan Id", expectedinstallmentplanid);
+		expectedofferdata.put("Installment Plan Id", expectedinstallmentplanid);		
 		expectedofferdata.put("Continuity Pricing", continuitypricing);	
 		expectedofferdata.put("Continuity Shipping", continuityshipping);
 		

@@ -248,6 +248,14 @@ public class BuyflowUtilities {
 					String[] lang_price_arr = lang_obj.parse_cart_language(cart_language);			
 					String cart_lang_price = lang_price_arr[1];
 					String cart_lang_shipping = lang_price_arr[2];	
+					
+					Double cont_price = Double.valueOf(cart_lang_price);	
+					double cont_roundOff = Math.floor(cont_price * 100.0) / 100.0;		
+					cart_lang_price = String.valueOf(cont_roundOff);	
+					
+					Double cont_shipping = Double.valueOf(cart_lang_shipping);	
+					double cont_ship_roundOff = Math.floor(cont_shipping * 100.0) / 100.0;		
+					cart_lang_shipping = String.valueOf(cont_ship_roundOff);
 									
 					item.add(cart_language);
 					item.add(cart_lang_price);
@@ -265,8 +273,7 @@ public class BuyflowUtilities {
 				item.add("No Continuity Shipping");
 			}			
 			actual_lineitems.add(item);
-		}
-		
+		}		
 		return actual_lineitems;
 	}
 	
