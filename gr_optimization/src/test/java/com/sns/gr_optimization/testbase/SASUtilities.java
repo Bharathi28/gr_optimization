@@ -289,7 +289,7 @@ public class SASUtilities {
 		jse.executeScript("window.scrollBy(0,100)", 0);
 	
 		String masterPPID = "";
-		if(offerdata.get("Master PPID") != null){
+		if((offerdata.get("Master PPID") != null) && (!(offerdata.get("Master PPID").equalsIgnoreCase("")))){
 			masterPPID = offerdata.get("Master PPID");
 		}
 		 
@@ -372,7 +372,7 @@ public class SASUtilities {
 	public void select_shade(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 //		jse.executeScript("window.scrollBy(0,300)", 0);
-	
+	Thread.sleep(2000);
 		String ppid = offerdata.get("30 Day PPID");
 		
 		if(brand.equalsIgnoreCase("CrepeErase")) {
@@ -401,7 +401,7 @@ public class SASUtilities {
 			if(!(xpath.equalsIgnoreCase(""))) {
 				WebElement shade_elmt = driver.findElement(By.xpath(xpath));
 				comm_obj.waitUntilElementAppears(driver, xpath);
-				Thread.sleep(2000);
+				Thread.sleep(3000);
 				if(!(shade_elmt.getAttribute("class").contains("selected"))) {
 					shade_elmt.click();
 				}		
@@ -465,7 +465,12 @@ public class SASUtilities {
 //		else if(shipfreq.contains("90")) {
 //			sel_element.selectByIndex(2);
 //		}
-		sel_element.selectByVisibleText(shipfreq.toLowerCase() + "s");
+		if(brand.equalsIgnoreCase("JLoBeauty")) {
+			sel_element.selectByVisibleText(shipfreq.toLowerCase() + "s");
+		}
+		else if(brand.equalsIgnoreCase("WestmoreBeauty")) {
+			sel_element.selectByVisibleText(shipfreq);
+		}		
 		Thread.sleep(2000);
 	}
 	

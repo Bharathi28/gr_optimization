@@ -71,6 +71,7 @@ public class BuyflowUtilities {
 		String elementvalue = locator.get(0).get("VALUE").toString();
 		
 		if(!(elementvalue.equalsIgnoreCase("n/a"))) {
+			Thread.sleep(5000);
 			WebElement element = comm_obj.find_webelement(driver, elementlocator, elementvalue);	
 			Thread.sleep(2000);
 			//element.click();
@@ -444,7 +445,7 @@ public class BuyflowUtilities {
 		}
 	}
 	
-	public String fill_out_form(WebDriver driver, String brand, String campaign, String cc, String shipbill, String supply) throws InterruptedException, ClassNotFoundException, SQLException {
+	public String fill_out_form(WebDriver driver, String brand, String campaign, String cc, String shipbill, String supply, String address) throws InterruptedException, ClassNotFoundException, SQLException {
 		WebDriverWait wait = new WebDriverWait(driver,50);
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		String realm = DBUtilities.get_realm(brand);
@@ -488,13 +489,13 @@ public class BuyflowUtilities {
 						driver.close();
 						driver.switchTo().window(winHandleBefore);
 						Thread.sleep(2000);
-						email = ccPayment(driver, jse, realm, brand, campaign, "Visa", shipbill, supply);
+						email = ccPayment(driver, jse, realm, brand, campaign, "Visa", shipbill, supply, address);
 					}
 					else if(driver.findElements(By.xpath("//div[contains(text(),\"Things don't appear to be working at the moment\")]")).size() != 0) {
 						driver.close();
 						driver.switchTo().window(winHandleBefore);
 						Thread.sleep(2000);
-						email = ccPayment(driver, jse, realm, brand, campaign, "Visa", shipbill, supply);
+						email = ccPayment(driver, jse, realm, brand, campaign, "Visa", shipbill, supply, address);
 					}
 					else if(driver.findElements(By.xpath("//div[@id='loginSection']//div//div[2]//a")).size() != 0) {
 						driver.findElement(By.xpath("//div[@id='loginSection']//div//div[2]//a")).click();
@@ -533,12 +534,12 @@ public class BuyflowUtilities {
 			}							
 		}
 		else {
-			email = ccPayment(driver, jse, realm, brand, campaign, cc, shipbill, supply);
+			email = ccPayment(driver, jse, realm, brand, campaign, cc, shipbill, supply, address);
 		}
 		return email;
 	}	
 	
-	public String ccPayment(WebDriver driver, JavascriptExecutor jse, String realm, String brand, String campaign, String cc, String shipbill, String supply) throws ClassNotFoundException, SQLException, InterruptedException {
+	public String ccPayment(WebDriver driver, JavascriptExecutor jse, String realm, String brand, String campaign, String cc, String shipbill, String supply, String address) throws ClassNotFoundException, SQLException, InterruptedException {
 		String alpha = org.apache.commons.lang3.RandomStringUtils.randomAlphabetic(9);
 		String num = org.apache.commons.lang3.RandomStringUtils.randomNumeric(4);
 		String email = alpha + "-" + num + "@yopmail.com";
@@ -547,11 +548,23 @@ public class BuyflowUtilities {
 		if((brand.equalsIgnoreCase("CrepeErase")) || (brand.equalsIgnoreCase("MeaningfulBeauty")) || (brand.equalsIgnoreCase("JLoBeauty"))){
 			driver.findElement(By.xpath("(//input[contains(@class,'input-text password')])[1]")).sendKeys("Grcweb123!");
 		}
-		fill_form_field(driver, realm, "PhoneNumber", "8887878787");					
+		
+		if(address.equalsIgnoreCase("Real")) {
+			fill_form_field(driver, realm, "PhoneNumber", "3103103100");	
+		}
+		else if(address.equalsIgnoreCase("Test")) {
+			fill_form_field(driver, realm, "PhoneNumber", "8887878787");	
+		}		
+						
 		fill_form_field(driver, realm, "FirstName", firstName());
 		fill_form_field(driver, realm, "LastName", lastName());
-		fill_form_field(driver, realm, "AddressLine1", "123 QATest st");
-//		fill_form_field(driver, realm, "AddressLine1", "200 N Pacific Coast Hwy");
+		
+		if(address.equalsIgnoreCase("Real")) {
+			fill_form_field(driver, realm, "AddressLine1", "200 N Pacific Coast Hwy");
+		}
+		else if(address.equalsIgnoreCase("Test")) {
+			fill_form_field(driver, realm, "AddressLine1", "123 QATest st");
+		}
 
 		if(campaign.equalsIgnoreCase("ca")) {
 			fill_form_field(driver, realm, "City", "Anywhere");
@@ -559,7 +572,14 @@ public class BuyflowUtilities {
 			fill_form_field(driver, realm, "Zip", "E3B7K6");
 		}
 		else {
-			fill_form_field(driver, realm, "City", "El Segundo");
+			if(address.equalsIgnoreCase("Real")) {
+				fill_form_field(driver, realm, "City", "Los Angeles");
+			}
+			else if(address.equalsIgnoreCase("Test")) {
+				fill_form_field(driver, realm, "City", "El Segundo");
+			}
+			
+////			fill_form_field(driver, realm, "City", "El Segundo");
 //			fill_form_field(driver, realm, "City", "Los Angeles");
 			fill_form_field(driver, realm, "State", "CA");					
 			

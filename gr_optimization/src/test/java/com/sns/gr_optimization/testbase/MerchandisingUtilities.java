@@ -70,21 +70,26 @@ public class MerchandisingUtilities {
 			size_option = "Yes";
 		}
 		
-		String pagepattern = generatePagePattern(category, shade, brand, onetime_subscribe_option, size_option);
+		String freq_option = "No";
+		if(category.equalsIgnoreCase("SubscribeandSave")) {	
+			if(!(Expshipfreq.equalsIgnoreCase("-"))) {
+				freq_option = "Yes";
+			}
+		}		
+		
+		String pagepattern = generatePagePattern(category, shade, brand, onetime_subscribe_option, size_option, freq_option);
 		expectedofferdata.put("PagePattern", pagepattern);
 		
 		if((offerdata.get("Post Purchase PPID") != null) && (kitppid.equalsIgnoreCase(offerdata.get("Post Purchase PPID").trim()))) {
-//			if(kitppid.equalsIgnoreCase(offerdata.get("Post Purchase PPID").trim())) {
-				ProductPPID = offerdata.get("Post Purchase PPID").trim();
-				PPID30Day  = offerdata.get("PPID").trim();
-				Price = offerdata.get("Post Purchase Price").trim();
-				RenewalPlanID = offerdata.get("Post Purchase Renewal Plan ID").trim();
-				CartLanguage = offerdata.get("Post Purchase Cart Language").trim();
-				SupplementalCartLanguage = offerdata.get("Post Purchase Supplemental Cart Language").trim();
+			ProductPPID = offerdata.get("Post Purchase PPID").trim();
+			PPID30Day  = offerdata.get("PPID").trim();
+			Price = offerdata.get("Post Purchase Price").trim();
+			RenewalPlanID = offerdata.get("Post Purchase Renewal Plan ID").trim();
+			CartLanguage = offerdata.get("Post Purchase Cart Language").trim();
+			SupplementalCartLanguage = offerdata.get("Post Purchase Supplemental Cart Language").trim();
 				
-				expectedofferdata.put("Offer Post-Purchase", "Yes");
-				expectedofferdata.put("SupplySize", "90");
-//			}
+			expectedofferdata.put("Offer Post-Purchase", "Yes");
+			expectedofferdata.put("SupplySize", "90");
 		}	
 		else {
 			ProductPPID = offerdata.get("PPID").trim();
@@ -120,7 +125,7 @@ public class MerchandisingUtilities {
 		expectedofferdata.put("Product PPID", ProductPPID);
 		expectedofferdata.put("30 Day PPID", PPID30Day);
 		
-		if(offerdata.get("Gift") != null) {
+		if((offerdata.get("Gift") != null) && (!(offerdata.get("Gift").equalsIgnoreCase(" ")))) {
 			String gifts = String.join(",", bf_obj.getPPIDfromString(brand, offerdata.get("Gift").trim()));
 			expectedofferdata.put("Gift", gifts);				
 		}
@@ -166,6 +171,30 @@ public class MerchandisingUtilities {
 					expectedofferdata.put("Offer Pre-Purchase", offerdata.get("Pre-Purchase").trim());
 				}
 			}
+			else if(brand.equalsIgnoreCase("WestmoreBeauty")) {
+				if(Expshipfreq.equalsIgnoreCase("-")) {
+					Expshipfreq = "1 month";
+				}
+				expectedofferdata.put("Shipping Frequency", Expshipfreq);
+				
+				String ShipFreqCol = Expshipfreq + " RP";
+				expectedofferdata.put("Renewal Plan Id", ProductShipFreq.get(ShipFreqCol).trim());	
+				
+				if(Expshipfreq.contains("1 Month")) {
+					CartLanguage = CartLanguage.replace("two months", "one month");
+					CartLanguage = CartLanguage.replace("Two months", "One month");
+					CartLanguage = CartLanguage.replace("every one month", "every month");
+					SupplementalCartLanguage = SupplementalCartLanguage.replace("two months", "one month");
+					SupplementalCartLanguage = SupplementalCartLanguage.replace("Two months", "One month");
+					SupplementalCartLanguage = SupplementalCartLanguage.replace("every one month", "every month");
+				}
+				else if(Expshipfreq.contains("3 Months")) {
+					CartLanguage = CartLanguage.replace("two", "three");
+					CartLanguage = CartLanguage.replace("Two", "Three");
+					SupplementalCartLanguage = SupplementalCartLanguage.replace("two", "three");
+					SupplementalCartLanguage = SupplementalCartLanguage.replace("Two", "Three");
+				}
+			}
 			else {
 				expectedofferdata.put("Renewal Plan Id", RenewalPlanID);
 			}
@@ -207,7 +236,7 @@ public class MerchandisingUtilities {
 			expectedofferdata.put("Price Book Id", CatalogPriceBookIDs.get("Entry-Continuity Pricebook"));
 			
 			if(offerdata.containsKey("Post Purchase Product")) {
-				if(offerdata.get("Post Purchase Product") != null) {								
+				if(offerdata.get("Post Purchase Product").trim() != null) {								
 					String PostPUProduct = String.join(",", bf_obj.getPPIDfromString(brand, offerdata.get("Post Purchase Product").trim()));
 					expectedofferdata.put("Post Purchase Product", PostPUProduct);
 				}
@@ -216,7 +245,7 @@ public class MerchandisingUtilities {
 		return expectedofferdata;
 	}
 	
-	public String generatePagePattern(String category, String shade, String brand, String subscribe_option, String size_option) {
+	public String generatePagePattern(String category, String shade, String brand, String subscribe_option, String size_option, String freq_option) {
 		String pagepattern = "product-";
 		
 		if(!(shade.equalsIgnoreCase("No Shade"))) {
@@ -236,13 +265,16 @@ public class MerchandisingUtilities {
 			else if(category.equalsIgnoreCase("SubscribeandSave")) {
 				pagepattern = pagepattern + "subscribe";
 				
-				if(brand.equalsIgnoreCase("JLoBeauty")) {
-					pagepattern = pagepattern + "-frequency";
-				}
+//				if(brand.equalsIgnoreCase("JLoBeauty")) {
+					if(freq_option.equalsIgnoreCase("Yes")) {
+						pagepattern = pagepattern + "-frequency";
+					}
+//				}
 			}
 		}					
 		else {
-			if(brand.equalsIgnoreCase("JLoBeauty")) {
+//			if(brand.equalsIgnoreCase("JLoBeauty")) {
+			if(freq_option.equalsIgnoreCase("Yes")) {
 				pagepattern = pagepattern + "-frequency";
 			}
 		}
@@ -1186,6 +1218,17 @@ public class MerchandisingUtilities {
 					}
 					else {
 						shipping_calc = "$5.99";
+					}
+				}
+				else if(brand.equalsIgnoreCase("Smileactives")) {
+					if(subtotal_calc > 100) {
+						shipping_calc = "FREE";
+					}
+					else if(subtotal_calc > 50) {
+						shipping_calc = "$2.99";
+					}
+					else {
+						shipping_calc = "$4.99";
 					}
 				}
 				else {

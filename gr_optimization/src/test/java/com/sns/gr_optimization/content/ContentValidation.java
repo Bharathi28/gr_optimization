@@ -117,7 +117,7 @@ public class ContentValidation {
 		HashMap<String, String> Checkout_offerdata = null;
 		HashMap<String, String> pre_upsell_page = null;
 		HashMap<String, String> product_offerdat = null;
-
+		HashMap<String, String> kit_offerdata_CheckOut = null;
 		System.out.println(env);
 		List<String> category_list = Arrays.asList("Kit".split(","));
 		System.out.println(category_list);
@@ -155,6 +155,18 @@ public class ContentValidation {
 
 			kit_offerdata_d = content_obj.getProdRowfromCatalog(seoData, "Home page");
 
+			System.out.println("Page Source Data : " + kit_offerdata_d);
+
+		}
+		if (brand.equalsIgnoreCase("JLoBeauty") == true) {// if (brand.equalsIgnoreCase("CrepeErase")) {
+			// Read SEO Page
+
+			seoData = comm_obj
+					.getExcelData(System.getProperty("user.dir") + "/Input_Output/ContentValidation/Content/SEO/"
+							+ English + "/src/" + brand + "/" + brand + ".xlsx", brand, 0);
+
+			kit_offerdata_d = content_obj.getProdRowfromCatalog(seoData, "Home page");
+			kit_offerdata_CheckOut = content_obj.getProdRowfromCatalog(seoData, "Checkout Page");
 			System.out.println("Page Source Data : " + kit_offerdata_d);
 
 		}
@@ -802,8 +814,8 @@ public class ContentValidation {
 				content_obj.write_textfile(pageSource_SAS, brand, English, seo, "pageSource_SAS_Page", ".txt");
 
 				if (pagepattern.contains("gift") == true) {
-//					if ((brand.equalsIgnoreCase("WestmoreBeauty") != true)
-//						&& (brand.equalsIgnoreCase("Smileactives") != true)) {
+					// if ((brand.equalsIgnoreCase("WestmoreBeauty") != true)
+					// && (brand.equalsIgnoreCase("Smileactives") != true)) {
 					content_obj.select_gift(driver, brand, campaign, expectedofferdata_kit);
 				}
 
@@ -821,11 +833,12 @@ public class ContentValidation {
 						output.add(content_obj.add_result(env, brand, campaign, "Pre-upsell page : Validate Title Tag ",
 								pass));
 					}
-//					else if (Title_Tag_result == false) {
-//						System.out.println("Title Tag Exp : " + fail);
-//						output.add(
-//								content_obj.add_result(env, brand, campaign, "Homepage : Validate Title Tag ", fail));
-//					}
+					// else if (Title_Tag_result == false) {
+					// System.out.println("Title Tag Exp : " + fail);
+					// output.add(
+					// content_obj.add_result(env, brand, campaign, "Homepage : Validate Title Tag
+					// ", fail));
+					// }
 					else {
 						System.out.println(" Pre-upsell page : " + null);
 						output.add(content_obj.add_result(env, brand, campaign, "Pre-upsell page : Validate Title Tag ",
@@ -833,12 +846,12 @@ public class ContentValidation {
 					}
 				}
 
-//			content_obj.select_kitshade(driver, brand, campaign, expectedofferdata_kit);
-//			content_obj.select_giftshade(driver, brand, campaign, expectedofferdata_kit);
-//			content_obj.select_product(driver, brand, campaign, expectedofferdata_kit);
-//			content_obj.select_shade(driver, brand, campaign, expectedofferdata_kit);
-//			content_obj.select_onetime(driver, brand, campaign, expectedofferdata_kit);
-//			content_obj.select_subscribe(driver, brand, campaign, expectedofferdata_kit);
+				// content_obj.select_kitshade(driver, brand, campaign, expectedofferdata_kit);
+				// content_obj.select_giftshade(driver, brand, campaign, expectedofferdata_kit);
+				// content_obj.select_product(driver, brand, campaign, expectedofferdata_kit);
+				// content_obj.select_shade(driver, brand, campaign, expectedofferdata_kit);
+				// content_obj.select_onetime(driver, brand, campaign, expectedofferdata_kit);
+				// content_obj.select_subscribe(driver, brand, campaign, expectedofferdata_kit);
 
 				content_obj.add_product_to_cart(driver, brand, campaign, "Kit");
 			}
@@ -850,14 +863,15 @@ public class ContentValidation {
 
 			}
 			// Check Pre-upsell page &
-//		if (brand.equalsIgnoreCase("CrepeErase") && prepu.equalsIgnoreCase("Yes")) {
-//			pre_upsell_page = content_obj.getProdRowfromCatalog(seoData, "Pre-upsell page");
-//			String pre_upsell_Tag = pre_upsell_page.get("Title Tag");
-//
-//			System.out.println(prepu);
-//			System.out.println(pre_upsell_Tag);
-//			System.out.println("URL name : " + driver.getCurrentUrl());
-//		}
+			// if (brand.equalsIgnoreCase("CrepeErase") && prepu.equalsIgnoreCase("Yes")) {
+			// pre_upsell_page = content_obj.getProdRowfromCatalog(seoData, "Pre-upsell
+			// page");
+			// String pre_upsell_Tag = pre_upsell_page.get("Title Tag");
+			//
+			// System.out.println(prepu);
+			// System.out.println(pre_upsell_Tag);
+			// System.out.println("URL name : " + driver.getCurrentUrl());
+			// }
 
 			// System.out.println("Page Title : " + driver.getTitle());
 
@@ -914,11 +928,12 @@ public class ContentValidation {
 						output.add(content_obj.add_result(env, brand, campaign, "SAS Page : Validate Meta description ",
 								"Not Present"));
 					}
+				} else {
+					// String Title_Tag_Rs = content_obj.check_seo_content(SAS_offerdata, "Title
+					// Tag", pageSource_SAS);
+					output.add(content_obj.add_result(env, brand, campaign, "SAS Page : Validate Title Tag ",
+							"Not Present"));
 				}
-				String Title_Tag_Rs = content_obj.check_seo_content(SAS_offerdata, "Title Tag", pageSource_SAS);
-				output.add(
-						content_obj.add_result(env, brand, campaign, "SAS Page : Validate Title Tag ", Title_Tag_Rs));
-
 			}
 
 			// Move to Checkout
@@ -1012,8 +1027,9 @@ public class ContentValidation {
 				output.add(output_row);
 			}
 
-//		HashMap<String, String> robots = content_obj.getSourceCodeInfo(seoData, brand);
-//		System.out.println(robots);
+			// HashMap<String, String> robots = content_obj.getSourceCodeInfo(seoData,
+			// brand);
+			// System.out.println(robots);
 
 			// Move - robots.txt
 			String Append_rb = null;
@@ -1059,11 +1075,12 @@ public class ContentValidation {
 
 		else {
 
+			// New PDP
+
 			System.out.println(url);
 			driver.get(url);
-
-			String category = "SubscribeandSave";
-			ppid = "JL2A0136";
+			String category = "SubscribeandSave";// "Product";
+			ppid = "JL1A0034";// "JL1A0036";
 			giftppid = "30 Day";
 
 			// Get the product data from Web Catalog
@@ -1089,7 +1106,8 @@ public class ContentValidation {
 			}
 
 			// Check if Post Purchase Upsell Page exists
-			if (currentCategory.equalsIgnoreCase("SubscribeandSave")) {
+			if ((currentCategory.equalsIgnoreCase("SubscribeandSave"))
+					|| (currentCategory.equalsIgnoreCase("ShopKit"))) {
 				postpu = merch_obj.checkShopPostPU(product_offerdata, brand);
 			}
 
@@ -1110,16 +1128,69 @@ public class ContentValidation {
 			product_lineitem.add(expectedofferdata_product.get("Supplemental Cart Language"));
 			expected_lineitems.add(product_lineitem);
 
-			subtotal_list.add(expectedofferdata_product.get("Price"));
+			// if((currentCategory.equalsIgnoreCase("ShopKit")) ||
+			// (currentCategory.equalsIgnoreCase("SubscribeandSave"))){
+			// Add Gift PPIDs to lineitem list
+			// if(!(expectedofferdata_product.get("Gift").contains("No Gift"))) {
+			// List<String> gift_lineitem = new ArrayList<String>();
+			// gift_lineitem.add("Gift");
+			// gift_lineitem.add(expectedofferdata_product.get("Gift"));
+			// gift_lineitem.add("FREE");
+			// gift_lineitem.add("No Cart Language");
+			// gift_lineitem.add("No Continuity Pricing");
+			// gift_lineitem.add("No Continuity Shipping");
+			// gift_lineitem.add("No Supplemental Cart Language");
+			// expected_lineitems.add(gift_lineitem);
+			// }
+
+			String[] giftppidarr = expectedofferdata_product.get("Gift").split(",");
+			if (!(giftppidarr[0].contains("No Gift"))) {
+				for (String gift : giftppidarr) {
+					List<String> gift_lineitem = new ArrayList<String>();
+					gift_lineitem.add("Gift");
+					gift_lineitem.add(gift);
+					gift_lineitem.add("FREE");
+					gift_lineitem.add("No Cart Language");
+					gift_lineitem.add("No Continuity Pricing");
+					gift_lineitem.add("No Continuity Shipping");
+					gift_lineitem.add("No Supplemental Cart Language");
+					expected_lineitems.add(gift_lineitem);
+				}
+			}
+
+			if (currentCategory.equalsIgnoreCase("ShopKit")) {
+				// Add PostPU Products to lineitem list
+				if (expectedofferdata_product.get("Offer Post-Purchase").equalsIgnoreCase("Yes")) {
+					if (expectedofferdata_product.containsKey("Post Purchase Product")) {
+						String postpu_ppid = expectedofferdata_product.get("Post Purchase Product");
+						String[] postpuppidarr = postpu_ppid.split(",");
+						for (String postpuprod : postpuppidarr) {
+							List<String> postpu_lineitem = new ArrayList<String>();
+							postpu_lineitem.add("PostPU");
+							postpu_lineitem.add(postpuprod);
+							postpu_lineitem.add("-");
+							postpu_lineitem.add("No Cart Language");
+							postpu_lineitem.add("No Continuity Pricing");
+							postpu_lineitem.add("No Continuity Shipping");
+							postpu_lineitem.add("No Supplemental Cart Language");
+							expected_lineitems.add(postpu_lineitem);
+						}
+					}
+				}
+			}
+
+			// }
 			List<String> supplysize_list = new ArrayList<String>();
 			List<String> offer_postpurchase_list = new ArrayList<String>();
 			String jloShippingSelect = "";
+			supplysize_list.add(expectedofferdata_product.get("SupplySize"));
 
+			subtotal_list.add(expectedofferdata_product.get("Price"));
 			supplysize_list.add(expectedofferdata_product.get("SupplySize"));
 			offer_postpurchase_list.add(expectedofferdata_product.get("Offer Post-Purchase"));
-//			if(currentCategory.equalsIgnoreCase("Product")) {
+			// if(currentCategory.equalsIgnoreCase("Product")) {
 			subtotal_list_forshippingcalc.add(expectedofferdata_product.get("Price"));
-//			}								 
+			// }
 
 			String[] jloShippingOptions = { "Free Shipping", "Two Day Shipping" };
 			int rnd = new Random().nextInt(jloShippingOptions.length);
@@ -1136,17 +1207,235 @@ public class ContentValidation {
 
 			pricebook_id_list.add(expectedofferdata_product.get("Price Book Id"));
 
+			// Home page
+
+			String pageSource = driver.getPageSource();
+
+			content_obj.write_textfile(pageSource, brand, English, seo, "pageSource", ".txt");
+
+			String Title_Tag_hp = content_obj.check_seo_content(kit_offerdata_d, "Title Tag", pageSource);
+			String Meta_description_Tag_hp = content_obj.check_seo_content(kit_offerdata_d, "Meta description",
+					pageSource);
+			String Meta_Name_Tag_hp = content_obj.check_seo_content(kit_offerdata_d, "Meta Name", pageSource);
+			String Meta_Google_Tag_hp = content_obj.check_seo_content(kit_offerdata_d, "Meta Google-site-verification",
+					pageSource);
+			String OG_Description_Tag_hp = content_obj.check_seo_content(kit_offerdata_d, "OG Tag Description",
+					pageSource);
+			String OG_Title_Tag_hp = content_obj.check_seo_content(kit_offerdata_d, "OG Tag Title", pageSource);
+
+			output.add(content_obj.add_result(env, brand, campaign, "Homepage : Validate Title Tag ", Title_Tag_hp));
+			output.add(content_obj.add_result(env, brand, campaign, "Homepage : Validate Meta description ",
+					Meta_description_Tag_hp));
+			output.add(
+					content_obj.add_result(env, brand, campaign, "Homepage : Validate Meta Name ", Meta_Name_Tag_hp));
+			output.add(content_obj.add_result(env, brand, campaign,
+					"Homepage : Validate Meta Google-site-verification ", Meta_Google_Tag_hp));
+			output.add(content_obj.add_result(env, brand, campaign, "Homepage : Validate OG Tag Description ",
+					OG_Description_Tag_hp));
+			output.add(
+					content_obj.add_result(env, brand, campaign, "Homepage : Validate OG Tag Title ", OG_Title_Tag_hp));
+
 			// Move to Shop
 
 			bf_obj.click_cta(driver, brand, campaign, "Shop");
 
 			// Select offer
-
 			sas_obj.select_offer(driver, expectedofferdata_product, currentCategory);
 
 			// Move to Checkout
 
 			bf_obj.move_to_checkout(driver, brand, campaigncategory, currentCategory);
+
+			if ((brand.equalsIgnoreCase("JLoBeauty"))
+					&& (expectedofferdata_product.get("Product Name").equalsIgnoreCase("Star Power Duo"))) {
+				sas_obj.select_prepu(driver, brand, campaign, expectedofferdata_product);
+			}
+
+			System.out.println("Title : " + driver.getTitle());
+			String pageSourceCheckout = driver.getPageSource();
+
+			content_obj.write_textfile(pageSourceCheckout, brand, English, seo, "pageSource_Checkout", ".txt");
+			String Title_Tag_Checkout = content_obj.check_seo_content(kit_offerdata_CheckOut, "Title Tag",
+					pageSourceCheckout);
+			String Meta_description_Tag_Checkout = content_obj.check_seo_content(kit_offerdata_CheckOut,
+					"Meta description", pageSourceCheckout);
+			output.add(content_obj.add_result(env, brand, campaign, "Check out : Validate Check out ",
+					Title_Tag_Checkout));
+			output.add(content_obj.add_result(env, brand, campaign, "Check out : Validate Meta description ",
+					Meta_description_Tag_Checkout));
+			// Check DND on Checkout Page
+			output.add(content_obj.donotsell(driver, env, brand, campaign, "CheckoutPage"));
+
+			output.add(content_obj.Check_Available(driver, env, brand, campaign, "Terms & Conditions Checkout",
+					"Checkout page : Click open Terms & Conditions popup"));
+
+			content_obj.clickaelement(driver, env, brand, campaign, "Terms & Conditions Checkout");
+			if (brand.equalsIgnoreCase("JLoBeauty") == true) {
+
+				content_obj.clickaelement(driver, env, brand, campaign, "CloseTermsConditions");
+			}
+
+			// Move - sitemap.xml
+			String site = "sitemap.xml";
+			String Append_xml = url + "/" + site;
+			driver.get(Append_xml);
+
+			output.add(content_obj.Check_Available(driver, env, brand, campaign, site, "Validate sitemap.xml "));
+
+			// Compare sitemap.xml Text
+			output_row = new ArrayList<String>();
+			output_row.add(env);
+			output_row.add(brand);
+			output_row.add(campaign);
+			output_row.add("Validate sitemap.xml Data ");
+			String sitemap = content_obj.get_String(driver, env, brand, campaign, "sitemap.xml data");
+			content_obj.write_textfile(sitemap, brand, English, seo, "Sitemap", ".xml");
+			File path_sitemap = new File(System.getProperty("user.dir") + "\\Input_Output\\ContentValidation\\Content\\"
+					+ seo + "\\" + English + "\\src\\" + brand + "\\" + "Sitemap.xml");
+			String result_sitemap = content_obj.Compare_text_file(path_sitemap, brand, English, seo, "Sitemap", ".xml");
+
+			if (result_sitemap == null) {
+
+				output_row.add(pass);
+			} else {
+				output_row.add(fail);
+			}
+			output_row.add(result_sitemap);
+			output.add(output_row);
+
+			// Move - robots.txt
+			String Append_rb = null;
+			String txt = "robots.txt";
+			if (campaign.equalsIgnoreCase("Core") == false) {
+				String[] up_url = url.split("/", 4);
+				String up = up_url[0] + "/" + up_url[1] + up_url[2];
+				Append_rb = up + "/" + txt;
+			} else {
+				Append_rb = url + "/" + txt;
+			}
+			System.out.println("URL : " + Append_rb);
+			driver.get(Append_rb);
+
+			output.add(content_obj.Check_Available(driver, env, brand, campaign, txt, "Validate Robots.txt "));
+
+			// Compare Robots Text
+			output_row = new ArrayList<String>();
+			output_row.add(env);
+			output_row.add(brand);
+			output_row.add(campaign);
+			output_row.add("Validate Robots.txt Data ");
+			String robots = content_obj.get_String(driver, env, brand, campaign, txt);
+			content_obj.write_textfile(robots, brand, English, seo, "Robotx_src", ".txt");
+			File path_robots = new File(System.getProperty("user.dir") + "\\Input_Output\\ContentValidation\\Content\\"
+					+ seo + "\\" + English + "\\src\\" + brand + "\\" + "Robotx_src.txt");
+			String result_robots = content_obj.Compare_text_file(path_robots, brand, English, seo, "Robotx", ".txt");
+			if (result_robots == null) {
+
+				output_row.add(pass);
+			} else {
+				output_row.add(fail);
+			}
+			output_row.add(result_robots);
+			output.add(output_row);
+
+			/// Old
+
+			// System.out.println(url);
+			// driver.get(url);
+			// String category = "Product";
+			// ppid = "JL1A0036";
+			// giftppid = "30 Day";
+			//
+			// // Get the product data from Web Catalog
+			// HashMap<String, String> product_offerdata =
+			// merch_obj.getProdRowfromCatalog(catalogData, ppid,
+			// currentCategory);
+			// System.out.println(product_offerdata);
+			//
+			// // Get Shipping Frequency
+			// HashMap<String, String> product_shippingfrequency = null;
+			//
+			// if (brand.equalsIgnoreCase("JLoBeauty")) {
+			// product_shippingfrequency = merch_obj.getProdShippingFrequency(JLoshipfreq,
+			// ppid);
+			// }
+			//
+			// // Get Price Book IDs
+			// LinkedHashMap<String, String> catalogPriceBookIDs =
+			// merch_obj.getCatalogPriceBookIDs(catalogData, ppid,
+			// currentCategory);
+			//
+			// // Check if the PPID is present in the campaign
+			// if (product_offerdata.size() == 0) {
+			// remarks = remarks + ppid + " doesn't exist in the Shop page of " + brand + "
+			// - " + campaigncategory;
+			// // continue;
+			// }
+			//
+			// // Check if Post Purchase Upsell Page exists
+			// if (currentCategory.equalsIgnoreCase("SubscribeandSave")) {
+			// postpu = merch_obj.checkShopPostPU(product_offerdata, brand);
+			// }
+			//
+			// // Collect current Offer related details from Merchandising Input file
+			// expectedofferdata_product =
+			// merch_obj.generateExpectedOfferDataForProduct(product_offerdata,
+			// product_shippingfrequency, ppid, giftppid, postpu, brand, campaigncategory,
+			// currentCategory,
+			// catalogPriceBookIDs);
+			// System.out.println(expectedofferdata_product);
+			//
+			// // Add Product PPID to lineitem list
+			// List<String> product_lineitem = new ArrayList<String>();
+			// product_lineitem.add(category);
+			// product_lineitem.add(expectedofferdata_product.get("Product PPID"));
+			// product_lineitem.add(expectedofferdata_product.get("Price"));
+			// product_lineitem.add(expectedofferdata_product.get("Cart Language"));
+			// product_lineitem.add(expectedofferdata_product.get("Continuity Pricing"));
+			// product_lineitem.add(expectedofferdata_product.get("Continuity Shipping"));
+			// product_lineitem.add(expectedofferdata_product.get("Supplemental Cart
+			// Language"));
+			// expected_lineitems.add(product_lineitem);
+			//
+			// subtotal_list.add(expectedofferdata_product.get("Price"));
+			// List<String> supplysize_list = new ArrayList<String>();
+			// List<String> offer_postpurchase_list = new ArrayList<String>();
+			// String jloShippingSelect = "";
+			//
+			// supplysize_list.add(expectedofferdata_product.get("SupplySize"));
+			// offer_postpurchase_list.add(expectedofferdata_product.get("Offer
+			// Post-Purchase"));
+			//// if(currentCategory.equalsIgnoreCase("Product")) {
+			// subtotal_list_forshippingcalc.add(expectedofferdata_product.get("Price"));
+			//// }
+			//
+			// String[] jloShippingOptions = { "Free Shipping", "Two Day Shipping" };
+			// int rnd = new Random().nextInt(jloShippingOptions.length);
+			// jloShippingSelect = jloShippingOptions[rnd];
+			//
+			// String shipping_calc = merch_obj.calculateShippingforProduct(brand,
+			// subtotal_list_forshippingcalc,
+			// jloShippingSelect, currentCategory, category_list);
+			// shipping_list.add(shipping_calc);
+			//
+			// if ((currentCategory.equalsIgnoreCase("SubscribeandSave"))
+			// || (currentCategory.equalsIgnoreCase("ShopKit"))) {
+			// renewal_plan_list.add(expectedofferdata_product.get("Renewal Plan Id"));
+			// }
+			//
+			// pricebook_id_list.add(expectedofferdata_product.get("Price Book Id"));
+			//
+			// // Move to Shop
+			//
+			// bf_obj.click_cta(driver, brand, campaign, "Shop");
+			//
+			// // Select offer
+			//
+			// sas_obj.select_offer(driver, expectedofferdata_product, currentCategory);
+			//
+			// // Move to Checkout
+			//
+			// bf_obj.move_to_checkout(driver, brand, campaigncategory, currentCategory);
 		}
 		driver.quit();
 

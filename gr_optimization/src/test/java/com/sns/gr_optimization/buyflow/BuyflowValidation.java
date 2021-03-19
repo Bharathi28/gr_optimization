@@ -88,14 +88,23 @@ public class BuyflowValidation {
 	
 	static String Output_foldername = monthStr + dayStr + yearStr;
 	
-	String username = System.getenv("BROWSERSTACK_USERNAME");
-	String accessKey = System.getenv("BROWSERSTACK_ACCESS_KEY");
-	String buildName = System.getenv("BROWSERSTACK_BUILD_NAME");
-	final String URL = "https://" + username + ":" + accessKey + "@hub-cloud.browserstack.com/wd/hub";	
+	// BrowserStack
+//	String username = System.getenv("BROWSERSTACK_USERNAME");
+//	String accessKey = System.getenv("BROWSERSTACK_ACCESS_KEY");
+//	String buildName = System.getenv("BROWSERSTACK_BUILD_NAME");
+//	final String URL = "https://" + username + ":" + accessKey + "@hub-cloud.browserstack.com/wd/hub";	
 	
 //	final String USERNAME = "manibharathikaru1";
 //	final String AUTOMATE_KEY = "hFN19RHbQmGyeL8Z47Ls";
 //	final String URL = "https://" + USERNAME + ":" + AUTOMATE_KEY + "@hub-cloud.browserstack.com/wd/hub";
+	
+	// AWS Gridlastic
+//	final String URL = "https://45DXQeDSUIhB0yaT6grHIkuQW7sN8ru3:nXR41kNMTUeJietfkLNSV7zI5Sl3aFXn@x9p7sl1q-hub.gridlastic.com/wd/hub";
+	
+	// LambdaTest
+	String username = "manibharathisearchnscore";
+	String accessKey = "kVAvkFtrOLrMUgNXgnhmoKiKWRcBvQiywvTlY4KVqCw2coOBbG";
+	final String URL = "https://" + username + ":" + accessKey + "@hub.lambdatest.com/wd/hub";
 	
 	BrowserMobProxy proxy;
 	DesiredCapabilities capabilities;
@@ -124,6 +133,7 @@ public class BuyflowValidation {
 		
 		// start the proxy
 		proxy = new BrowserMobProxyServer();
+		
 
 		proxy.setTrustAllServers(true);
 		proxy.start(12345);
@@ -150,6 +160,17 @@ public class BuyflowValidation {
 
 		// get the Selenium proxy object
 		Proxy seleniumProxy = ClientUtil.createSeleniumProxy(proxy);	
+		
+//		try {
+//            String hostIp = Inet4Address.getLocalHost().getHostAddress();
+//            seleniumProxy.setHttpProxy(hostIp + ":" + proxy.getPort());
+//            seleniumProxy.setSslProxy(hostIp + ":" + proxy.getPort());
+////            seleniumProxy.setHttpProxy("3.101.91.144:12345");
+////            seleniumProxy.setSslProxy("3.101.91.144:12345");
+//        } catch (UnknownHostException e) {
+//            e.printStackTrace();
+////            Assert.fail("invalid Host Address");
+//        }
 
 		ChromeOptions options = new ChromeOptions();
 		options.setProxy(seleniumProxy);
@@ -163,14 +184,29 @@ public class BuyflowValidation {
 		capabilities.setCapability("os_version", "10");
 		capabilities.setCapability("browser_version", "80");	    
 			    
+//		capabilities.setCapability("platformName", "windows");
 		capabilities.setCapability("browser", "Chrome");
-		capabilities.setCapability("browserstack.local", "true");
-		capabilities.setCapability("browserstack.debug", "true");
-		capabilities.setCapability("name", "Buyflow Execution");
-		capabilities.setCapability("browserstack.networkLogs", "true");
-		capabilities.setCapability("browserstack.acceptInsecureCerts", "true");
-		capabilities.setCapability("browserstack.local", "true");
-		capabilities.setCapability("browserstack.localIdentifier", "Test1");
+//		capabilities.setCapability("video", "True");
+		
+//		 capabilities.setCapability("platform", "Windows 10");
+//	     capabilities.setCapability("browserName", "Chrome");
+//	     capabilities.setCapability("version", "87.0"); // If this cap isn't specified, it will just get the any available one
+//        capabilities.setCapability("resolution","1920x1080");
+//        capabilities.setCapability("build", "First Test");
+//        capabilities.setCapability("name", "Sample Test");
+//        capabilities.setCapability("network", true); // To enable network logs
+//        capabilities.setCapability("visual", true); // To enable step by step screenshot
+//        capabilities.setCapability("video", true); // To enable video recording
+//        capabilities.setCapability("console", true); // To capture console logs
+		
+        // BrowserStack
+//		capabilities.setCapability("browserstack.local", "true");
+//		capabilities.setCapability("browserstack.debug", "true");
+//		capabilities.setCapability("name", "Buyflow Execution");
+//		capabilities.setCapability("browserstack.networkLogs", "true");
+//		capabilities.setCapability("browserstack.acceptInsecureCerts", "true");
+//		capabilities.setCapability("browserstack.local", "true");
+//		capabilities.setCapability("browserstack.localIdentifier", "Test1");
 				
 		Calendar calendar = Calendar.getInstance();
 		int day = calendar.get(Calendar.DAY_OF_WEEK);
@@ -212,7 +248,7 @@ public class BuyflowValidation {
 	}	
 	
 	@Test(dataProvider="buyflowInput")
-	public void buyflow(String env, String brand, String campaign, String category, String kitppid, String giftppid, String shipbill, String cc, String browser, String pixelStr) throws Exception {	
+	public void buyflow(String env, String brand, String campaign, String category, String kitppid, String giftppid, String shipbill, String cc, String address, String browser, String pixelStr) throws Exception {	
 		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver.exe");
 //		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver");
 //		System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver");
@@ -242,7 +278,7 @@ public class BuyflowValidation {
 		///////////////////////////////////////////////////////////////		
 		// Read all Merchandising Input
 		String[][] catalogData = null;
-		String[][] JLoshipfreq = null;
+		String[][] shipfreq = null;
 		String[][] merchData = null;		
 		
 		String brandcode = db_obj.get_sourceproductlinecode(brand);
@@ -253,8 +289,9 @@ public class BuyflowValidation {
 		// Read Web Catalog
 		if((category_list.contains("Product")) || (category_list.contains("SubscribeandSave")) || (category_list.contains("ShopKit"))) {
 			catalogData = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/Merchandising Input/" + brand + "/" + brandcode + " Web Catalog.xlsx", "Acq", 0);
-			if(brand.equalsIgnoreCase("JLoBeauty")) {
-				JLoshipfreq = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/Merchandising Input/" + brand + "/" + brandcode + " Web Catalog.xlsx", "Shipping Frequencies", 0);
+			if((brand.equalsIgnoreCase("JLoBeauty")) || (brand.equalsIgnoreCase("WestmoreBeauty"))) {
+//			if(brand.equalsIgnoreCase("JLoBeauty")) {
+				shipfreq = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/Merchandising Input/" + brand + "/" + brandcode + " Web Catalog.xlsx", "Shipping Frequencies", 0);
 			}
 		}
 		
@@ -313,8 +350,10 @@ public class BuyflowValidation {
 		
 		// Launch Browser
 //		WebDriver driver = new RemoteWebDriver(new java.net.URL(URL), capabilities);
-		WebDriver driver = new ChromeDriver(capabilities);
+				WebDriver driver = new ChromeDriver(capabilities);
 		driver.manage().window().maximize();
+		
+		System.out.println(((RemoteWebDriver) driver).getSessionId());
 		
 		// enable more detailed HAR capture, if desired (see CaptureType for the complete list)
 	    proxy.enableHarCaptureTypes(CaptureType.REQUEST_CONTENT, CaptureType.RESPONSE_CONTENT);
@@ -562,8 +601,9 @@ public class BuyflowValidation {
 				// Get Shipping Frequency
 				HashMap<String, String> product_shippingfrequency = null;
 				
-				if(brand.equalsIgnoreCase("JLoBeauty")) {
-					product_shippingfrequency = merch_obj.getProdShippingFrequency(JLoshipfreq, ppid);
+				if((brand.equalsIgnoreCase("JLoBeauty")) || (brand.equalsIgnoreCase("WestmoreBeauty"))){
+//				if(brand.equalsIgnoreCase("JLoBeauty")) {
+					product_shippingfrequency = merch_obj.getProdShippingFrequency(shipfreq, ppid);
 				}				
 				
 				// Get Price Book IDs
@@ -610,7 +650,7 @@ public class BuyflowValidation {
 //					}	
 					
 					String[] giftppidarr = expectedofferdata_product.get("Gift").split(",");
-					if(!(giftppidarr[0].contains("No Gift"))) {
+					if((!(giftppidarr[0].contains("No Gift"))) && (!(giftppidarr[0].equalsIgnoreCase("")))){
 						for (String gift : giftppidarr) {
 							List<String> gift_lineitem = new ArrayList<String>();
 							gift_lineitem.add("Gift");
@@ -628,19 +668,21 @@ public class BuyflowValidation {
 						// Add PostPU Products to lineitem list
 						if(expectedofferdata_product.get("Offer Post-Purchase").equalsIgnoreCase("Yes")) {
 							if(expectedofferdata_product.containsKey("Post Purchase Product")) {
-								String postpu_ppid = expectedofferdata_product.get("Post Purchase Product");
-								String[] postpuppidarr = postpu_ppid.split(",");	
-								for (String postpuprod : postpuppidarr) {
-									List<String> postpu_lineitem = new ArrayList<String>();
-									postpu_lineitem.add("PostPU");
-									postpu_lineitem.add(postpuprod);
-									postpu_lineitem.add("-");
-									postpu_lineitem.add("No Cart Language");
-									postpu_lineitem.add("No Continuity Pricing");
-									postpu_lineitem.add("No Continuity Shipping");
-									postpu_lineitem.add("No Supplemental Cart Language");
-									expected_lineitems.add(postpu_lineitem);
-								}
+								if(!(expectedofferdata_product.get("Post Purchase Product").equalsIgnoreCase(""))) {
+									String postpu_ppid = expectedofferdata_product.get("Post Purchase Product");
+									String[] postpuppidarr = postpu_ppid.split(",");	
+									for (String postpuprod : postpuppidarr) {
+										List<String> postpu_lineitem = new ArrayList<String>();
+										postpu_lineitem.add("PostPU");
+										postpu_lineitem.add(postpuprod);
+										postpu_lineitem.add("-");
+										postpu_lineitem.add("No Cart Language");
+										postpu_lineitem.add("No Continuity Pricing");
+										postpu_lineitem.add("No Continuity Shipping");
+										postpu_lineitem.add("No Supplemental Cart Language");
+										expected_lineitems.add(postpu_lineitem);
+									}
+								}								
 							}
 						}	
 					}
@@ -760,7 +802,7 @@ public class BuyflowValidation {
 		// Fall-back scenario
 		// Paypal - Cannot fill-in invalid address-zipcode
 		if(cc.equalsIgnoreCase("Paypal")) {
-			email = bf_obj.fill_out_form(driver, brand, campaigncategory, cc, shipbill, "30");
+			email = bf_obj.fill_out_form(driver, brand, campaigncategory, cc, shipbill, "30", address);
 			System.out.println("Email : " + email);
 			if(!(email.contains("testbuyer"))) {
 				remarks = remarks + "Paypal Down - Credit card order placed ; ";
@@ -770,7 +812,7 @@ public class BuyflowValidation {
 		else {
 //			if(((categorylist.contains("Kit")) || (categorylist.contains("ShopKit"))) && (offer_postpurchase.equalsIgnoreCase("Yes"))) {
 			if(offer_postpurchase.equalsIgnoreCase("Yes")) {
-				email = bf_obj.fill_out_form(driver, brand, campaigncategory, "VISA", "same", "90");
+				email = bf_obj.fill_out_form(driver, brand, campaigncategory, "VISA", "same", "90", address);
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver, pixelStr);
 				console_obj.analyzeLog(driver, "CheckoutPage");			
 				
@@ -782,7 +824,7 @@ public class BuyflowValidation {
 				bf_obj.upsell_confirmation(driver, brand, campaigncategory, offer_postpurchase, PostPUPage);
 			}
 			else {
-				email = bf_obj.fill_out_form(driver, brand, campaigncategory, cc, shipbill, "30");
+				email = bf_obj.fill_out_form(driver, brand, campaigncategory, cc, shipbill, "30", address);
 				System.out.println("Email : " + email);
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver, pixelStr);
 				console_obj.analyzeLog(driver, "CheckoutPage");		
