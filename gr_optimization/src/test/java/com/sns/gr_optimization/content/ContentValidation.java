@@ -154,8 +154,9 @@ public class ContentValidation {
 							+ English + "/src/" + brand + "/" + brand + ".xlsx", brand, 0);
 
 			kit_offerdata_d = content_obj.getProdRowfromCatalog(seoData, "Home page");
+			Checkout_offerdata = content_obj.getProdRowfromCatalog(seoData, "Checkout Page");
 
-			System.out.println("Page Source Data : " + kit_offerdata_d);
+			System.out.println("Page Source Data : " + Checkout_offerdata);
 
 		}
 		if (brand.equalsIgnoreCase("JLoBeauty") == true) {// if (brand.equalsIgnoreCase("CrepeErase")) {
@@ -942,45 +943,20 @@ public class ContentValidation {
 
 			if (brand.equalsIgnoreCase("JLoBeauty") != true) { // if (brand.equalsIgnoreCase("CrepeErase")) {
 
-				Checkout_offerdata = content_obj.getProdRowfromCatalog(seoData, "Checkout Page");
 				String Checkout_Tag = Checkout_offerdata.get("Title Tag");
 				String Checkout_MDTag1 = Checkout_offerdata.get("Meta description");
 				Thread.sleep(4000);
 				String pageSource_Co = driver.getPageSource();
 
-				System.out.println("Checkout_Tag : " + Checkout_MDTag1);
+				System.out.println("Checkout Tag : " + Checkout_Tag);
 
-				if (Checkout_Tag != null && Checkout_MDTag1 != null) {
-					Boolean Checkout_result = pageSource_Co.contains(Checkout_Tag);
-					Boolean CheckoutMD_result = pageSource_Co.contains(Checkout_MDTag1);
-					// if (homepage.trim().contains(pageSource.trim())) {
-					if (Checkout_result == true) {
-						System.out.println(" Checkout Page Exp : " + pass);
-						output.add(content_obj.add_result(env, brand, campaign, "Checkout Page : Validate Title Tag ",
-								pass));
-					} else {
-
-						System.out.println(" Checkout Page Exp : " + fail);
-						output.add(content_obj.add_result(env, brand, campaign, "Checkout Page : Validate Title Tag ",
-								fail));
-					}
-
-					if (CheckoutMD_result == true) {
-						System.out.println(" Checkout Page Exp : " + pass);
-						output.add(content_obj.add_result(env, brand, campaign,
-								"Checkout Page : Validate Meta description ", pass));
-					} else {
-
-						System.out.println(" Checkout Page Exp : " + fail);
-						output.add(content_obj.add_result(env, brand, campaign,
-								"Checkout Page : Validate Meta description ", fail));
-					}
-				} else {
-					output.add(content_obj.add_result(env, brand, campaign, "Checkout Page : Validate Title Tag ",
-							"Not Present"));
-					output.add(content_obj.add_result(env, brand, campaign,
-							"Checkout Page : Validate Meta description ", "Not Present"));
-				}
+				String Title_Tag_Rs = content_obj.check_seo_content(Checkout_offerdata, "Title Tag", pageSource_Co);
+				output.add(content_obj.add_result(env, brand, campaign, "Checkout Page : Validate Title Tag ",
+						Title_Tag_Rs));
+				String Title_Tag_CP = content_obj.check_seo_content(Checkout_offerdata, "Meta description",
+						pageSource_Co);
+				output.add(content_obj.add_result(env, brand, campaign, "Checkout Page : Validate Meta description ",
+						Title_Tag_CP));
 
 			}
 			// Check DND on Checkout Page
@@ -1452,8 +1428,7 @@ public class ContentValidation {
 		// List<String> attachmentList = new ArrayList<String>();
 		attachmentList.add(file);
 
-		// mailObj.sendEmail("Content Validation Results", sendReportTo,
-		// attachmentList);
+		mailObj.sendEmail("Content Validation Results", sendReportTo, attachmentList);
 	}
 
 	public void mkdir() {
