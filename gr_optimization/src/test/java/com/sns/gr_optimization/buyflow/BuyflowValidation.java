@@ -102,9 +102,14 @@ public class BuyflowValidation {
 //	final String URL = "https://45DXQeDSUIhB0yaT6grHIkuQW7sN8ru3:nXR41kNMTUeJietfkLNSV7zI5Sl3aFXn@x9p7sl1q-hub.gridlastic.com/wd/hub";
 	
 	// LambdaTest
-	String username = "manibharathisearchnscore";
-	String accessKey = "kVAvkFtrOLrMUgNXgnhmoKiKWRcBvQiywvTlY4KVqCw2coOBbG";
+//	String username = "manibharathisearchnscore";
+//	String accessKey = "kVAvkFtrOLrMUgNXgnhmoKiKWRcBvQiywvTlY4KVqCw2coOBbG";
+//	final String URL = "https://" + username + ":" + accessKey + "@hub.lambdatest.com/wd/hub";
+	
+	String username = "aaqil";
+	String accessKey = "NIp8I15dgUNzNtGZMPtl2hpFIjzRsrRZQmXtbbgHesZdJXXuqU";
 	final String URL = "https://" + username + ":" + accessKey + "@hub.lambdatest.com/wd/hub";
+	
 
 //	Local l;
 	
@@ -119,6 +124,14 @@ public class BuyflowValidation {
 		
 //		System.out.println("Enter Email id : ");
 //		sendReportTo = in.next();
+		
+		String lambdausername = System.getenv("$LT_USERNAME");
+		String lambdaaccesskey = System.getenv("$LT_ACCESS_KEY");
+		String lambdaurl = "https://" + lambdausername + ":" + lambdaaccesskey + "@hub.lambdatest.com/wd/hub";
+		
+		System.out.println(lambdausername);
+		System.out.println(lambdaaccesskey);
+		System.out.println(lambdaurl);
 	}
 	
 	@DataProvider(name="buyflowInput", parallel=true)
