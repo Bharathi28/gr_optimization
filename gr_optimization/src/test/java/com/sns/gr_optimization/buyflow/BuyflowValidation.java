@@ -127,8 +127,8 @@ public class BuyflowValidation {
 //		System.out.println("Enter Email id : ");
 //		sendReportTo = in.next();
 		
-		String lambdausername = System.getenv("$LT_USERNAME");
-		String lambdaaccesskey = System.getenv("$LT_ACCESS_KEY");
+		String lambdausername = System.getenv("LT_USERNAME");
+		String lambdaaccesskey = System.getenv("LT_ACCESS_KEY");
 		URL = "https://" + lambdausername + ":" + lambdaaccesskey + "@hub.lambdatest.com/wd/hub";
 		
 		System.out.println(lambdausername);
