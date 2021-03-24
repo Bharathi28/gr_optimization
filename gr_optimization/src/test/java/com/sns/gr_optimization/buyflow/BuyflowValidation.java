@@ -110,7 +110,8 @@ public class BuyflowValidation {
 //	String username = "aaqil";
 //	String accessKey = "NIp8I15dgUNzNtGZMPtl2hpFIjzRsrRZQmXtbbgHesZdJXXuqU";
 //	final String URL = "https://" + username + ":" + accessKey + "@hub.lambdatest.com/wd/hub";
-	
+	String lambdausername;
+	String lambdaaccesskey;
 	String URL;
 //	Local l;
 	
@@ -122,14 +123,15 @@ public class BuyflowValidation {
 		sendReportTo = System.getProperty("email");
 		testSet = System.getProperty("testset");
 		testSuite = System.getProperty("testsuite");
-		accesskey = System.getProperty("accesskey");
+		lambdausername = System.getProperty("LT_USERNAME");
+		lambdaaccesskey = System.getProperty("LT_ACCESS_KEY");
 		System.out.println("Access Key : " + accesskey);
 //		System.out.println("Enter Email id : ");
 //		sendReportTo = in.next();
 		
-		String lambdausername = System.getenv("LT_USERNAME");
-		String lambdaaccesskey = System.getenv("LT_ACCESS_KEY");
-		URL = "https://" + lambdausername + ":" + lambdaaccesskey + "@hub.lambdatest.com/wd/hub";
+//		String lambdausername = System.getenv("LT_USERNAME");
+//		String lambdaaccesskey = System.getenv("LT_ACCESS_KEY");
+//		URL = "https://" + lambdausername + ":" + lambdaaccesskey + "@hub.lambdatest.com/wd/hub";
 		
 		System.out.println(lambdausername);
 		System.out.println(lambdaaccesskey);
