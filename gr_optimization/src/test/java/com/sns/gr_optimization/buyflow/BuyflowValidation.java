@@ -80,6 +80,7 @@ public class BuyflowValidation {
 	String sendReportTo = "aaqil@searchnscore.com,manibharathi@searchnscore.com";
 	String testSet = "Core";
 	String testSuite = "Buyflow";
+	String accesskey = "";
 	
 	static Calendar now = Calendar.getInstance();		
 	static String monthStr = Integer.toString(now.get(Calendar.MONTH) + 1); // Note: zero based!
@@ -106,11 +107,11 @@ public class BuyflowValidation {
 //	String accessKey = "kVAvkFtrOLrMUgNXgnhmoKiKWRcBvQiywvTlY4KVqCw2coOBbG";
 //	final String URL = "https://" + username + ":" + accessKey + "@hub.lambdatest.com/wd/hub";
 	
-	String username = "aaqil";
-	String accessKey = "NIp8I15dgUNzNtGZMPtl2hpFIjzRsrRZQmXtbbgHesZdJXXuqU";
-	final String URL = "https://" + username + ":" + accessKey + "@hub.lambdatest.com/wd/hub";
+//	String username = "aaqil";
+//	String accessKey = "NIp8I15dgUNzNtGZMPtl2hpFIjzRsrRZQmXtbbgHesZdJXXuqU";
+//	final String URL = "https://" + username + ":" + accessKey + "@hub.lambdatest.com/wd/hub";
 	
-
+	String URL;
 //	Local l;
 	
 	@BeforeSuite
@@ -118,20 +119,21 @@ public class BuyflowValidation {
 //		System.setProperty("email", "aaqil@searchnscore.com,manibharathi@searchnscore.com");
 //		System.setProperty("testset", "Top 3");
 //		
-//		sendReportTo = System.getProperty("email");
-//		testSet = System.getProperty("testset");
-//		testSuite = System.getProperty("testsuite");
-		
+		sendReportTo = System.getProperty("email");
+		testSet = System.getProperty("testset");
+		testSuite = System.getProperty("testsuite");
+		accesskey = System.getProperty("accesskey");
+		System.out.println("Access Key : " + accesskey);
 //		System.out.println("Enter Email id : ");
 //		sendReportTo = in.next();
 		
 		String lambdausername = System.getenv("$LT_USERNAME");
 		String lambdaaccesskey = System.getenv("$LT_ACCESS_KEY");
-		String lambdaurl = "https://" + lambdausername + ":" + lambdaaccesskey + "@hub.lambdatest.com/wd/hub";
+		URL = "https://" + lambdausername + ":" + lambdaaccesskey + "@hub.lambdatest.com/wd/hub";
 		
 		System.out.println(lambdausername);
 		System.out.println(lambdaaccesskey);
-		System.out.println(lambdaurl);
+		System.out.println(URL);
 	}
 	
 	@DataProvider(name="buyflowInput", parallel=true)
