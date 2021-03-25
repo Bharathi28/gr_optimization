@@ -123,15 +123,15 @@ public class BuyflowValidation {
 		sendReportTo = System.getProperty("email");
 		testSet = System.getProperty("testset");
 		testSuite = System.getProperty("testsuite");
-		lambdausername = System.getProperty("LT_USERNAME");
-		lambdaaccesskey = System.getProperty("LT_ACCESS_KEY");
+		lambdausername = System.getProperty("username");
+		lambdaaccesskey = System.getProperty("accesskey");
 		System.out.println("Access Key : " + accesskey);
 //		System.out.println("Enter Email id : ");
 //		sendReportTo = in.next();
 		
 //		String lambdausername = System.getenv("LT_USERNAME");
 //		String lambdaaccesskey = System.getenv("LT_ACCESS_KEY");
-//		URL = "https://" + lambdausername + ":" + lambdaaccesskey + "@hub.lambdatest.com/wd/hub";
+		URL = "https://" + lambdausername + ":" + lambdaaccesskey + "@hub.lambdatest.com/wd/hub";
 		
 		System.out.println(lambdausername);
 		System.out.println(lambdaaccesskey);
