@@ -113,6 +113,8 @@ public class BuyflowValidation {
 	String lambdausername;
 	String lambdaaccesskey;
 	String URL;
+	String path;
+	String outputpath;
 //	Local l;
 	
 	@BeforeSuite
@@ -121,11 +123,13 @@ public class BuyflowValidation {
 //		System.setProperty("testset", "Top 3");
 //		
 		sendReportTo = System.getProperty("email");
-		testSet = System.getProperty("testset");
-		testSuite = System.getProperty("testsuite");
+//		testSet = System.getProperty("testset");
+//		testSuite = System.getProperty("testsuite");
 		lambdausername = System.getProperty("username");
 		lambdaaccesskey = System.getProperty("accesskey");
-		System.out.println("Access Key : " + accesskey);
+		path = System.getProperty("filepath");
+//		outputpath = System.getProperty("output");
+		
 //		System.out.println("Enter Email id : ");
 //		sendReportTo = in.next();
 		
@@ -147,9 +151,6 @@ public class BuyflowValidation {
 //		System.out.println(URL);
 		
 		
-			    
-
-				
 		Calendar calendar = Calendar.getInstance();
 		int day = calendar.get(Calendar.DAY_OF_WEEK);
 //		System.out.println(day);
@@ -184,8 +185,9 @@ public class BuyflowValidation {
 //			}
 //		}
 		
-		arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
+//		arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
 //	arrayObject = comm_obj.getExcelData("C:/Automation/Automation Input and Output/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
+	arrayObject = comm_obj.getExcelData(path+ "/new_run_input.xlsx", "rundata", 1);
 		return arrayObject;
 	}	
 	
@@ -196,19 +198,34 @@ public class BuyflowValidation {
 //		System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver");
 		
 		// Create Required Directories
-		File newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Harfiles");
+//		File newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Harfiles");
+//		newDirectory.mkdir();
+//		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles", brand);
+//		newDirectory.mkdir();
+//		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Pixel Output");
+//		newDirectory.mkdir();		
+//		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel Output", Output_foldername);
+//		newDirectory.mkdir();
+//		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Run Output");
+//		newDirectory.mkdir();
+//		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Screenshots");
+//		newDirectory.mkdir();
+//		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Screenshots", brand);
+//		newDirectory.mkdir();
+		
+		File newDirectory = new File(path, "Harfiles");
 		newDirectory.mkdir();
-		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles", brand);
+		newDirectory = new File(path + "\\Harfiles", brand);
 		newDirectory.mkdir();
-		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Pixel Output");
+		newDirectory = new File(path, "Pixel Output");
 		newDirectory.mkdir();		
-		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel Output", Output_foldername);
+		newDirectory = new File(path + "\\Pixel Output", Output_foldername);
 		newDirectory.mkdir();
-		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Run Output");
+		newDirectory = new File(path, "Run Output");
 		newDirectory.mkdir();
-		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Screenshots");
+		newDirectory = new File(path, "Screenshots");
 		newDirectory.mkdir();
-		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Screenshots", brand);
+		newDirectory = new File(path + "\\Screenshots", brand);
 		newDirectory.mkdir();
 		
 		// start the proxy
@@ -1526,8 +1543,9 @@ public class BuyflowValidation {
 //		l.stop();
 //		driver.quit();
 		
-		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Run Output\\");
+//		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Run Output\\");
 //		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", "C:\\Automation\\Automation Input and Output\\Input_Output\\BuyflowValidation\\Run Output\\");
+		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", path + "\\Run Output\\");
 		
 		attachmentList.add(file);
 		
