@@ -123,8 +123,8 @@ public class BuyflowValidation {
 //		System.setProperty("testset", "Top 3");
 //		
 		sendReportTo = System.getProperty("email");
-//		testSet = System.getProperty("testset");
-//		testSuite = System.getProperty("testsuite");
+		testSet = System.getProperty("testset");
+		testSuite = System.getProperty("testsuite");
 		lambdausername = System.getProperty("username");
 		lambdaaccesskey = System.getProperty("accesskey");
 		path = System.getProperty("filepath");
