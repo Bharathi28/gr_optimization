@@ -214,7 +214,7 @@ public class BuyflowValidation {
 		// start the proxy
 		BrowserMobProxy proxy = new BrowserMobProxyServer();
 		proxy.setTrustAllServers(true);
-		proxy.start(12345);
+		proxy.start(0);
 		System.out.println("Started proxy server at: " + proxy.getPort());
 		
 //		l = new Local();
