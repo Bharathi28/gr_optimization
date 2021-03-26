@@ -193,7 +193,7 @@ public class BuyflowValidation {
 		capabilities.setCapability("browserName", "Chrome");
 		capabilities.setCapability("version","89.0");
 		capabilities.setCapability("resolution","1920x1200");
-		capabilities.setCapability("tunnel",true);
+//		capabilities.setCapability("tunnel",true);
 		capabilities.setCapability("console",true);
 		capabilities.setCapability("network",true);
 		
