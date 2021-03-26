@@ -32,7 +32,7 @@
             	<suiteXmlFiles>
             		<suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
                	</suiteXmlFiles>
-               	<forkCount>5</forkCount>
+               	<forkCount>10</forkCount>
          		<reuseForks>true</reuseForks>
             </configuration>
          </plugin>
