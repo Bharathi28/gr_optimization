@@ -32,6 +32,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -167,7 +168,8 @@ public class PixelUtilities {
 		HashMap<Integer, HashMap> overallOutput = new LinkedHashMap<Integer, HashMap>();
 		
 //		WebDriver driver = new ChromeDriver();
-		WebDriver driver =  new RemoteWebDriver(new java.net.URL(URL), capabilities);
+		RemoteWebDriver driver =  new RemoteWebDriver(new java.net.URL(URL), capabilities);
+		driver.setFileDetector(new LocalFileDetector());
 	    driver.manage().window().maximize();
 	    driver.get("https://ericduran.github.io/chromeHAR/");
 	    WebDriverWait wait = new WebDriverWait(driver,50);
@@ -206,6 +208,7 @@ public class PixelUtilities {
 					String[] pixelIdArr = pixelbrandid.split(",");						
 						
 					List<HashMap> pagemapList = new ArrayList<HashMap>();
+					
 					for(String page : pages) {													
 						HashMap<String, List<List<String>>> pageMap = new LinkedHashMap<String, List<List<String>>>();	
 				        System.out.println(page);
