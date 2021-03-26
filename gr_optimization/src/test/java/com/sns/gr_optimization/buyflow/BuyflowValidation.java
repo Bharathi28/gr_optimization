@@ -1459,7 +1459,7 @@ public class BuyflowValidation {
 		proxy.stop();
 	
 		if(!(pixelStr.equalsIgnoreCase("-"))) {
-			HashMap<Integer, HashMap> overallOutput = pixel_obj.validatePixels(pixelStr, pattern, brand, campaign, env, campaignpages, URL, capabilities);
+			HashMap<Integer, HashMap> overallOutput = pixel_obj.validatePixels(pixelStr, pattern, brand, campaign, env, campaignpages, URL, capabilities, path);
 			attachmentList = pixel_obj.writePixelOutput(overallOutput, brand, campaign, attachmentList, Output_foldername, path);
 		}
 	}
