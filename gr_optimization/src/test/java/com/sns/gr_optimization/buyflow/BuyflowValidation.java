@@ -550,6 +550,8 @@ public class BuyflowValidation {
 				
 				if((brand.equalsIgnoreCase("JLoBeauty")) || (brand.equalsIgnoreCase("WestmoreBeauty"))){
 //				if(brand.equalsIgnoreCase("JLoBeauty")) {
+					System.out.println(shipfreq);
+					System.out.println(ppid);
 					product_shippingfrequency = merch_obj.getProdShippingFrequency(shipfreq, ppid);
 				}				
 				
