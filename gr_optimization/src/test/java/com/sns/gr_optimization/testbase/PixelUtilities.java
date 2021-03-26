@@ -67,6 +67,11 @@ public class PixelUtilities {
 	}
 	
 	public void getHarData(BrowserMobProxy proxy, String filename, WebDriver driver, String pixelStr) throws InterruptedException {
+		String last_char = filename.substring(filename.length() - 1);
+		if(last_char.equalsIgnoreCase("_")) {
+			filename = filename.substring(0, filename.length() - 1);
+		}
+		
 		if(!(pixelStr.equalsIgnoreCase("-"))) {
 			comm_obj.checkPageIsReady(driver);
 			Thread.sleep(10000);
@@ -201,8 +206,16 @@ public class PixelUtilities {
 					for(String page : pages) {													
 						HashMap<String, List<List<String>>> pageMap = new LinkedHashMap<String, List<List<String>>>();	
 				        System.out.println(page);
-				        System.out.println(path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_" + page.toLowerCase() + "_" + pattern + ".har");
-						driver.findElement(By.name("har")).sendKeys(path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_" + page.toLowerCase() + "_" + pattern + ".har");
+				        
+				        String filepath = path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_" + page.toLowerCase() + "_" + pattern;
+				        String last_char = filepath.substring(filepath.length() - 1);
+						if(last_char.equalsIgnoreCase("_")) {
+							filepath = filepath.substring(0, filepath.length() - 1);
+						}
+						filepath = filepath + ".har";
+				        
+				        System.out.println(filepath);
+						driver.findElement(By.name("har")).sendKeys(filepath);
 						
 						WebElement searchElmt = driver.findElement(By.id("search"));
 						wait.until(ExpectedConditions.visibilityOf(searchElmt));
