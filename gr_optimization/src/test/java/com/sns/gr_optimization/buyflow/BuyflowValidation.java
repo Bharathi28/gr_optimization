@@ -237,15 +237,15 @@ public class BuyflowValidation {
 		
 		// Read Web Catalog
 		if((category_list.contains("Product")) || (category_list.contains("SubscribeandSave")) || (category_list.contains("ShopKit"))) {
-			catalogData = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/Merchandising Input/" + brand + "/" + brandcode + " Web Catalog.xlsx", "Acq", 0);
+			catalogData = comm_obj.getExcelData(path + "/Merchandising Input/" + brand + "/" + brandcode + " Web Catalog.xlsx", "Acq", 0);
 			if((brand.equalsIgnoreCase("JLoBeauty")) || (brand.equalsIgnoreCase("WestmoreBeauty"))) {
 //			if(brand.equalsIgnoreCase("JLoBeauty")) {
-				shipfreq = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/Merchandising Input/" + brand + "/" + brandcode + " Web Catalog.xlsx", "Shipping Frequencies", 0);
+				shipfreq = comm_obj.getExcelData(path + " /Merchandising Input/" + brand + "/" + brandcode + " Web Catalog.xlsx", "Shipping Frequencies", 0);
 			}
 		}
 		
 		// Read Merchandising Input
-		merchData = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/Merchandising Input/" + brand + "/" + campaigncategory + ".xlsx", "Active Campaign", 0);
+		merchData = comm_obj.getExcelData(path + "/Merchandising Input/" + brand + "/" + campaigncategory + ".xlsx", "Active Campaign", 0);
 
 		///////////////////////////////////////////////////////////////
 		
