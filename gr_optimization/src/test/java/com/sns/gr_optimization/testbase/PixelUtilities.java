@@ -67,10 +67,13 @@ public class PixelUtilities {
 	}
 	
 	public void getHarData(BrowserMobProxy proxy, String filename, WebDriver driver, String pixelStr) throws InterruptedException {
+		filename = filename.replace(".har", "");
+		
 		String last_char = filename.substring(filename.length() - 1);
 		if(last_char.equalsIgnoreCase("_")) {
 			filename = filename.substring(0, filename.length() - 1);
 		}
+		filename = filename + ".har";
 		
 		if(!(pixelStr.equalsIgnoreCase("-"))) {
 			comm_obj.checkPageIsReady(driver);
