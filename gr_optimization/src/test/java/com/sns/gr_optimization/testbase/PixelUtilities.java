@@ -273,8 +273,8 @@ public class PixelUtilities {
 		return overallOutput;
 	}
 	
-	public static List<String> writePixelOutput(HashMap map, String fileName, String sheetName, List<String> attachmentList, String Output_foldername) throws IOException {	
-		File file = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel Output\\" + Output_foldername + "\\" + fileName + ".xlsx");
+	public static List<String> writePixelOutput(HashMap map, String fileName, String sheetName, List<String> attachmentList, String Output_foldername, String path) throws IOException {	
+		File file = new File(path + "\\Pixel Output\\" + Output_foldername + "\\" + fileName + ".xlsx");
 		XSSFWorkbook workbook = null;
 		// Check file existence 
 	    if (file.exists() == false) {
@@ -282,7 +282,7 @@ public class PixelUtilities {
 	        workbook = new XSSFWorkbook();
 	    } 
 	    else {
-	        FileInputStream inputStream = new FileInputStream(new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel Output\\" + Output_foldername + "\\" + fileName + ".xlsx"));
+	        FileInputStream inputStream = new FileInputStream(new File(path + "\\Pixel Output\\" + Output_foldername + "\\" + fileName + ".xlsx"));
 	        workbook = new XSSFWorkbook(inputStream);
 	    }
 	    

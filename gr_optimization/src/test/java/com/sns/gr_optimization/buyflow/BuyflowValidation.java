@@ -317,7 +317,7 @@ public class BuyflowValidation {
 		pixel_obj.defineNewHar(proxy, brand + "HomePage");		
 		driver.get(url);
 		driver.manage().timeouts().implicitlyWait(6, TimeUnit.SECONDS);	
-		pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_homepage_" + pattern +".har", driver, pixelStr);
+		pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_homepage_" + pattern +".har", driver, pixelStr);
 //		console_obj.analyzeLog(driver, "HomePage");			
 		
 		HashMap<String, String> sourcecodedata = null;
@@ -522,7 +522,7 @@ public class BuyflowValidation {
 				pixel_obj.defineNewHar(proxy, brand + "SASPage");	  
 				bf_obj.click_cta(driver, brand, campaign, "Ordernow");
 				
-				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver, pixelStr);
+				pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver, pixelStr);
 //				console_obj.analyzeLog(driver, "SASPage");	
 							
 				// Gift Validation
@@ -643,13 +643,13 @@ public class BuyflowValidation {
 				// Move to Shop
 				pixel_obj.defineNewHar(proxy, brand + "ShopPage");	  
 				bf_obj.click_cta(driver, brand, campaign, "Shop");
-				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_shoppage_" + pattern +".har", driver, pixelStr);
+				pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_shoppage_" + pattern +".har", driver, pixelStr);
 //				console_obj.analyzeLog(driver, "ShopPage");	
 				
 				// Select offer			
 				pixel_obj.defineNewHar(proxy, brand + "PDPage");	
 				sas_obj.select_offer(driver, expectedofferdata_product, currentCategory);
-				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_pdpage_" + pattern +".har", driver, pixelStr);
+				pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_pdpage_" + pattern +".har", driver, pixelStr);
 //				console_obj.analyzeLog(driver, "PDPage");	
 				
 				// Move to Checkout
@@ -743,12 +743,12 @@ public class BuyflowValidation {
 //			if(((categorylist.contains("Kit")) || (categorylist.contains("ShopKit"))) && (offer_postpurchase.equalsIgnoreCase("Yes"))) {
 			if(offer_postpurchase.equalsIgnoreCase("Yes")) {
 				email = bf_obj.fill_out_form(driver, brand, campaigncategory, "VISA", "same", "90", address);
-				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver, pixelStr);
+				pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver, pixelStr);
 //				console_obj.analyzeLog(driver, "CheckoutPage");			
 				
 				pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
 				bf_obj.complete_order(driver, brand, "VISA");
-				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern +".har", driver, pixelStr);
+				pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern +".har", driver, pixelStr);
 //				console_obj.analyzeLog(driver, "PostPurchaseUpsell");			
 				
 				bf_obj.upsell_confirmation(driver, brand, campaigncategory, offer_postpurchase, PostPUPage);
@@ -756,7 +756,7 @@ public class BuyflowValidation {
 			else {
 				email = bf_obj.fill_out_form(driver, brand, campaigncategory, cc, shipbill, "30", address);
 				System.out.println("Email : " + email);
-				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver, pixelStr);
+				pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver, pixelStr);
 //				console_obj.analyzeLog(driver, "CheckoutPage");		
 			}	
 		}	
@@ -1052,7 +1052,7 @@ public class BuyflowValidation {
 			pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");
         	// Navigate to Confirmation Page	        
         	bf_obj.complete_order(driver, brand, cc);          
-            pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver, pixelStr);
+            pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver, pixelStr);
 //            console_obj.analyzeLog(driver, "ConfirmationPage");	
 		}
 		// Post Purchase Upsell page is present
@@ -1062,7 +1062,7 @@ public class BuyflowValidation {
 			if(supplysize.equalsIgnoreCase("30")) {
 				pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
 				bf_obj.complete_order(driver, brand, cc);
-				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern + ".har", driver, pixelStr);
+				pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern + ".har", driver, pixelStr);
 //				console_obj.analyzeLog(driver, "PostPurchaseUpsell");	
 			}
 			// supplysize - 90
@@ -1070,7 +1070,7 @@ public class BuyflowValidation {
 			else if(supplysize.equalsIgnoreCase("90")) {
 				pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");	        
 	        	bf_obj.complete_order(driver, brand, cc);          
-	            pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver, pixelStr);
+	            pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver, pixelStr);
 //	            console_obj.analyzeLog(driver, "ConfirmationPage");	
 			}					
 		}			
@@ -1085,7 +1085,7 @@ public class BuyflowValidation {
 			if((supplysize.equalsIgnoreCase("30")) || (cc.equalsIgnoreCase("Paypal"))) {
 				pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");
 				bf_obj.upsell_confirmation(driver, brand, campaigncategory, offer_postpurchase, PostPUPage);
-				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver, pixelStr);
+				pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver, pixelStr);
 //				 console_obj.analyzeLog(driver, "ConfirmationPage");	
 			}
 		}								
@@ -1183,7 +1183,7 @@ public class BuyflowValidation {
 		}		
 		
 		Screenshot confpage = new AShot().takeScreenshot(driver);
-		ImageIO.write(confpage.getImage(),"PNG",new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Screenshots\\" + brand + "\\" + campaign + "_" + kitppid +".png"));
+		ImageIO.write(confpage.getImage(),"PNG",new File(path + "\\Screenshots\\" + brand + "\\" + campaign + "_" + kitppid +".png"));
 		
 		String conf_num = bf_obj.fetch_conf_num(driver, brand);
 		System.out.println("Confirmation Number : " + conf_num);				
@@ -1458,7 +1458,7 @@ public class BuyflowValidation {
 	
 		if(!(pixelStr.equalsIgnoreCase("-"))) {
 			HashMap<Integer, HashMap> overallOutput = pixel_obj.validatePixels(pixelStr, pattern, brand, campaign, env, campaignpages, URL, capabilities);
-			attachmentList = pixel_obj.writePixelOutput(overallOutput, brand, campaign, attachmentList, Output_foldername);
+			attachmentList = pixel_obj.writePixelOutput(overallOutput, brand, campaign, attachmentList, Output_foldername, path);
 		}
 	}
 	
@@ -1474,14 +1474,14 @@ public class BuyflowValidation {
 		
 		attachmentList.add(file);
 		
-		Path testoutput_path = Paths.get(System.getProperty("user.dir") + "\\test-output\\emailable-report.html");
-		Path target_path = Paths.get(System.getProperty("user.dir") + "\\target\\surefire-reports\\emailable-report.html");
-		if (Files.exists(testoutput_path)) {
-			attachmentList.add(System.getProperty("user.dir") + "\\test-output\\emailable-report.html");
-		}
-		else if (Files.exists(target_path)){
-			attachmentList.add(System.getProperty("user.dir") + "\\target\\surefire-reports\\emailable-report.html");
-		}	
+//		Path testoutput_path = Paths.get(System.getProperty("user.dir") + "\\test-output\\emailable-report.html");
+//		Path target_path = Paths.get(System.getProperty("user.dir") + "\\target\\surefire-reports\\emailable-report.html");
+//		if (Files.exists(testoutput_path)) {
+//			attachmentList.add(System.getProperty("user.dir") + "\\test-output\\emailable-report.html");
+//		}
+//		else if (Files.exists(target_path)){
+//			attachmentList.add(System.getProperty("user.dir") + "\\target\\surefire-reports\\emailable-report.html");
+//		}	
 		
 		mailObj.sendEmail("Buyflow Results", sendReportTo, attachmentList);		
 	}	
