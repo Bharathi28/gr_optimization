@@ -240,7 +240,7 @@ public class BuyflowValidation {
 			catalogData = comm_obj.getExcelData(path + "/Merchandising Input/" + brand + "/" + brandcode + " Web Catalog.xlsx", "Acq", 0);
 			if((brand.equalsIgnoreCase("JLoBeauty")) || (brand.equalsIgnoreCase("WestmoreBeauty"))) {
 //			if(brand.equalsIgnoreCase("JLoBeauty")) {
-				shipfreq = comm_obj.getExcelData(path + " /Merchandising Input/" + brand + "/" + brandcode + " Web Catalog.xlsx", "Shipping Frequencies", 0);
+				shipfreq = comm_obj.getExcelData(path + "/Merchandising Input/" + brand + "/" + brandcode + " Web Catalog.xlsx", "Shipping Frequencies", 0);
 			}
 		}
 		
