@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +31,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -152,10 +155,11 @@ public class PixelUtilities {
 	    return pattern;
 	}
 	
-	public HashMap<Integer, HashMap> validatePixels(String pixelStr, String pattern, String brand, String campaign, String env, List<String> campaignpages) throws ClassNotFoundException, SQLException, InterruptedException {
+	public HashMap<Integer, HashMap> validatePixels(String pixelStr, String pattern, String brand, String campaign, String env, List<String> campaignpages, String URL, DesiredCapabilities capabilities) throws ClassNotFoundException, SQLException, InterruptedException, MalformedURLException {
 		HashMap<Integer, HashMap> overallOutput = new LinkedHashMap<Integer, HashMap>();
 		
-		WebDriver driver = new ChromeDriver();
+//		WebDriver driver = new ChromeDriver();
+		WebDriver driver =  new RemoteWebDriver(new java.net.URL(URL), capabilities);
 	    driver.manage().window().maximize();
 	    driver.get("https://ericduran.github.io/chromeHAR/");
 	    WebDriverWait wait = new WebDriverWait(driver,50);

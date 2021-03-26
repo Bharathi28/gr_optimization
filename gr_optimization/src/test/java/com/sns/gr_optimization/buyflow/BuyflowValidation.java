@@ -88,34 +88,11 @@ public class BuyflowValidation {
 	static String yearStr = Integer.toString(now.get(Calendar.YEAR));
 	
 	static String Output_foldername = monthStr + dayStr + yearStr;
-	
-	// BrowserStack
-//	String username = System.getenv("BROWSERSTACK_USERNAME");
-//	String accessKey = System.getenv("BROWSERSTACK_ACCESS_KEY");
-//	String buildName = System.getenv("BROWSERSTACK_BUILD_NAME");
-//	final String URL = "https://" + username + ":" + accessKey + "@hub-cloud.browserstack.com/wd/hub";	
-	
-//	final String USERNAME = "manibharathikaru1";
-//	final String AUTOMATE_KEY = "hFN19RHbQmGyeL8Z47Ls";
-//	final String URL = "https://" + USERNAME + ":" + AUTOMATE_KEY + "@hub-cloud.browserstack.com/wd/hub";
-	
-	// AWS Gridlastic
-//	final String URL = "https://45DXQeDSUIhB0yaT6grHIkuQW7sN8ru3:nXR41kNMTUeJietfkLNSV7zI5Sl3aFXn@x9p7sl1q-hub.gridlastic.com/wd/hub";
-	
-	// LambdaTest
-//	String username = "manibharathisearchnscore";
-//	String accessKey = "kVAvkFtrOLrMUgNXgnhmoKiKWRcBvQiywvTlY4KVqCw2coOBbG";
-//	final String URL = "https://" + username + ":" + accessKey + "@hub.lambdatest.com/wd/hub";
-	
-//	String username = "aaqil";
-//	String accessKey = "NIp8I15dgUNzNtGZMPtl2hpFIjzRsrRZQmXtbbgHesZdJXXuqU";
-//	final String URL = "https://" + username + ":" + accessKey + "@hub.lambdatest.com/wd/hub";
+
 	String lambdausername;
 	String lambdaaccesskey;
 	String URL;
 	String path;
-	String outputpath;
-//	Local l;
 	
 	@BeforeSuite
 	public void getEmailId() {
@@ -123,18 +100,10 @@ public class BuyflowValidation {
 //		System.setProperty("testset", "Top 3");
 //		
 		sendReportTo = System.getProperty("email");
-		testSet = System.getProperty("testset");
-		testSuite = System.getProperty("testsuite");
 		lambdausername = System.getProperty("username");
 		lambdaaccesskey = System.getProperty("accesskey");
 		path = System.getProperty("filepath");
-//		outputpath = System.getProperty("output");
-		
-//		System.out.println("Enter Email id : ");
-//		sendReportTo = in.next();
-		
-//		String lambdausername = System.getenv("LT_USERNAME");
-//		String lambdaaccesskey = System.getenv("LT_ACCESS_KEY");
+
 		URL = "https://" + lambdausername + ":" + lambdaaccesskey + "@hub.lambdatest.com/wd/hub";
 		
 		System.out.println(lambdausername);
@@ -145,49 +114,21 @@ public class BuyflowValidation {
 	@DataProvider(name="buyflowInput", parallel=true)
 	public Object[][] testData() throws Exception {
 		
-//		System.out.println(username);
-//		System.out.println(accessKey);
-//		System.out.println(buildName);
-//		System.out.println(URL);
-		
-		
 		Calendar calendar = Calendar.getInstance();
 		int day = calendar.get(Calendar.DAY_OF_WEEK);
-//		System.out.println(day);
 		
 		Object[][] arrayObject = null;
 		
-//		if(day == 7) {
-//			arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Saturday", 1);
-//		}
-//		else if(day == 1) {
-//			arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Sunday", 1);
-//		}
-//		else {
-//			if(testSuite.equalsIgnoreCase("Buyflow")) {
-//				if(testSet.equalsIgnoreCase("Core")) {
-//					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Core", 1);
-//				}
-//				else if(testSet.equalsIgnoreCase("Top 3")){
-//					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Top 3", 1);
-//				}
-//				else if(testSet.equalsIgnoreCase("All active")){
-//					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "All active", 1);
-//				}
-//			}
-//			else if(testSuite.equalsIgnoreCase("Pixel")) {
-//				if(day == 6) {
-//					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "AllPixels", 1);
-//				}
-//				else {
-//					arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "FBPixels", 1);
-//				}
-//			}
-//		}
-		
-//		arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
-//	arrayObject = comm_obj.getExcelData("C:/Automation/Automation Input and Output/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
-	arrayObject = comm_obj.getExcelData(path+ "/new_run_input.xlsx", "rundata", 1);
+		if(day == 7) {
+			arrayObject = comm_obj.getExcelData(path+ "/new_run_input.xlsx", "Saturday", 1);
+		}
+		else if(day == 1) {
+			arrayObject = comm_obj.getExcelData(path+ "/new_run_input.xlsx", "Sunday", 1);
+		}
+		else {
+			arrayObject = comm_obj.getExcelData(path+ "/new_run_input.xlsx", "rundata", 1);
+		}
+	
 		return arrayObject;
 	}	
 	
@@ -234,39 +175,9 @@ public class BuyflowValidation {
 		proxy.start(0);
 		System.out.println("Started proxy server at: " + proxy.getPort());
 		
-//		l = new Local();
-//	
-//		Map<String, String> l_options = new HashMap<String, String>();
-////		l_options.put("key", AUTOMATE_KEY);
-//		l_options.put("key", accessKey);
-//
-//		l_options.put("v", "true");
-//		l_options.put("force", "true");
-//		l_options.put("onlyAutomate", "true");
-//
-//		l_options.put("forcelocal", "true");
-//		l_options.put("forceproxy", "true");
-//
-//		l_options.put("localProxyHost", "localhost");
-//		l_options.put("localProxyPort", "12345");
-//		l_options.put("localIdentifier", "Test1");
-//
-//		l.start(l_options);
-
 		// get the Selenium proxy object
 		Proxy seleniumProxy = ClientUtil.createSeleniumProxy(proxy);	
 		
-//		try {
-//            String hostIp = Inet4Address.getLocalHost().getHostAddress();
-//            seleniumProxy.setHttpProxy(hostIp + ":" + proxy.getPort());
-//            seleniumProxy.setSslProxy(hostIp + ":" + proxy.getPort());
-////            seleniumProxy.setHttpProxy("3.101.91.144:12345");
-////            seleniumProxy.setSslProxy("3.101.91.144:12345");
-//        } catch (UnknownHostException e) {
-//            e.printStackTrace();
-////            Assert.fail("invalid Host Address");
-//        }
-
 		ChromeOptions options = new ChromeOptions();
 		options.setProxy(seleniumProxy);
 		options.setAcceptInsecureCerts(true);	   
@@ -274,13 +185,26 @@ public class BuyflowValidation {
 		options.addArguments("--disable-backgrounding-occluded-windows");
 			    
 		DesiredCapabilities capabilities = new DesiredCapabilities();
-		capabilities.setCapability(ChromeOptions.CAPABILITY, options);	    
-		capabilities.setCapability("os", "Windows");
-		capabilities.setCapability("os_version", "10");
-		capabilities.setCapability("browser_version", "80");	    
-			    
-//		capabilities.setCapability("platformName", "windows");
-		capabilities.setCapability("browser", "Chrome");
+		capabilities.setCapability(ChromeOptions.CAPABILITY, options);	
+		
+		capabilities.setCapability("build", "Buyflow");
+		capabilities.setCapability("name", "Test");
+		capabilities.setCapability("platform", "Windows 10");
+		capabilities.setCapability("browserName", "Chrome");
+		capabilities.setCapability("version","89.0");
+		capabilities.setCapability("resolution","1920x1200");
+		capabilities.setCapability("tunnel",true);
+		capabilities.setCapability("console",true);
+		capabilities.setCapability("network",true);
+		
+		
+		
+//		capabilities.setCapability("os", "Windows");
+//		capabilities.setCapability("os_version", "10");
+//		capabilities.setCapability("browser_version", "80");	    
+//			    
+////		capabilities.setCapability("platformName", "windows");
+//		capabilities.setCapability("browser", "Chrome");
 //		capabilities.setCapability("video", "True");
 		
 //		 capabilities.setCapability("platform", "Windows 10");
@@ -293,17 +217,6 @@ public class BuyflowValidation {
 //        capabilities.setCapability("visual", true); // To enable step by step screenshot
 //        capabilities.setCapability("video", true); // To enable video recording
 //        capabilities.setCapability("console", true); // To capture console logs
-		
-        // BrowserStack
-//		capabilities.setCapability("browserstack.local", "true");
-//		capabilities.setCapability("browserstack.debug", "true");
-//		capabilities.setCapability("name", "Buyflow Execution");
-//		capabilities.setCapability("browserstack.networkLogs", "true");
-//		capabilities.setCapability("browserstack.acceptInsecureCerts", "true");
-//		capabilities.setCapability("browserstack.local", "true");
-//		capabilities.setCapability("browserstack.localIdentifier", "Test1");
-				
-				
 		
 		// Get Source Code Information - Campaign Category
 		String campaigncategory = db_obj.checkcampaigncategory(brand, campaign);
@@ -905,7 +818,13 @@ public class BuyflowValidation {
 							}
 									
 							// Continuity Pricing
-							String continuity_price_result = bf_obj.assertPrice(actual_continuity_price, expected_item.get(4));
+							String continuity_price_result = "";
+							if(expected_item.get(4).contains("No Continuity")) {
+								continuity_price_result = "PASS";
+							}
+							else {
+								continuity_price_result = bf_obj.assertPrice(actual_continuity_price, expected_item.get(4));
+							}
 							
 							if(continuity_price_result.equalsIgnoreCase("PASS")) {
 								ContinuityPriceResult = "PASS";
@@ -915,8 +834,14 @@ public class BuyflowValidation {
 								remarks = remarks + "Checkout Cart - " + expected_item.get(0) + " - " + expected_item.get(1) + " Continuity Pricing Mismatch. Expected - " + expected_item.get(4) + " , Actual - " + actual_continuity_price + " ; ";
 							}
 																
-							// Continuity Shipping
-							String continuity_ship_result = bf_obj.assertPrice(actual_continuity_shipping, expected_item.get(5));
+							// Continuity Shipping							
+							String continuity_ship_result = "";
+							if(expected_item.get(5).contains("No Continuity")) {
+								continuity_ship_result = "PASS";
+							}
+							else {
+								continuity_ship_result = bf_obj.assertPrice(actual_continuity_shipping, expected_item.get(5));
+							}
 							
 							if(continuity_ship_result.equalsIgnoreCase("PASS")) {
 								ContinuityPriceResult = "PASS";
@@ -924,7 +849,7 @@ public class BuyflowValidation {
 							else {
 								ContinuityPriceResult = "FAIL";
 								remarks = remarks + "Checkout Cart - " + expected_item.get(0) + " - " + expected_item.get(1) + " Continuity Shipping Mismatch. Expected - " + expected_item.get(5) + " , Actual - " + actual_continuity_shipping + " ; ";
-							}						
+							}								
 						}					
 						temp_lineitemlist.add(expected_item);
 					}					
@@ -1532,7 +1457,7 @@ public class BuyflowValidation {
 		proxy.stop();
 	
 		if(!(pixelStr.equalsIgnoreCase("-"))) {
-			HashMap<Integer, HashMap> overallOutput = pixel_obj.validatePixels(pixelStr, pattern, brand, campaign, env, campaignpages);
+			HashMap<Integer, HashMap> overallOutput = pixel_obj.validatePixels(pixelStr, pattern, brand, campaign, env, campaignpages, URL, capabilities);
 			attachmentList = pixel_obj.writePixelOutput(overallOutput, brand, campaign, attachmentList, Output_foldername);
 		}
 	}
