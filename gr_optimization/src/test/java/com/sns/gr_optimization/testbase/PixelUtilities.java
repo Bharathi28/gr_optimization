@@ -201,7 +201,7 @@ public class PixelUtilities {
 					for(String page : pages) {													
 						HashMap<String, List<List<String>>> pageMap = new LinkedHashMap<String, List<List<String>>>();	
 				        System.out.println(page);
-						driver.findElement(By.name("har")).sendKeys(path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_" + page + "_" + pattern + ".har");
+						driver.findElement(By.name("har")).sendKeys(path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_" + page.toLowerCase() + "_" + pattern + ".har");
 						
 						WebElement searchElmt = driver.findElement(By.id("search"));
 						wait.until(ExpectedConditions.visibilityOf(searchElmt));
