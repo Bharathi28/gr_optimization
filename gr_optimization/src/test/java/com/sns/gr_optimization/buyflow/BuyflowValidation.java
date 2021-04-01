@@ -188,12 +188,18 @@ public class BuyflowValidation {
 		capabilities.setCapability(ChromeOptions.CAPABILITY, options);	
 		
 		capabilities.setCapability("build", "Buyflow");
-		capabilities.setCapability("name", "Test");
-		capabilities.setCapability("platform", "Windows 10");
-		capabilities.setCapability("browserName", "Chrome");
-		capabilities.setCapability("version","89.0");
-		capabilities.setCapability("resolution","1920x1200");
-//		capabilities.setCapability("tunnel",true);
+		capabilities.setCapability("name", brand + "-" + campaign + "-" + kitppid);
+				
+		capabilities.setCapability("platform", "macOS Sierra");
+		capabilities.setCapability("browserName", "Firefox");
+		capabilities.setCapability("version","87.0");
+		
+//		capabilities.setCapability("platform", "Windows 10");
+//		capabilities.setCapability("browserName", "Chrome");
+//		capabilities.setCapability("version","89.0");
+//		capabilities.setCapability("resolution","1920x1200");		
+		
+		//		capabilities.setCapability("tunnel",true);
 		capabilities.setCapability("console",true);
 		capabilities.setCapability("network",true);
 		

@@ -432,7 +432,7 @@ public class MerchandisingUtilities {
 				}			
 				
 				// Continuity Pricing and Shipping
-				if((brand.equalsIgnoreCase("Smileactives")) && (campaign.equalsIgnoreCase("core2"))) {
+				if((brand.equalsIgnoreCase("Smileactives")) && ((campaign.equalsIgnoreCase("core2")) || (campaign.equalsIgnoreCase("specialoffer")))) {
 					if((offerdata.get("Pre Purchase Continuity Pricing (product)") != null) && (!(offerdata.get("Pre Purchase Continuity Pricing (product)").equalsIgnoreCase("-")))) {
 						continuitypricing = offerdata.get("Pre Purchase Continuity Pricing (product)").trim();	
 						continuitypricing = continuitypricing.replace("$", "");
@@ -1267,6 +1267,7 @@ public class MerchandisingUtilities {
 				OfferPostPurchase = offer_postpurchase_list.get(i);
 			}			
 		}				
+		
 		
 		if((postPUCategory.equalsIgnoreCase("Kit")) || (postPUCategory.equalsIgnoreCase("ShopKit"))) {
 			postPUCategory = "PostPU";
