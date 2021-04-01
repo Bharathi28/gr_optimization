@@ -146,7 +146,7 @@ public class BuyflowUtilities {
 			
 		String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
 		String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();
-		jse.executeScript("window.scrollBy(0,350)", 0);
+		jse.executeScript("window.scrollBy(0,400)", 0);
 		Thread.sleep(4000);
 		
 		comm_obj.find_webelement(driver, elementlocator, elementvalue).click();
@@ -581,6 +581,7 @@ public class BuyflowUtilities {
 			
 ////			fill_form_field(driver, realm, "City", "El Segundo");
 //			fill_form_field(driver, realm, "City", "Los Angeles");
+			Thread.sleep(2000);
 			fill_form_field(driver, realm, "State", "CA");					
 			
 			if(supply.equalsIgnoreCase("30")) {		
