@@ -190,13 +190,17 @@ public class BuyflowValidation {
 		capabilities.setCapability("build", "Buyflow");
 		capabilities.setCapability("name", brand + "-" + campaign + "-" + kitppid);
 				
-		capabilities.setCapability("platform", "macOS Sierra");
-		capabilities.setCapability("browserName", "Firefox");
-		capabilities.setCapability("version","87.0");
+//		capabilities.setCapability("platform", "macOS Sierra");
+//		capabilities.setCapability("browserName", "Firefox");
+//		capabilities.setCapability("version","87.0");
+//		
+//		capabilities.setCapability("platform", "OS X Yosemite");
+//		capabilities.setCapability("browserName", "MicrosoftEdge");
+//		capabilities.setCapability("version","81.0");
 		
-		capabilities.setCapability("platform", "OS X Yosemite");
-		capabilities.setCapability("browserName", "MicrosoftEdge");
-		capabilities.setCapability("version","81.0");
+		capabilities.setCapability("platform", "MacOS Catalina");
+		capabilities.setCapability("browserName", "Safari");
+		capabilities.setCapability("version","13.0");
 		
 //		capabilities.setCapability("platform", "Windows 10");
 //		capabilities.setCapability("browserName", "Chrome");
