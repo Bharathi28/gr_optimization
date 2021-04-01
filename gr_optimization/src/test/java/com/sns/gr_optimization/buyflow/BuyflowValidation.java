@@ -194,9 +194,9 @@ public class BuyflowValidation {
 		capabilities.setCapability("browserName", "Firefox");
 		capabilities.setCapability("version","87.0");
 		
-//		capabilities.setCapability("platform", "OS X Yosemite");
-//		capabilities.setCapability("browserName", "MicrosoftEdge");
-//		capabilities.setCapability("version","81.0");
+		capabilities.setCapability("platform", "OS X Yosemite");
+		capabilities.setCapability("browserName", "MicrosoftEdge");
+		capabilities.setCapability("version","81.0");
 		
 //		capabilities.setCapability("platform", "Windows 10");
 //		capabilities.setCapability("browserName", "Chrome");
