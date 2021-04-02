@@ -198,14 +198,14 @@ public class BuyflowValidation {
 //		capabilities.setCapability("browserName", "MicrosoftEdge");
 //		capabilities.setCapability("version","81.0");
 		
-		capabilities.setCapability("platform", "MacOS Catalina");
-		capabilities.setCapability("browserName", "Safari");
-		capabilities.setCapability("version","13.0");
+//		capabilities.setCapability("platform", "MacOS Catalina");
+//		capabilities.setCapability("browserName", "Safari");
+//		capabilities.setCapability("version","13.0");
 		
-//		capabilities.setCapability("platform", "Windows 10");
-//		capabilities.setCapability("browserName", "Chrome");
-//		capabilities.setCapability("version","89.0");
-//		capabilities.setCapability("resolution","1920x1200");		
+		capabilities.setCapability("platform", "Windows 10");
+		capabilities.setCapability("browserName", "Chrome");
+		capabilities.setCapability("version","89.0");
+		capabilities.setCapability("resolution","1920x1200");		
 		
 		//		capabilities.setCapability("tunnel",true);
 		capabilities.setCapability("console",true);
