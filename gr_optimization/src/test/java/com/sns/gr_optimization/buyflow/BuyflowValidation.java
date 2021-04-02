@@ -210,6 +210,7 @@ public class BuyflowValidation {
 		//		capabilities.setCapability("tunnel",true);
 		capabilities.setCapability("console",true);
 		capabilities.setCapability("network",true);
+		capabilities.setCapability("network.har",true);
 		
 		
 		
