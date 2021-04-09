@@ -214,7 +214,7 @@ public class ContentValidation {
 		// Read Source code details from Merchandising template for the campaign
 		sourcecodedata = merch_obj.getSourceCodeInfo(merchData, campaign);
 		// Collect Source code details for the campaign
-		expectedsourcecodedata = merch_obj.generateExpectedSourceCodeData(sourcecodedata);
+		expectedsourcecodedata = merch_obj.generateExpectedSourceCodeData(sourcecodedata, brand, campaign, giftppid);
 		// System.out.println(expectedsourcecodedata);
 
 		// HashMap variable to collect Kit related details from Merchandising Template
