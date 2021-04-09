@@ -1,7 +1,9 @@
 package com.sns.gr_optimization.buyflow;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -77,10 +79,9 @@ public class BuyflowValidation {
 	static List<String> attachmentList = new ArrayList<String>();
 	
 	List<List<String>> output = new ArrayList<List<String>>();
-	String sendReportTo = "aaqil@searchnscore.com,manibharathi@searchnscore.com";
+	String sendReportTo = "manibharathi@searchnscore.com";
 	String testSet = "Core";
 	String testSuite = "Buyflow";
-	String accesskey = "";
 	
 	static Calendar now = Calendar.getInstance();		
 	static String monthStr = Integer.toString(now.get(Calendar.MONTH) + 1); // Note: zero based!
@@ -88,85 +89,78 @@ public class BuyflowValidation {
 	static String yearStr = Integer.toString(now.get(Calendar.YEAR));
 	
 	static String Output_foldername = monthStr + dayStr + yearStr;
-
-	String lambdausername;
-	String lambdaaccesskey;
-	String URL;
-	String path;
 	
+	// LambdaTest
+	String username = "manibharathisearchnscore";
+	String accessKey = "kVAvkFtrOLrMUgNXgnhmoKiKWRcBvQiywvTlY4KVqCw2coOBbG";
+	final String URL = "https://" + username + ":" + accessKey + "@hub.lambdatest.com/wd/hub";
+
 	@BeforeSuite
 	public void getEmailId() {
 //		System.setProperty("email", "aaqil@searchnscore.com,manibharathi@searchnscore.com");
 //		System.setProperty("testset", "Top 3");
 //		
-		sendReportTo = System.getProperty("email");
-		lambdausername = System.getProperty("username");
-		lambdaaccesskey = System.getProperty("accesskey");
-		path = System.getProperty("filepath");
-
-		URL = "https://" + lambdausername + ":" + lambdaaccesskey + "@hub.lambdatest.com/wd/hub";
+//		sendReportTo = System.getProperty("email");
+//		testSet = System.getProperty("testset");
+//		testSuite = System.getProperty("testsuite");
 		
-		System.out.println(lambdausername);
-		System.out.println(lambdaaccesskey);
-		System.out.println(URL);
+//		System.out.println("Enter Email id : ");
+//		sendReportTo = in.next();
 	}
 	
 	@DataProvider(name="buyflowInput", parallel=true)
 	public Object[][] testData() throws Exception {
 		
+//		System.out.println(username);
+//		System.out.println(accessKey);
+//		System.out.println(buildName);
+//		System.out.println(URL);
+		
 		Calendar calendar = Calendar.getInstance();
 		int day = calendar.get(Calendar.DAY_OF_WEEK);
+//		System.out.println(day);
 		
 		Object[][] arrayObject = null;
 		
 		if(day == 7) {
-			arrayObject = comm_obj.getExcelData(path+ "/new_run_input.xlsx", "Saturday", 1);
+			arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Saturday", 1);
 		}
 		else if(day == 1) {
-			arrayObject = comm_obj.getExcelData(path+ "/new_run_input.xlsx", "Sunday", 1);
+			arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Sunday", 1);
 		}
 		else {
-			arrayObject = comm_obj.getExcelData(path+ "/new_run_input.xlsx", "rundata", 1);
+			arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
 		}
-	
+		
+//		arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
+//	arrayObject = comm_obj.getExcelData("C:/Automation/Automation Input and Output/Input_Output/BuyflowValidation/new_run_input.xlsx", "rundata", 1);
 		return arrayObject;
 	}	
 	
 	@Test(dataProvider="buyflowInput")
-	public void buyflow(String env, String brand, String campaign, String category, String kitppid, String giftppid, String shipbill, String cc, String address, String browser, String pixelStr) throws Exception {	
+	public void buyflow(String env, String brand, String campaign, String category, String kitppid, String giftppid, String shipbill, String cc, String address, String browser, String pixelStr, String console) throws Exception {	
 		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver.exe");
 //		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver");
 //		System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver");
 		
 		// Create Required Directories
-//		File newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Harfiles");
-//		newDirectory.mkdir();
-//		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles", brand);
-//		newDirectory.mkdir();
-//		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Pixel Output");
-//		newDirectory.mkdir();		
-//		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel Output", Output_foldername);
-//		newDirectory.mkdir();
-//		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Run Output");
-//		newDirectory.mkdir();
-//		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Screenshots");
-//		newDirectory.mkdir();
-//		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Screenshots", brand);
-//		newDirectory.mkdir();
-		
-		File newDirectory = new File(path, "Harfiles");
+		File newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Harfiles");
 		newDirectory.mkdir();
-		newDirectory = new File(path + "\\Harfiles", brand);
+		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles", brand);
 		newDirectory.mkdir();
-		newDirectory = new File(path, "Pixel Output");
+		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Pixel Output");
 		newDirectory.mkdir();		
-		newDirectory = new File(path + "\\Pixel Output", Output_foldername);
+		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel Output", Output_foldername);
 		newDirectory.mkdir();
-		newDirectory = new File(path, "Run Output");
+		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Run Output");
 		newDirectory.mkdir();
-		newDirectory = new File(path, "Screenshots");
+		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Screenshots");
 		newDirectory.mkdir();
-		newDirectory = new File(path + "\\Screenshots", brand);
+		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Screenshots", brand);
+		newDirectory.mkdir();
+		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation", "Console Errors");
+		newDirectory.mkdir();
+		newDirectory = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Console Errors", brand);
 		newDirectory.mkdir();
 		
 		// start the proxy
@@ -185,41 +179,13 @@ public class BuyflowValidation {
 		options.addArguments("--disable-backgrounding-occluded-windows");
 			    
 		DesiredCapabilities capabilities = new DesiredCapabilities();
-		capabilities.setCapability(ChromeOptions.CAPABILITY, options);	
-		
-		capabilities.setCapability("build", "Buyflow");
-		capabilities.setCapability("name", brand + "-" + campaign + "-" + kitppid);
-				
-//		capabilities.setCapability("platform", "macOS Sierra");
-//		capabilities.setCapability("browserName", "Firefox");
-//		capabilities.setCapability("version","87.0");
-//		
-//		capabilities.setCapability("platform", "OS X Yosemite");
-//		capabilities.setCapability("browserName", "MicrosoftEdge");
-//		capabilities.setCapability("version","81.0");
-		
-//		capabilities.setCapability("platform", "MacOS Catalina");
-//		capabilities.setCapability("browserName", "Safari");
-//		capabilities.setCapability("version","13.0");
-		
-		capabilities.setCapability("platform", "Windows 10");
-		capabilities.setCapability("browserName", "Chrome");
-		capabilities.setCapability("version","89.0");
-		capabilities.setCapability("resolution","1920x1200");		
-		
-		//		capabilities.setCapability("tunnel",true);
-		capabilities.setCapability("console",true);
-		capabilities.setCapability("network",true);
-		capabilities.setCapability("network.har",true);
-		
-		
-		
-//		capabilities.setCapability("os", "Windows");
-//		capabilities.setCapability("os_version", "10");
-//		capabilities.setCapability("browser_version", "80");	    
-//			    
-////		capabilities.setCapability("platformName", "windows");
-//		capabilities.setCapability("browser", "Chrome");
+		capabilities.setCapability(ChromeOptions.CAPABILITY, options);	    
+		capabilities.setCapability("os", "Windows");
+		capabilities.setCapability("os_version", "10");
+		capabilities.setCapability("browser_version", "80");	    
+			    
+//		capabilities.setCapability("platformName", "windows");
+		capabilities.setCapability("browser", "Chrome");
 //		capabilities.setCapability("video", "True");
 		
 //		 capabilities.setCapability("platform", "Windows 10");
@@ -252,15 +218,14 @@ public class BuyflowValidation {
 		
 		// Read Web Catalog
 		if((category_list.contains("Product")) || (category_list.contains("SubscribeandSave")) || (category_list.contains("ShopKit"))) {
-			catalogData = comm_obj.getExcelData(path + "/Merchandising Input/" + brand + "/" + brandcode + " Web Catalog.xlsx", "Acq", 0);
+			catalogData = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/Merchandising Input/" + brand + "/" + brandcode + " Web Catalog.xlsx", "Acq", 0);
 			if((brand.equalsIgnoreCase("JLoBeauty")) || (brand.equalsIgnoreCase("WestmoreBeauty"))) {
-//			if(brand.equalsIgnoreCase("JLoBeauty")) {
-				shipfreq = comm_obj.getExcelData(path + "/Merchandising Input/" + brand + "/" + brandcode + " Web Catalog.xlsx", "Shipping Frequencies", 0);
+				shipfreq = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/Merchandising Input/" + brand + "/" + brandcode + " Web Catalog.xlsx", "Shipping Frequencies", 0);
 			}
 		}
 		
 		// Read Merchandising Input
-		merchData = comm_obj.getExcelData(path + "/Merchandising Input/" + brand + "/" + campaigncategory + ".xlsx", "Active Campaign", 0);
+		merchData = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/Merchandising Input/" + brand + "/" + campaigncategory + ".xlsx", "Active Campaign", 0);
 
 		///////////////////////////////////////////////////////////////
 		
@@ -313,8 +278,8 @@ public class BuyflowValidation {
 		ListIterator<String> categoryIterator = categorylist.listIterator();		
 		
 		// Launch Browser
-		WebDriver driver = new RemoteWebDriver(new java.net.URL(URL), capabilities);
-//				WebDriver driver = new ChromeDriver(capabilities);
+//		WebDriver driver = new RemoteWebDriver(new java.net.URL(URL), capabilities);
+		WebDriver driver = new ChromeDriver(capabilities);
 		driver.manage().window().maximize();
 		
 		System.out.println(((RemoteWebDriver) driver).getSessionId());
@@ -328,12 +293,16 @@ public class BuyflowValidation {
 		// Har file pattern based on Pixel
 		String pattern = pixel_obj.getPattern(url, pixelStr);
 		
+		StringBuilder consoleerror = new StringBuilder("");
+		
+		consoleerror.append(brand + "\n");
+		
 		// HomePage
 		pixel_obj.defineNewHar(proxy, brand + "HomePage");		
 		driver.get(url);
 		driver.manage().timeouts().implicitlyWait(6, TimeUnit.SECONDS);	
-		pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_homepage_" + pattern +".har", driver, pixelStr);
-//		console_obj.analyzeLog(driver, "HomePage");			
+		pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_homepage_" + pattern +".har", driver, pixelStr);
+		consoleerror = console_obj.analyzeLog(driver, "HomePage", consoleerror, console);			
 		
 		HashMap<String, String> sourcecodedata = null;
 		HashMap<String, String> expectedsourcecodedata = null;
@@ -341,7 +310,7 @@ public class BuyflowValidation {
 		// Read Source code details from Merchandising template for the campaign
 		sourcecodedata = merch_obj.getSourceCodeInfo(merchData, campaign);	
 		// Collect Source code details for the campaign
-		expectedsourcecodedata = merch_obj.generateExpectedSourceCodeData(sourcecodedata);
+		expectedsourcecodedata = merch_obj.generateExpectedSourceCodeData(sourcecodedata, brand, campaign, giftppid);
 		
 		// HashMap variable to collect Kit related details from Merchandising Template
 		HashMap<String, String> expectedofferdata_kit = null;
@@ -537,8 +506,8 @@ public class BuyflowValidation {
 				pixel_obj.defineNewHar(proxy, brand + "SASPage");	  
 				bf_obj.click_cta(driver, brand, campaign, "Ordernow");
 				
-				pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver, pixelStr);
-//				console_obj.analyzeLog(driver, "SASPage");	
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_saspage_" + pattern +".har", driver, pixelStr);
+				consoleerror = console_obj.analyzeLog(driver, "SASPage", consoleerror, console);		
 							
 				// Gift Validation
 				String expectedcampaigngifts = expectedofferdata_kit.get("Campaign Gifts");
@@ -565,8 +534,6 @@ public class BuyflowValidation {
 				
 				if((brand.equalsIgnoreCase("JLoBeauty")) || (brand.equalsIgnoreCase("WestmoreBeauty"))){
 //				if(brand.equalsIgnoreCase("JLoBeauty")) {
-					System.out.println(shipfreq);
-					System.out.println(ppid);
 					product_shippingfrequency = merch_obj.getProdShippingFrequency(shipfreq, ppid);
 				}				
 				
@@ -660,14 +627,14 @@ public class BuyflowValidation {
 				// Move to Shop
 				pixel_obj.defineNewHar(proxy, brand + "ShopPage");	  
 				bf_obj.click_cta(driver, brand, campaign, "Shop");
-				pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_shoppage_" + pattern +".har", driver, pixelStr);
-//				console_obj.analyzeLog(driver, "ShopPage");	
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_shoppage_" + pattern +".har", driver, pixelStr);
+				consoleerror = console_obj.analyzeLog(driver, "ShopPage", consoleerror, console);	
 				
 				// Select offer			
 				pixel_obj.defineNewHar(proxy, brand + "PDPage");	
 				sas_obj.select_offer(driver, expectedofferdata_product, currentCategory);
-				pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_pdpage_" + pattern +".har", driver, pixelStr);
-//				console_obj.analyzeLog(driver, "PDPage");	
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_pdpage_" + pattern +".har", driver, pixelStr);
+				consoleerror = console_obj.analyzeLog(driver, "PDPage", consoleerror, console);		
 				
 				// Move to Checkout
 				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
@@ -711,16 +678,6 @@ public class BuyflowValidation {
 //		System.out.println("Subtotal list : " + subtotal_list);
 //		System.out.println("Category list : " + category_list);
 		
-		
-//		if(category_list.contains("Kit")) {
-//			offer_postpurchase = expectedofferdata_kit.get("Offer Post-Purchase");
-//			supplysize = expectedofferdata_kit.get("SupplySize");
-//		}
-//		else {
-//			offer_postpurchase = expectedofferdata_product.get("Offer Post-Purchase");
-//			supplysize = expectedofferdata_product.get("SupplySize");
-//		}	
-		
 		// JLoBeauty - select shipping
 		if(brand.equalsIgnoreCase("JLoBeauty")) {
 			Select sel_element = new Select(driver.findElement(By.xpath("//select[@id='dwfrm_singleshipping_shippingAddress_shippingMethodID']")));
@@ -760,21 +717,21 @@ public class BuyflowValidation {
 //			if(((categorylist.contains("Kit")) || (categorylist.contains("ShopKit"))) && (offer_postpurchase.equalsIgnoreCase("Yes"))) {
 			if(offer_postpurchase.equalsIgnoreCase("Yes")) {
 				email = bf_obj.fill_out_form(driver, brand, campaigncategory, "VISA", "same", "90", address);
-				pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver, pixelStr);
-//				console_obj.analyzeLog(driver, "CheckoutPage");			
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver, pixelStr);
+				consoleerror = console_obj.analyzeLog(driver, "CheckoutPage", consoleerror, console);					
 				
 				pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
 				bf_obj.complete_order(driver, brand, "VISA");
-				pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern +".har", driver, pixelStr);
-//				console_obj.analyzeLog(driver, "PostPurchaseUpsell");			
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern +".har", driver, pixelStr);
+				consoleerror = console_obj.analyzeLog(driver, "PostPurchaseUpsell", consoleerror, console);				
 				
 				bf_obj.upsell_confirmation(driver, brand, campaigncategory, offer_postpurchase, PostPUPage);
 			}
 			else {
 				email = bf_obj.fill_out_form(driver, brand, campaigncategory, cc, shipbill, "30", address);
 				System.out.println("Email : " + email);
-				pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver, pixelStr);
-//				console_obj.analyzeLog(driver, "CheckoutPage");		
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver, pixelStr);
+				consoleerror = console_obj.analyzeLog(driver, "CheckoutPage", consoleerror, console);			
 			}	
 		}	
 		
@@ -866,7 +823,7 @@ public class BuyflowValidation {
 							else {
 								ContinuityPriceResult = "FAIL";
 								remarks = remarks + "Checkout Cart - " + expected_item.get(0) + " - " + expected_item.get(1) + " Continuity Shipping Mismatch. Expected - " + expected_item.get(5) + " , Actual - " + actual_continuity_shipping + " ; ";
-							}								
+							}						
 						}					
 						temp_lineitemlist.add(expected_item);
 					}					
@@ -1069,8 +1026,8 @@ public class BuyflowValidation {
 			pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");
         	// Navigate to Confirmation Page	        
         	bf_obj.complete_order(driver, brand, cc);          
-            pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver, pixelStr);
-//            console_obj.analyzeLog(driver, "ConfirmationPage");	
+            pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver, pixelStr);
+            consoleerror = console_obj.analyzeLog(driver, "ConfirmationPage", consoleerror, console);			
 		}
 		// Post Purchase Upsell page is present
 		else {
@@ -1079,16 +1036,16 @@ public class BuyflowValidation {
 			if(supplysize.equalsIgnoreCase("30")) {
 				pixel_obj.defineNewHar(proxy, brand + "PostPurchaseUpsell");	  				
 				bf_obj.complete_order(driver, brand, cc);
-				pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern + ".har", driver, pixelStr);
-//				console_obj.analyzeLog(driver, "PostPurchaseUpsell");	
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_postpurchaseupsell_" + pattern + ".har", driver, pixelStr);
+				consoleerror = console_obj.analyzeLog(driver, "PostPurchaseUpsell", consoleerror, console);			
 			}
 			// supplysize - 90
 			// After Fall back scenario - control navigates to Confirmation page
 			else if(supplysize.equalsIgnoreCase("90")) {
 				pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");	        
 	        	bf_obj.complete_order(driver, brand, cc);          
-	            pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver, pixelStr);
-//	            console_obj.analyzeLog(driver, "ConfirmationPage");	
+	            pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver, pixelStr);
+	            consoleerror = console_obj.analyzeLog(driver, "ConfirmationPage", consoleerror, console);		
 			}					
 		}			
 		Thread.sleep(3000);
@@ -1102,8 +1059,8 @@ public class BuyflowValidation {
 			if((supplysize.equalsIgnoreCase("30")) || (cc.equalsIgnoreCase("Paypal"))) {
 				pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");
 				bf_obj.upsell_confirmation(driver, brand, campaigncategory, offer_postpurchase, PostPUPage);
-				pixel_obj.getHarData(proxy, path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver, pixelStr);
-//				 console_obj.analyzeLog(driver, "ConfirmationPage");	
+				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver, pixelStr);
+				consoleerror = console_obj.analyzeLog(driver, "ConfirmationPage", consoleerror, console);			
 			}
 		}								
 		
@@ -1200,7 +1157,7 @@ public class BuyflowValidation {
 		}		
 		
 		Screenshot confpage = new AShot().takeScreenshot(driver);
-		ImageIO.write(confpage.getImage(),"PNG",new File(path + "\\Screenshots\\" + brand + "\\" + campaign + "_" + kitppid +".png"));
+		ImageIO.write(confpage.getImage(),"PNG",new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Screenshots\\" + brand + "\\" + campaign + "_" + kitppid +".png"));
 		
 		String conf_num = bf_obj.fetch_conf_num(driver, brand);
 		System.out.println("Confirmation Number : " + conf_num);				
@@ -1474,9 +1431,17 @@ public class BuyflowValidation {
 		proxy.stop();
 	
 		if(!(pixelStr.equalsIgnoreCase("-"))) {
-			HashMap<Integer, HashMap> overallOutput = pixel_obj.validatePixels(pixelStr, pattern, brand, campaign, env, campaignpages, URL, capabilities, path);
-			attachmentList = pixel_obj.writePixelOutput(overallOutput, brand, campaign, attachmentList, Output_foldername, path);
+			HashMap<Integer, HashMap> overallOutput = pixel_obj.validatePixels(pixelStr, pattern, brand, campaign, env, campaignpages);
+			attachmentList = pixel_obj.writePixelOutput(overallOutput, brand, campaign, attachmentList, Output_foldername);
 		}
+		
+		if(console.equalsIgnoreCase("Yes")) {
+//			File consolefile = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Console Errors\\" + brand + "\\" + kitppid + ".txt");
+			OutputStream os = new FileOutputStream(new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Console Errors\\" + brand + "\\" + kitppid + ".txt"));
+	        os.write(consoleerror.toString().getBytes(), 0, consoleerror.toString().length());
+	        attachmentList.add(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Console Errors\\" + brand + "\\" + kitppid + ".txt");
+		}
+		System.out.println(consoleerror.toString());
 	}
 	
 	@AfterSuite
@@ -1485,20 +1450,19 @@ public class BuyflowValidation {
 //		l.stop();
 //		driver.quit();
 		
-//		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Run Output\\");
+		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Run Output\\");
 //		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", "C:\\Automation\\Automation Input and Output\\Input_Output\\BuyflowValidation\\Run Output\\");
-		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", path + "\\Run Output\\");
 		
 		attachmentList.add(file);
 		
-//		Path testoutput_path = Paths.get(System.getProperty("user.dir") + "\\test-output\\emailable-report.html");
-//		Path target_path = Paths.get(System.getProperty("user.dir") + "\\target\\surefire-reports\\emailable-report.html");
-//		if (Files.exists(testoutput_path)) {
-//			attachmentList.add(System.getProperty("user.dir") + "\\test-output\\emailable-report.html");
-//		}
-//		else if (Files.exists(target_path)){
-//			attachmentList.add(System.getProperty("user.dir") + "\\target\\surefire-reports\\emailable-report.html");
-//		}	
+		Path testoutput_path = Paths.get(System.getProperty("user.dir") + "\\test-output\\emailable-report.html");
+		Path target_path = Paths.get(System.getProperty("user.dir") + "\\target\\surefire-reports\\emailable-report.html");
+		if (Files.exists(testoutput_path)) {
+			attachmentList.add(System.getProperty("user.dir") + "\\test-output\\emailable-report.html");
+		}
+		else if (Files.exists(target_path)){
+			attachmentList.add(System.getProperty("user.dir") + "\\target\\surefire-reports\\emailable-report.html");
+		}	
 		
 		mailObj.sendEmail("Buyflow Results", sendReportTo, attachmentList);		
 	}	

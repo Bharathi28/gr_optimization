@@ -17,13 +17,45 @@ public class MerchandisingUtilities {
 	BuyflowUtilities bf_obj = new BuyflowUtilities();
 	CartLanguageUtilities lang_obj = new CartLanguageUtilities();
 	
-	public HashMap<String, String> generateExpectedSourceCodeData(HashMap<String, String> sourcecodedata) throws ClassNotFoundException, SQLException {
+	public HashMap<String, String> generateExpectedSourceCodeData(HashMap<String, String> sourcecodedata, String brand, String campaign, String type) throws ClassNotFoundException, SQLException {
 		LinkedHashMap<String, String> expectedsourcecodedata = new LinkedHashMap<String, String>();
 				
 		expectedsourcecodedata.put("Media ID", sourcecodedata.get("Media ID"));
 		expectedsourcecodedata.put("Creative ID", sourcecodedata.get("Creative ID"));
 		expectedsourcecodedata.put("Venue ID", sourcecodedata.get("Venue ID"));
-		expectedsourcecodedata.put("Price Book ID", sourcecodedata.get("Price Book ID"));
+		
+		if((brand.equalsIgnoreCase("Smileactives")) && (campaign.equalsIgnoreCase("specialoffer2"))) {
+			String pricebook = sourcecodedata.get("Price Book ID");
+			String[] arr = pricebook.split("\n");
+			String pattern = "";
+			int set = 0;
+			
+			if(type.equalsIgnoreCase("entrykit")) {
+				pattern ="entry";
+			}
+			else if(type.equalsIgnoreCase("oneshot")) {
+				pattern = "oneshot";
+			}
+			
+			for(String value : arr) {
+				if(value.toLowerCase().contains(pattern)) {
+					String[] arr1 = value.split(" ");
+					for(String value1 : arr1) {
+						if(value1.contains("PSAA")) {
+							expectedsourcecodedata.put("Price Book ID", value1);
+							set = 1;
+							break;
+						}
+					}
+				}
+				if(set==1) {
+					break;
+				}
+			}
+		}
+		else {
+			expectedsourcecodedata.put("Price Book ID", sourcecodedata.get("Price Book ID"));
+		}		
 		return expectedsourcecodedata;
 	}
 	

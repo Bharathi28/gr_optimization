@@ -9,6 +9,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 
 public class SASUtilities {
@@ -182,8 +183,10 @@ public class SASUtilities {
 		Thread.sleep(2000);
 		
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
-		jse.executeScript("window.scrollBy(0,200)", 0);
-		Thread.sleep(2000);
+		if(!((brand.equalsIgnoreCase("MallyBeauty")) && (campaign.equalsIgnoreCase("glow2a")))) {
+			jse.executeScript("window.scrollBy(0,200)", 0);
+			Thread.sleep(2000);
+		}		
 		
 		String prepu = offerdata.get("Offer Pre-Purchase");
 		
@@ -319,6 +322,12 @@ public class SASUtilities {
 			}	
 			else if(brand.equalsIgnoreCase("MeaningfulBeauty")){
 				xpath = "//div[@data-itemid='" + ppid + "']//div//div//h3//a";
+//				jse.executeScript("window.scrollBy(0,400)", 0);
+				
+//				xpath = "//div[@data-itemid='" + ppid + "']//div//div[4]//div[4]//div//a";
+				
+				// //div[@data-itemid='MT2A3918']//div//div[4]//div[4]//div//a
+
 			}
 			else if((brand.equalsIgnoreCase("WestmoreBeauty")) || (brand.equalsIgnoreCase("MallyBeauty")) || (brand.equalsIgnoreCase("Smileactives"))){
 				
@@ -341,9 +350,16 @@ public class SASUtilities {
 				}
 			}
 						
+			
+//			if(brand.equalsIgnoreCase("MeaningfulBeauty")) {
+//				WebElement hover_elmt = driver.findElement(By.xpath("//div[@data-itemid='" + ppid + "']//div//div//h3//a"));
+//				Actions act = new Actions(driver);
+//				act.moveToElement(hover_elmt);
+//				Thread.sleep(2000);
+//			}
 			WebElement product_elmt = driver.findElement(By.xpath(xpath));
 			comm_obj.waitUntilElementAppears(driver, xpath);
-			Thread.sleep(2000);
+			Thread.sleep(4000);
 			product_elmt.click();
 		}		
 		
@@ -360,12 +376,6 @@ public class SASUtilities {
 			
 			
 		}
-//		if(brand.equalsIgnoreCase("JLoBeauty")) {
-//			if(!(pagepattern.contains("shade"))) {
-//				Thread.sleep(4000);
-//				driver.findElement(By.xpath("//button[@id='add-cart-modal']")).click();
-//			}
-//		}
 		Thread.sleep(1000);
 	}
 	
@@ -455,18 +465,18 @@ public class SASUtilities {
 		String shipfreq = offerdata.get("Shipping Frequency");
 		
 		Select sel_element = new Select(driver.findElement(By.xpath("//select[@id='shippingFrequencySelector']")));
-		
-//		if(shipfreq.contains("30")) {
-//			sel_element.selectByIndex(0);
-//		}
-//		else if(shipfreq.contains("60")) {
-//			sel_element.selectByIndex(1);
-//		}
-//		else if(shipfreq.contains("90")) {
-//			sel_element.selectByIndex(2);
-//		}
+				
 		if(brand.equalsIgnoreCase("JLoBeauty")) {
-			sel_element.selectByVisibleText(shipfreq.toLowerCase() + "s");
+//			sel_element.selectByVisibleText(shipfreq.toLowerCase() + "s");
+			if(shipfreq.contains("30")) {
+				sel_element.selectByIndex(0);
+			}
+			else if(shipfreq.contains("60")) {
+				sel_element.selectByIndex(1);
+			}
+			else if(shipfreq.contains("90")) {
+				sel_element.selectByIndex(2);
+			}
 		}
 		else if(brand.equalsIgnoreCase("WestmoreBeauty")) {
 			sel_element.selectByVisibleText(shipfreq);

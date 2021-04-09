@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,9 +30,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.LocalFileDetector;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -68,14 +64,6 @@ public class PixelUtilities {
 	}
 	
 	public void getHarData(BrowserMobProxy proxy, String filename, WebDriver driver, String pixelStr) throws InterruptedException {
-		filename = filename.replace(".har", "");
-		
-		String last_char = filename.substring(filename.length() - 1);
-		if(last_char.equalsIgnoreCase("_")) {
-			filename = filename.substring(0, filename.length() - 1);
-		}
-		filename = filename + ".har";
-		
 		if(!(pixelStr.equalsIgnoreCase("-"))) {
 			comm_obj.checkPageIsReady(driver);
 			Thread.sleep(10000);
@@ -164,12 +152,10 @@ public class PixelUtilities {
 	    return pattern;
 	}
 	
-	public HashMap<Integer, HashMap> validatePixels(String pixelStr, String pattern, String brand, String campaign, String env, List<String> campaignpages, String URL, DesiredCapabilities capabilities, String path) throws ClassNotFoundException, SQLException, InterruptedException, MalformedURLException {
+	public HashMap<Integer, HashMap> validatePixels(String pixelStr, String pattern, String brand, String campaign, String env, List<String> campaignpages) throws ClassNotFoundException, SQLException, InterruptedException {
 		HashMap<Integer, HashMap> overallOutput = new LinkedHashMap<Integer, HashMap>();
 		
-//		WebDriver driver = new ChromeDriver();
-		RemoteWebDriver driver =  new RemoteWebDriver(new java.net.URL(URL), capabilities);
-		driver.setFileDetector(new LocalFileDetector());
+		WebDriver driver = new ChromeDriver();
 	    driver.manage().window().maximize();
 	    driver.get("https://ericduran.github.io/chromeHAR/");
 	    WebDriverWait wait = new WebDriverWait(driver,50);
@@ -208,20 +194,10 @@ public class PixelUtilities {
 					String[] pixelIdArr = pixelbrandid.split(",");						
 						
 					List<HashMap> pagemapList = new ArrayList<HashMap>();
-					
 					for(String page : pages) {													
 						HashMap<String, List<List<String>>> pageMap = new LinkedHashMap<String, List<List<String>>>();	
 				        System.out.println(page);
-				        
-				        String filepath = path + "\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_" + page.toLowerCase() + "_" + pattern;
-				        String last_char = filepath.substring(filepath.length() - 1);
-						if(last_char.equalsIgnoreCase("_")) {
-							filepath = filepath.substring(0, filepath.length() - 1);
-						}
-						filepath = filepath + ".har";
-				        
-				        System.out.println(filepath);
-						driver.findElement(By.name("har")).sendKeys(filepath);
+						driver.findElement(By.name("har")).sendKeys(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_" + page + "_" + pattern + ".har");
 						
 						WebElement searchElmt = driver.findElement(By.id("search"));
 						wait.until(ExpectedConditions.visibilityOf(searchElmt));
@@ -293,8 +269,8 @@ public class PixelUtilities {
 		return overallOutput;
 	}
 	
-	public static List<String> writePixelOutput(HashMap map, String fileName, String sheetName, List<String> attachmentList, String Output_foldername, String path) throws IOException {	
-		File file = new File(path + "\\Pixel Output\\" + Output_foldername + "\\" + fileName + ".xlsx");
+	public static List<String> writePixelOutput(HashMap map, String fileName, String sheetName, List<String> attachmentList, String Output_foldername) throws IOException {	
+		File file = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel Output\\" + Output_foldername + "\\" + fileName + ".xlsx");
 		XSSFWorkbook workbook = null;
 		// Check file existence 
 	    if (file.exists() == false) {
@@ -302,7 +278,7 @@ public class PixelUtilities {
 	        workbook = new XSSFWorkbook();
 	    } 
 	    else {
-	        FileInputStream inputStream = new FileInputStream(new File(path + "\\Pixel Output\\" + Output_foldername + "\\" + fileName + ".xlsx"));
+	        FileInputStream inputStream = new FileInputStream(new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel Output\\" + Output_foldername + "\\" + fileName + ".xlsx"));
 	        workbook = new XSSFWorkbook(inputStream);
 	    }
 	    
@@ -488,11 +464,11 @@ public class PixelUtilities {
 			resultSheet.autoSizeColumn(columnIndex, true);
 		}			
 		
-		FileOutputStream outputStream = new FileOutputStream(new File(path + "\\Pixel Output\\" + Output_foldername + "\\" + brand +".xlsx"));
+		FileOutputStream outputStream = new FileOutputStream(new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel Output\\" + Output_foldername + "\\" + brand +".xlsx"));
 	    workbook.write(outputStream);
 	    workbook.close();
 	    outputStream.close();
-	    attachmentList.add(path + "\\Pixel Output\\" + Output_foldername + "\\" + brand +".xlsx");
+	    attachmentList.add(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Pixel Output\\" + Output_foldername + "\\" + brand +".xlsx");
 	    System.out.println("pixel_output.xlsx written successfully");
 	    return attachmentList;
 	}
