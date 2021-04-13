@@ -100,7 +100,7 @@ public class BuyflowValidation {
 //		System.setProperty("email", "aaqil@searchnscore.com,manibharathi@searchnscore.com");
 //		System.setProperty("testset", "Top 3");
 //		
-//		sendReportTo = System.getProperty("email");
+		sendReportTo = System.getProperty("email");
 //		testSet = System.getProperty("testset");
 //		testSuite = System.getProperty("testsuite");
 		
