@@ -453,7 +453,12 @@ public class BuyflowUtilities {
 		Thread.sleep(2000);
 		if(cc.equalsIgnoreCase("paypal")) {
 			if(realm.equalsIgnoreCase("R4")) {
-				driver.findElement(By.xpath("//div[@id='paypalSection']//div//div")).click();
+				if(brand.equalsIgnoreCase("JLoBeauty")) {
+					driver.findElement(By.xpath("(//div[@id='paypalSection']//div//div)[3]")).click();
+				}
+				else {
+					driver.findElement(By.xpath("//div[@id='paypalSection']//div//div")).click();
+				}
 			}
 			else {
 				driver.findElement(By.xpath("//button[@class='PayPalExpressButton']")).click();
