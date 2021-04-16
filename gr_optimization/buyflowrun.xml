@@ -1,5 +1,5 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
-<suite name="buyflowSuite" data-provider-thread-count="10">
+<suite name="buyflowSuite" data-provider-thread-count="5">
 	<parameter name="environment" value="QA" />
 	<test name="buyflowTest">
 		<classes>
