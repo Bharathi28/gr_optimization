@@ -234,8 +234,8 @@ public class SASUtilities {
 	
 	public void select_kitshade(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
-//		jse.executeScript("window.scrollBy(0,100)", 0);
-		
+		jse.executeScript("window.scrollBy(0,400)", 0);
+		Thread.sleep(2000);
 		String kitname = offerdata.get("Kit Name");
 		String kitshade = offerdata.get("KitShade");
 		
