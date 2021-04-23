@@ -18,8 +18,9 @@ public class SASUtilities {
 	BuyflowUtilities bf_obj = new BuyflowUtilities();
 	
 	public void select_offer(WebDriver driver, HashMap<String, String> offerdata, String category) throws ClassNotFoundException, SQLException, InterruptedException {
-//		JavascriptExecutor jse = (JavascriptExecutor) driver;
-//		jse.executeScript("window.scrollBy(0,0)", 0);
+		JavascriptExecutor jse = (JavascriptExecutor) driver;
+		jse.executeScript("window.scrollBy(0,0)", 0);
+		Thread.sleep(2000);
 		
 		String brand =  offerdata.get("Brand");
 		String campaign =  offerdata.get("Campaign");
@@ -105,7 +106,7 @@ public class SASUtilities {
 
 		comm_obj.waitUntilElementAppears(driver, elementvalue);
 
-		Thread.sleep(1000);	
+		Thread.sleep(3000);	
 		kit_elmt.click();
 		Thread.sleep(1000);
 	}
@@ -234,7 +235,10 @@ public class SASUtilities {
 	
 	public void select_kitshade(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
-		jse.executeScript("window.scrollBy(0,400)", 0);
+		if (!(brand.equalsIgnoreCase("MallyBeauty"))) {
+			jse.executeScript("window.scrollBy(0,400)", 0);
+		}
+		
 		Thread.sleep(2000);
 		String kitname = offerdata.get("Kit Name");
 		String kitshade = offerdata.get("KitShade");
@@ -300,14 +304,21 @@ public class SASUtilities {
 		String name = offerdata.get("Product Name").trim();
 		String pagepattern = offerdata.get("PagePattern");
 
-		if(name.equalsIgnoreCase("Star Power Duo")) {
-			driver.findElement(By.xpath("(//a[@class='button-text sd-cta'])[2]")).click();
+		if(name.toLowerCase().contains("star power duo")) {
+			driver.findElement(By.xpath("//div[@data-itemid='JL2A0196']//div[4]//div[5]//a")).click();
 			Thread.sleep(1000);
 		}
 		else {
 			String xpath = "";
 			if(brand.equalsIgnoreCase("JLoBeauty")) {
-				xpath = "(//h3[contains(@class,'product-name')]//a[contains(text(),'" + name + "')])[1]";
+//				xpath = "(//h3[contains(@class,'product-name')]//a[contains(text(),'" + name + "')])[1]";
+				
+				if(masterPPID.equalsIgnoreCase("")) {
+					xpath = "//div[@data-itemid='" + ppid + "']//div[4]//div[5]//a";
+				}
+				else {
+					xpath = "//div[@data-itemid='" + masterPPID + "']//div[4]//div[5]//a";
+				}
 			}
 			else if(brand.equalsIgnoreCase("CrepeErase")){
 				
@@ -341,7 +352,7 @@ public class SASUtilities {
 			else {				
 				xpath = "//h3[contains(@class,'product-name')]//a[contains(text(),'" + name + "')]";
 			}
-			System.out.println(xpath);
+//			System.out.println(xpath);
 			while(driver.findElements(By.xpath(xpath)).size() == 0){
 				jse.executeScript("window.scrollBy(0,400)", 0);
 				

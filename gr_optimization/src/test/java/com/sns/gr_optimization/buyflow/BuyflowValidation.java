@@ -121,7 +121,7 @@ public class BuyflowValidation {
 //		System.out.println(day);
 		
 		Object[][] arrayObject = null;
-		day=1;
+		
 		if(day == 7) {
 			arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Saturday", 1);
 		}
@@ -1017,7 +1017,7 @@ public class BuyflowValidation {
 				bf_obj.clear_form_field(driver, realm, "Zip");
 				bf_obj.fill_form_field(driver, realm, "Zip", "90245");
 				Thread.sleep(2000);
-				bf_obj.fill_form_field(driver, realm, "CVV", "349");	
+//				bf_obj.fill_form_field(driver, realm, "CVV", "349");	
 			}
 		}							
 		

@@ -76,7 +76,7 @@ public class BuyflowUtilities {
 			Thread.sleep(2000);
 			//element.click();
 			jse.executeScript("arguments[0].click();", element); 
-		}	
+		}
 	}
 	
 	public void click_logo(WebDriver driver, String brand, String campaign) throws ClassNotFoundException, SQLException {
@@ -181,7 +181,7 @@ public class BuyflowUtilities {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		
 		if((!(brand.equalsIgnoreCase("MallyBeauty")))  && (!(brand.equalsIgnoreCase("DrDenese")))){
-			jse.executeScript("window.scrollBy(0,1000)", 0);
+//			jse.executeScript("window.scrollBy(0,1000)", 0);
 		}
 		Thread.sleep(2000);
 		
@@ -398,18 +398,15 @@ public class BuyflowUtilities {
 				comp_order_element = driver.findElement(By.id("submitButton"));
 			}
 			else {
-				if(brand.equalsIgnoreCase("FixMDSkin")) {
-					jse.executeScript("window.scrollBy(0,250)", 0);
-					Thread.sleep(2000);
-				}
-				comp_order_element = driver.findElement(By.id("trigerPlaceOrder"));
+				System.out.println(driver.findElement(By.xpath("//button[@id='trigerPlaceOrder']")).isDisplayed());
+				comp_order_element = driver.findElement(By.xpath("//button[@id='trigerPlaceOrder']"));
 			}			
 		}
 		wait.until(ExpectedConditions.visibilityOf(comp_order_element));
 		wait.until(ExpectedConditions.elementToBeClickable(comp_order_element));
-//		jse.executeScript("arguments[0].click();", comp_order_element);	
-		Thread.sleep(2000);
-		comp_order_element.click();
+		jse.executeScript("arguments[0].click();", comp_order_element);	
+//		Thread.sleep(2000);
+//		comp_order_element.click();
 	}
 	
 	public void clear_form_field(WebDriver driver, String realm, String field) throws ClassNotFoundException, SQLException {
@@ -458,7 +455,7 @@ public class BuyflowUtilities {
 				}
 				else {
 					driver.findElement(By.xpath("//div[@id='paypalSection']//div//div")).click();
-				}
+				}				
 			}
 			else {
 				driver.findElement(By.xpath("//button[@class='PayPalExpressButton']")).click();
@@ -586,7 +583,6 @@ public class BuyflowUtilities {
 			
 ////			fill_form_field(driver, realm, "City", "El Segundo");
 //			fill_form_field(driver, realm, "City", "Los Angeles");
-			Thread.sleep(2000);
 			fill_form_field(driver, realm, "State", "CA");					
 			
 			if(supply.equalsIgnoreCase("30")) {		
@@ -634,9 +630,9 @@ public class BuyflowUtilities {
 		fill_form_field(driver, realm, "Year", "2024");	
 		
 
-		if(realm.equalsIgnoreCase("R4")) {
-			fill_form_field(driver, realm, "CVV", "349");
-		}
+//		if(realm.equalsIgnoreCase("R4")) {
+//			fill_form_field(driver, realm, "CVV", "349");
+//		}
 		jse.executeScript("window.scrollBy(0,200)", 0);
 		Thread.sleep(2000);
 		fill_form_field(driver, realm, "Agree", "");

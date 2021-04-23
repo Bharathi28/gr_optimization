@@ -98,9 +98,9 @@ public class MerchandisingUtilities {
 		}
 		
 		String size_option = "No";
-		if(offerdata.get("Product Name").trim().equalsIgnoreCase("THAT JLO GLOW™")) {
-			size_option = "Yes";
-		}
+//		if(offerdata.get("Product Name").trim().equalsIgnoreCase("THAT JLO GLOW™")) {
+//			size_option = "Yes";
+//		}
 		
 		String freq_option = "No";
 		if(category.equalsIgnoreCase("SubscribeandSave")) {	
@@ -268,7 +268,7 @@ public class MerchandisingUtilities {
 			expectedofferdata.put("Price Book Id", CatalogPriceBookIDs.get("Entry-Continuity Pricebook"));
 			
 			if(offerdata.containsKey("Post Purchase Product")) {
-				if(offerdata.get("Post Purchase Product").trim() != null) {								
+				if(offerdata.get("Post Purchase Product") != null) {								
 					String PostPUProduct = String.join(",", bf_obj.getPPIDfromString(brand, offerdata.get("Post Purchase Product").trim()));
 					expectedofferdata.put("Post Purchase Product", PostPUProduct);
 				}
@@ -954,7 +954,7 @@ public class MerchandisingUtilities {
 									ssheader = ssheader.replaceAll("20% off", "");
 									ssheader = ssheader.replaceAll("\\s+", "");				
 									ssheader = ssheader.replaceAll("[^a-zA-Z0-9$]+", "");
-									System.out.println(ssheader);
+//									System.out.println(ssheader);
 									CatalogPriceBookIDs.put("Subscribe and Save price", ssheader);
 								}									
 							}
@@ -1299,7 +1299,6 @@ public class MerchandisingUtilities {
 				OfferPostPurchase = offer_postpurchase_list.get(i);
 			}			
 		}				
-		
 		
 		if((postPUCategory.equalsIgnoreCase("Kit")) || (postPUCategory.equalsIgnoreCase("ShopKit"))) {
 			postPUCategory = "PostPU";
