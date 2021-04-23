@@ -121,7 +121,7 @@ public class BuyflowValidation {
 //		System.out.println(day);
 		
 		Object[][] arrayObject = null;
-		
+		day=1;
 		if(day == 7) {
 			arrayObject = comm_obj.getExcelData(System.getProperty("user.dir")+"/Input_Output/BuyflowValidation/new_run_input.xlsx", "Saturday", 1);
 		}
