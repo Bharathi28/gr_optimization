@@ -232,10 +232,12 @@ public class BuyflowValidation {
 		// Given offer and category
 		String[] offer_array = kitppid.split(",");
 		String[] category_array = category.split(",");
+		String[] freq_array = giftppid.split(",");
 		
 		// Generate Final Offerlist and categorylist
 		List<String> offerlist = new ArrayList<String>();
 		List<String> categorylist = new ArrayList<String>();
+		List<String> freqlist = new ArrayList<String>();
 		
 		for(int i=0 ; i<offer_array.length ; i++) {
 			if(offer_array[i].contains("single")) {
@@ -253,6 +255,11 @@ public class BuyflowValidation {
 			else {
 				offerlist.add(offer_array[i]);
 				categorylist.add(category_array[i]);
+				if((brand.equalsIgnoreCase("JLoBeauty")) || (brand.equalsIgnoreCase("WestmoreBeauty"))) {
+					if(category_array[i].equalsIgnoreCase("SubscribeandSave")) {
+						freqlist.add(freq_array[i]);
+					}
+				}
 			}
 		}
 //		System.out.println(offerlist);
@@ -275,14 +282,15 @@ public class BuyflowValidation {
 		String PriceBookIdResult = "PASS";
 		
 		ListIterator<String> offerIterator = offerlist.listIterator();
-		ListIterator<String> categoryIterator = categorylist.listIterator();		
-		
+		ListIterator<String> categoryIterator = categorylist.listIterator();	
+		ListIterator<String> freqIterator = freqlist.listIterator();
+				
 		// Launch Browser
-//		WebDriver driver = new RemoteWebDriver(new java.net.URL(URL), capabilities);
+//				WebDriver driver = new RemoteWebDriver(new java.net.URL(URL), capabilities);
 		WebDriver driver = new ChromeDriver(capabilities);
 		driver.manage().window().maximize();
 		
-		System.out.println(((RemoteWebDriver) driver).getSessionId());
+//				System.out.println(((RemoteWebDriver) driver).getSessionId());
 		
 		// enable more detailed HAR capture, if desired (see CaptureType for the complete list)
 	    proxy.enableHarCaptureTypes(CaptureType.REQUEST_CONTENT, CaptureType.RESPONSE_CONTENT);
@@ -333,7 +341,8 @@ public class BuyflowValidation {
 		
 		while(offerIterator.hasNext() && categoryIterator.hasNext()) {
 			String ppid = offerIterator.next();			
-			String currentCategory = categoryIterator.next();					
+			String currentCategory = categoryIterator.next();	
+			
 			
 			if(currentCategory.equalsIgnoreCase("Kit")) {
 				// Get column in which the PPID is present and check if the PPID belongs to Pre-Purchase Entry Kit
@@ -389,7 +398,7 @@ public class BuyflowValidation {
 				// Collect current Offer related details from Merchandising Input file
 				if(!(brand.equalsIgnoreCase("JloBeauty"))) {
 					expectedofferdata_kit = merch_obj.generateExpectedOfferDataForKit(kit_offerdata, PPUSection, postpu, ppid, giftppid, brand, campaigncategory);
-					System.out.println(expectedofferdata_kit);
+//							System.out.println(expectedofferdata_kit);
 				}
 								
 				// Add Kit PPID to lineitem list
@@ -525,15 +534,21 @@ public class BuyflowValidation {
 			}
 			else if((currentCategory.equalsIgnoreCase("Product")) || (currentCategory.equalsIgnoreCase("SubscribeandSave")) || (currentCategory.equalsIgnoreCase("ShopKit"))) {
 								
+				String currentfreq = giftppid;
+				if((brand.equalsIgnoreCase("JLoBeauty")) || (brand.equalsIgnoreCase("WestmoreBeauty"))) {
+					if(currentCategory.equalsIgnoreCase("SubscribeandSave")) {
+						currentfreq = freqIterator.next();
+					}
+				}
+				
 				// Get the product data from Web Catalog
 				HashMap<String, String> product_offerdata = merch_obj.getProdRowfromCatalog(catalogData, ppid, currentCategory);
-				System.out.println(product_offerdata);
+//						System.out.println(product_offerdata);
 				
 				// Get Shipping Frequency
 				HashMap<String, String> product_shippingfrequency = null;
 				
 				if((brand.equalsIgnoreCase("JLoBeauty")) || (brand.equalsIgnoreCase("WestmoreBeauty"))){
-//				if(brand.equalsIgnoreCase("JLoBeauty")) {
 					product_shippingfrequency = merch_obj.getProdShippingFrequency(shipfreq, ppid);
 				}				
 				
@@ -552,8 +567,8 @@ public class BuyflowValidation {
 				}				
 				
 				// Collect current Offer related details from Merchandising Input file
-				expectedofferdata_product = merch_obj.generateExpectedOfferDataForProduct(product_offerdata, product_shippingfrequency, ppid, giftppid, postpu, brand, campaigncategory, currentCategory, catalogPriceBookIDs);
-				System.out.println(expectedofferdata_product);
+				expectedofferdata_product = merch_obj.generateExpectedOfferDataForProduct(product_offerdata, product_shippingfrequency, ppid, currentfreq, postpu, brand, campaigncategory, currentCategory, catalogPriceBookIDs);
+//						System.out.println(expectedofferdata_product);
 				
 				// Add Product PPID to lineitem list
 				List<String> product_lineitem = new ArrayList<String>();
@@ -607,16 +622,18 @@ public class BuyflowValidation {
 				subtotal_list.add(expectedofferdata_product.get("Price"));
 				supplysize_list.add(expectedofferdata_product.get("SupplySize"));
 				offer_postpurchase_list.add(expectedofferdata_product.get("Offer Post-Purchase"));
-//				if(currentCategory.equalsIgnoreCase("Product")) {
+//						if(currentCategory.equalsIgnoreCase("Product")) {
 					subtotal_list_forshippingcalc.add(expectedofferdata_product.get("Price"));
-//				}								 
+//						}								 
 								
-				String[] jloShippingOptions= {"Free Shipping","Two Day Shipping"};
-				int rnd = new Random().nextInt(jloShippingOptions.length);			
-				jloShippingSelect = jloShippingOptions[rnd];
+//						String[] jloShippingOptions= {"Free Shipping","Two Day Shipping"};
+//						int rnd = new Random().nextInt(jloShippingOptions.length);			
+//						jloShippingSelect = jloShippingOptions[rnd];
 					
-				String shipping_calc = merch_obj.calculateShippingforProduct(brand, subtotal_list_forshippingcalc, jloShippingSelect, currentCategory, category_list);
-				shipping_list.add(shipping_calc);
+				if(!(brand.equalsIgnoreCase("JLoBeauty"))) {
+					String shipping_calc = merch_obj.calculateShippingforProduct(brand, subtotal_list_forshippingcalc, jloShippingSelect, currentCategory, category_list);
+					shipping_list.add(shipping_calc);
+				}				
 				
 				if((currentCategory.equalsIgnoreCase("SubscribeandSave")) || (currentCategory.equalsIgnoreCase("ShopKit"))) {
 					renewal_plan_list.add(expectedofferdata_product.get("Renewal Plan Id"));
@@ -640,7 +657,7 @@ public class BuyflowValidation {
 				pixel_obj.defineNewHar(proxy, brand + "CheckoutPage");
 				bf_obj.move_to_checkout(driver, brand, campaigncategory, currentCategory);
 				
-				if((brand.equalsIgnoreCase("JLoBeauty")) && (expectedofferdata_product.get("Product Name").equalsIgnoreCase("Star Power Duo"))) {
+				if((brand.equalsIgnoreCase("JLoBeauty")) && (expectedofferdata_product.get("Product Name").contains("Star Power Duo"))) {
 					sas_obj.select_prepu(driver, brand, campaign, expectedofferdata_product);
 				}
 			}
@@ -668,20 +685,24 @@ public class BuyflowValidation {
 		
 		campaignpages.add("CheckoutPage");
 		
-//		if(category_list.contains("Kit")) {
+//				if(category_list.contains("Kit")) {
 			if(postpu.equalsIgnoreCase("Yes")) {
 				campaignpages.add("PostPurchaseUpsell");
 			}
-//		}		
+//				}		
 		campaignpages.add("ConfirmationPage");
 		
-//		System.out.println("Subtotal list : " + subtotal_list);
-//		System.out.println("Category list : " + category_list);
+//				System.out.println("Subtotal list : " + subtotal_list);
+//				System.out.println("Category list : " + category_list);
 		
 		// JLoBeauty - select shipping
 		if(brand.equalsIgnoreCase("JLoBeauty")) {
+			String[] jloShippingOptions= {"Free Shipping","Two Day Shipping"};
+			int rnd = new Random().nextInt(jloShippingOptions.length);			
+			jloShippingSelect = jloShippingOptions[rnd];
+			
 			Select sel_element = new Select(driver.findElement(By.xpath("//select[@id='dwfrm_singleshipping_shippingAddress_shippingMethodID']")));
-//			System.out.println("Selected Shipping : " + jloShippingSelect);
+//					System.out.println("Selected Shipping : " + jloShippingSelect);
 			if(jloShippingSelect.equalsIgnoreCase("Free Shipping")){
 				sel_element.selectByValue("Standard");
 			}
@@ -694,8 +715,9 @@ public class BuyflowValidation {
 		}				
 		
 		// Decide on which PostPU
+//				System.out.println(subtotal_list);
 		List<String> PostPUdetails = merch_obj.getPostPU(subtotal_list, category_list, supplysize_list, offer_postpurchase_list);
-//		System.out.println("PostPUDetails: " + PostPUdetails);
+//				System.out.println("PostPUDetails: " + PostPUdetails);
 		String PostPUPage = PostPUdetails.get(0);
 		String supplysize  = PostPUdetails.get(1);
 		String offer_postpurchase  = PostPUdetails.get(2);
@@ -714,7 +736,7 @@ public class BuyflowValidation {
 			}
 		}
 		else {
-//			if(((categorylist.contains("Kit")) || (categorylist.contains("ShopKit"))) && (offer_postpurchase.equalsIgnoreCase("Yes"))) {
+//					if(((categorylist.contains("Kit")) || (categorylist.contains("ShopKit"))) && (offer_postpurchase.equalsIgnoreCase("Yes"))) {
 			if(offer_postpurchase.equalsIgnoreCase("Yes")) {
 				email = bf_obj.fill_out_form(driver, brand, campaigncategory, "VISA", "same", "90", address);
 				pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_checkoutpage_" + pattern +".har", driver, pixelStr);
@@ -745,10 +767,10 @@ public class BuyflowValidation {
 		List<List<String>> diff_lineitemlist = new ArrayList<>();
 		
 		// Scenario - 90-day order + Paypal - could not validate 90-day cart language and supplemental language because invalid zipcode could not be fill-in for Paypal
-//		if((!(cc.equalsIgnoreCase("Paypal"))) && (!(supplysize.equalsIgnoreCase("90"))) && (!(offer_postpurchase.equalsIgnoreCase("Yes")))) {
+//				if((!(cc.equalsIgnoreCase("Paypal"))) && (!(supplysize.equalsIgnoreCase("90"))) && (!(offer_postpurchase.equalsIgnoreCase("Yes")))) {
 		if(!((cc.equalsIgnoreCase("Paypal")) && (supplysize.equalsIgnoreCase("90")) && (offer_postpurchase.equalsIgnoreCase("Yes")))){
 			
-//		}
+//				}
 			// When some more lineitems are expected
 			temp_lineitemlist = new ArrayList<>();
 			diff_lineitemlist = new ArrayList<>(expected_lineitems);
@@ -863,7 +885,7 @@ public class BuyflowValidation {
 			
 		// Scenario - 90-day order + Paypal - could not validate 90-day cart language and supplemental language because invalid zipcode could not be fill-in for Paypal
 		if((category_list.contains("Kit")) || (category_list.contains("SubscribeandSave")) || (category_list.contains("ShopKit"))) {
-//			if(!((cc.equalsIgnoreCase("Paypal")) && (supplysize.equalsIgnoreCase("90")) && (offer_postpurchase.equalsIgnoreCase("Yes")))){
+//					if(!((cc.equalsIgnoreCase("Paypal")) && (supplysize.equalsIgnoreCase("90")) && (offer_postpurchase.equalsIgnoreCase("Yes")))){
 							
 				for(List<String> expected_item : expected_lineitems) {
 					String exp_suppl_cart_lang = expected_item.get(6);
@@ -949,7 +971,22 @@ public class BuyflowValidation {
 		}
 		
 		// Calculate Expected Checkout - Shipping Price
+//				String expected_shipping = "";
+		if(brand.equalsIgnoreCase("JLoBeauty")) {
+			String categoryapplied = "Product";
+			if(categorylist.contains("SubscribeandSave")) {
+				categoryapplied = "SubscribeandSave";
+			}
+			String shipping_calc = merch_obj.calculateShippingforProduct(brand, subtotal_list_forshippingcalc, jloShippingSelect, categoryapplied, category_list);
+			shipping_list.add(shipping_calc);
+		}
+//				else {
+//					expected_shipping = bf_obj.CalculateTotalPrice(shipping_list);
+//				}		
+		
 		String expected_shipping = bf_obj.CalculateTotalPrice(shipping_list);
+//					System.out.println(shipping_list);
+//					System.out.println(expected_shipping);
 		checkout_shipping = checkout_shipping.replace("Standard -","");
 		checkout_shipping = checkout_shipping.replace("Two Day -","");
 		checkout_shipping = checkout_shipping.replace("\n","");
@@ -1017,7 +1054,7 @@ public class BuyflowValidation {
 				bf_obj.clear_form_field(driver, realm, "Zip");
 				bf_obj.fill_form_field(driver, realm, "Zip", "90245");
 				Thread.sleep(2000);
-//				bf_obj.fill_form_field(driver, realm, "CVV", "349");	
+//						bf_obj.fill_form_field(driver, realm, "CVV", "349");	
 			}
 		}							
 		
@@ -1043,15 +1080,15 @@ public class BuyflowValidation {
 			// After Fall back scenario - control navigates to Confirmation page
 			else if(supplysize.equalsIgnoreCase("90")) {
 				pixel_obj.defineNewHar(proxy, brand + "ConfirmationPage");	        
-	        	bf_obj.complete_order(driver, brand, cc);          
+	        	bf_obj.complete_order(driver, brand, cc);       
 	            pixel_obj.getHarData(proxy, System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_confirmationpage_" + pattern + ".har", driver, pixelStr);
 	            consoleerror = console_obj.analyzeLog(driver, "ConfirmationPage", consoleerror, console);		
 			}					
 		}			
 		Thread.sleep(3000);
 		
-//		// Upsell page validations
-//		driver.findElement(By.xpath("//i[@class='fa fa-plus']")).click();				
+//				// Upsell page validations
+//				driver.findElement(By.xpath("//i[@class='fa fa-plus']")).click();				
 		
 		// No Upsell Confirmation if fall-back has happened previously(90-day - CC Order)
 		// For 30-day order or Paypal order - Select Upsell Confirmation
@@ -1350,13 +1387,13 @@ public class BuyflowValidation {
 			VenueIdResult = "PASS";
 		}
 		
-//		// Price Book Id Validation
+//				// Price Book Id Validation
 		String actualpricebookid = comm_obj.getFromVariableMap(driver, "pricebookId");
 				
 		List<String> actual_price_book_list = Arrays.asList(actualpricebookid.split("\\s*,\\s*"));
 		
-//		System.out.println("Actual:" + actual_price_book_list);
-//		System.out.println("Expected:" + pricebook_id_list);
+//				System.out.println("Actual:" + actual_price_book_list);
+//				System.out.println("Expected:" + pricebook_id_list);
 				
 		if(pricebook_id_list.contains("No expected PriceBookID")) {
 			PriceBookIdResult = "Could not validate";		
@@ -1436,12 +1473,12 @@ public class BuyflowValidation {
 		}
 		
 		if(console.equalsIgnoreCase("Yes")) {
-//			File consolefile = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Console Errors\\" + brand + "\\" + kitppid + ".txt");
+//					File consolefile = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Console Errors\\" + brand + "\\" + kitppid + ".txt");
 			OutputStream os = new FileOutputStream(new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Console Errors\\" + brand + "\\" + kitppid + ".txt"));
 	        os.write(consoleerror.toString().getBytes(), 0, consoleerror.toString().length());
 	        attachmentList.add(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Console Errors\\" + brand + "\\" + kitppid + ".txt");
 		}
-		System.out.println(consoleerror.toString());
+//				System.out.println(consoleerror.toString());
 	}
 	
 	@AfterSuite

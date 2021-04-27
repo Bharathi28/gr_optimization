@@ -98,9 +98,9 @@ public class MerchandisingUtilities {
 		}
 		
 		String size_option = "No";
-//		if(offerdata.get("Product Name").trim().equalsIgnoreCase("THAT JLO GLOW™")) {
-//			size_option = "Yes";
-//		}
+		if(offerdata.get("Product Name").trim().equalsIgnoreCase("THAT INNER LOVE™")) {
+			size_option = "Yes";
+		}
 		
 		String freq_option = "No";
 		if(category.equalsIgnoreCase("SubscribeandSave")) {	
@@ -181,27 +181,32 @@ public class MerchandisingUtilities {
 //			}			
 						
 			if(brand.equalsIgnoreCase("JLoBeauty")) {
-				if(Expshipfreq.equalsIgnoreCase("-")) {
-					Expshipfreq = "30 Day";
+				if(offerdata.get("Product Name").trim().equalsIgnoreCase("THAT INNER LOVE™")) {
+					expectedofferdata.put("Renewal Plan Id", RenewalPlanID);
 				}
-				expectedofferdata.put("Shipping Frequency", Expshipfreq);
-				
-				String ShipFreqCol = Expshipfreq + " RP";
-				expectedofferdata.put("Renewal Plan Id", ProductShipFreq.get(ShipFreqCol).trim());				
-				
-				if(Expshipfreq.contains("30")) {
-					CartLanguage = CartLanguage.replace("90 days", "30 days");
-					SupplementalCartLanguage = SupplementalCartLanguage.replace("90 days", "30 days");
-				}
-				else if(Expshipfreq.contains("60")) {
-					CartLanguage = CartLanguage.replace("90 days", "60 days");
-					SupplementalCartLanguage = SupplementalCartLanguage.replace("90 days", "60 days");
-				}		
-				
-				// Pre-Purchase Upsell for Star Power Duo
-				if(offerdata.get("Product Name").trim().equalsIgnoreCase("Star Power Duo")) {
-					expectedofferdata.put("Offer Pre-Purchase", offerdata.get("Pre-Purchase").trim());
-				}
+				else {
+					if(Expshipfreq.equalsIgnoreCase("-")) {
+						Expshipfreq = "30 Day";
+					}
+					expectedofferdata.put("Shipping Frequency", Expshipfreq);
+					
+					String ShipFreqCol = Expshipfreq + " RP";
+					expectedofferdata.put("Renewal Plan Id", ProductShipFreq.get(ShipFreqCol).trim());				
+					
+					if(Expshipfreq.contains("30")) {
+						CartLanguage = CartLanguage.replace("90 days", "30 days");
+						SupplementalCartLanguage = SupplementalCartLanguage.replace("90 days", "30 days");
+					}
+					else if(Expshipfreq.contains("60")) {
+						CartLanguage = CartLanguage.replace("90 days", "60 days");
+						SupplementalCartLanguage = SupplementalCartLanguage.replace("90 days", "60 days");
+					}		
+					
+					// Pre-Purchase Upsell for Star Power Duo
+					if(offerdata.get("Product Name").trim().equalsIgnoreCase("Star Power Duo")) {
+						expectedofferdata.put("Offer Pre-Purchase", offerdata.get("Pre-Purchase").trim());
+					}
+				}				
 			}
 			else if(brand.equalsIgnoreCase("WestmoreBeauty")) {
 				if(Expshipfreq.equalsIgnoreCase("-")) {
@@ -215,10 +220,10 @@ public class MerchandisingUtilities {
 				if(Expshipfreq.contains("1 Month")) {
 					CartLanguage = CartLanguage.replace("two months", "one month");
 					CartLanguage = CartLanguage.replace("Two months", "One month");
-					CartLanguage = CartLanguage.replace("every one month", "every month");
+//					CartLanguage = CartLanguage.replace("every one month", "every month");
 					SupplementalCartLanguage = SupplementalCartLanguage.replace("two months", "one month");
 					SupplementalCartLanguage = SupplementalCartLanguage.replace("Two months", "One month");
-					SupplementalCartLanguage = SupplementalCartLanguage.replace("every one month", "every month");
+//					SupplementalCartLanguage = SupplementalCartLanguage.replace("every one month", "every month");
 				}
 				else if(Expshipfreq.contains("3 Months")) {
 					CartLanguage = CartLanguage.replace("two", "three");
@@ -233,7 +238,6 @@ public class MerchandisingUtilities {
 			expectedofferdata.put("Cart Language", CartLanguage);			
 			expectedofferdata.put("Supplemental Cart Language", SupplementalCartLanguage);
 			
-//			String[] lang_price_arr = lang_obj.parse_cart_language(offerdata.get("Cart Language").trim());	
 			String[] lang_price_arr = lang_obj.parse_cart_language(CartLanguage);
 			String cart_lang_price = lang_price_arr[1];
 			String cart_lang_shipping = lang_price_arr[2];	
