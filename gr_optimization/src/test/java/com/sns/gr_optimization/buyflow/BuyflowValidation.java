@@ -37,12 +37,15 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.Select;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.browserstack.local.Local;
+import com.lambdatest.tunnel.Tunnel;
 import com.sns.gr_optimization.testbase.BuyflowUtilities;
 import com.sns.gr_optimization.testbase.CartLanguageUtilities;
 import com.sns.gr_optimization.testbase.CommonUtilities;
@@ -94,15 +97,12 @@ public class BuyflowValidation {
 	String username = "manibharathisearchnscore";
 	String accessKey = "kVAvkFtrOLrMUgNXgnhmoKiKWRcBvQiywvTlY4KVqCw2coOBbG";
 	final String URL = "https://" + username + ":" + accessKey + "@hub.lambdatest.com/wd/hub";
-
+	
 	@BeforeSuite
 	public void getEmailId() {
 //		System.setProperty("email", "aaqil@searchnscore.com,manibharathi@searchnscore.com");
-//		System.setProperty("testset", "Top 3");
-//		
+	
 		sendReportTo = System.getProperty("email");
-//		testSet = System.getProperty("testset");
-//		testSuite = System.getProperty("testsuite");
 		
 //		System.out.println("Enter Email id : ");
 //		sendReportTo = in.next();
@@ -111,14 +111,8 @@ public class BuyflowValidation {
 	@DataProvider(name="buyflowInput", parallel=true)
 	public Object[][] testData() throws Exception {
 		
-//		System.out.println(username);
-//		System.out.println(accessKey);
-//		System.out.println(buildName);
-//		System.out.println(URL);
-		
 		Calendar calendar = Calendar.getInstance();
 		int day = calendar.get(Calendar.DAY_OF_WEEK);
-//		System.out.println(day);
 		
 		Object[][] arrayObject = null;
 		
@@ -165,39 +159,69 @@ public class BuyflowValidation {
 		
 		// start the proxy
 		BrowserMobProxy proxy = new BrowserMobProxyServer();
-		proxy.setTrustAllServers(true);
-		proxy.start(0);
-		System.out.println("Started proxy server at: " + proxy.getPort());
+				proxy.setTrustAllServers(true);
+				
+				proxy.start(0);
+				
+				System.out.println("Started proxy server at: " + proxy.getPort());
+				
+				String  portn = String.valueOf(proxy.getPort());
+				
+				// get the Selenium proxy object
+		        Proxy seleniumProxy = ClientUtil.createSeleniumProxy(proxy);
+//		        String hostIp = Inet4Address.getLocalHost().getHostAddress();
+//		        seleniumProxy.setHttpProxy(hostIp + ":" + proxy.getPort());
+//		        seleniumProxy.setSslProxy(hostIp + ":" + proxy.getPort());	
+//				
+//		        System.out.println(seleniumProxy);
+//		        System.out.println(portn + " <-- BrowserMob Proxy port passed in tunnel");
+
+		        
+//		        BuyflowValidation b = new BuyflowValidation();
+//		            Tunnel t = new Tunnel();
+//		            HashMap<String, String> t_options = new HashMap<String, String>();
+//		            t_options.put("user", username);
+//		            t_options.put("key", accessKey);
+//		            t_options.put("proxyHost",hostIp);
+//		            t_options.put("proxyPort", portn);
+//		            t_options.put("ingress-only", "--ingress-only");   //mandatory while using browserMob proxy
+//		            t_options.put("tunnelName",brand + " " + campaign + " " + kitppid);
+//
+//		            //start tunnel
+//		            t.start(t_options);
+//		            
+//		            System.out.println(t_options);
+		            
+				ChromeOptions options = new ChromeOptions();
+				options.setProxy(seleniumProxy);
+				options.setAcceptInsecureCerts(true);	   
+				options.addArguments("--ignore-certificate-errors");
+				options.addArguments("--disable-backgrounding-occluded-windows");
+					    
+				DesiredCapabilities capabilities = new DesiredCapabilities();
+				capabilities.setCapability(ChromeOptions.CAPABILITY, options);	    
+				capabilities.setCapability("os", "Windows");
+				capabilities.setCapability("os_version", "10");
+				capabilities.setCapability("browser_version", "80");	    
+					    
+				capabilities.setCapability("platformName", "windows");
+//				capabilities.setCapability("browser", "Chrome");	
+				
+//				capabilities.setCapability("build", "Buyflow");
+//				capabilities.setCapability("name", brand + " " + campaign + " " + kitppid);
+//						
+//				capabilities.setCapability("platform", "Windows 10");
+//				capabilities.setCapability("browserName", "Chrome");
+//				capabilities.setCapability("version","89.0");
+//				capabilities.setCapability("resolution","1920x1200");
+//				capabilities.setCapability("tunnel",true);
+//				capabilities.setCapability("tunnelName",brand + " " + campaign + " " + kitppid);
 		
-		// get the Selenium proxy object
-		Proxy seleniumProxy = ClientUtil.createSeleniumProxy(proxy);	
-		
-		ChromeOptions options = new ChromeOptions();
-		options.setProxy(seleniumProxy);
-		options.setAcceptInsecureCerts(true);	   
-		options.addArguments("--ignore-certificate-errors");
-		options.addArguments("--disable-backgrounding-occluded-windows");
-			    
-		DesiredCapabilities capabilities = new DesiredCapabilities();
-		capabilities.setCapability(ChromeOptions.CAPABILITY, options);	    
-		capabilities.setCapability("os", "Windows");
-		capabilities.setCapability("os_version", "10");
-		capabilities.setCapability("browser_version", "80");	    
-			    
-//		capabilities.setCapability("platformName", "windows");
-		capabilities.setCapability("browser", "Chrome");
-//		capabilities.setCapability("video", "True");
-		
-//		 capabilities.setCapability("platform", "Windows 10");
-//	     capabilities.setCapability("browserName", "Chrome");
-//	     capabilities.setCapability("version", "87.0"); // If this cap isn't specified, it will just get the any available one
-//        capabilities.setCapability("resolution","1920x1080");
-//        capabilities.setCapability("build", "First Test");
-//        capabilities.setCapability("name", "Sample Test");
-//        capabilities.setCapability("network", true); // To enable network logs
-//        capabilities.setCapability("visual", true); // To enable step by step screenshot
-//        capabilities.setCapability("video", true); // To enable video recording
-//        capabilities.setCapability("console", true); // To capture console logs
+				// Launch Browser
+//				WebDriver driver = new RemoteWebDriver(new java.net.URL(URL), capabilities);
+		WebDriver driver = new ChromeDriver(capabilities);
+		driver.manage().window().maximize();
+ 
 		
 		// Get Source Code Information - Campaign Category
 		String campaigncategory = db_obj.checkcampaigncategory(brand, campaign);
@@ -262,8 +286,6 @@ public class BuyflowValidation {
 				}
 			}
 		}
-//		System.out.println(offerlist);
-//		System.out.println(categorylist);
 		
 		// Intialize result variables
 		String remarks = "";
@@ -284,13 +306,6 @@ public class BuyflowValidation {
 		ListIterator<String> offerIterator = offerlist.listIterator();
 		ListIterator<String> categoryIterator = categorylist.listIterator();	
 		ListIterator<String> freqIterator = freqlist.listIterator();
-				
-		// Launch Browser
-//				WebDriver driver = new RemoteWebDriver(new java.net.URL(URL), capabilities);
-		WebDriver driver = new ChromeDriver(capabilities);
-		driver.manage().window().maximize();
-		
-//				System.out.println(((RemoteWebDriver) driver).getSessionId());
 		
 		// enable more detailed HAR capture, if desired (see CaptureType for the complete list)
 	    proxy.enableHarCaptureTypes(CaptureType.REQUEST_CONTENT, CaptureType.RESPONSE_CONTENT);
@@ -338,22 +353,26 @@ public class BuyflowValidation {
 		String postpu = "No";
 		String prepu = "No";		
 		String jloShippingSelect = "";
-		
+		String SAexpectedShipFreq = "";
 		while(offerIterator.hasNext() && categoryIterator.hasNext()) {
 			String ppid = offerIterator.next();			
-			String currentCategory = categoryIterator.next();	
-			
+			String currentCategory = categoryIterator.next();				
 			
 			if(currentCategory.equalsIgnoreCase("Kit")) {
 				// Get column in which the PPID is present and check if the PPID belongs to Pre-Purchase Entry Kit
 				int PPIDcolumn = 0;
+				HashMap<String, String> shippingfrequency = null;
 				if((brand.equalsIgnoreCase("Smileactives")) && (campaign.equalsIgnoreCase("specialoffer2"))) {
-					if(giftppid.equalsIgnoreCase("entrykit")) {
+					if(giftppid.contains("entrykit")) {
 						PPIDcolumn = 1;
+						String[] arr = giftppid.split("-");
+						SAexpectedShipFreq = arr[1];
+						// Get Shipping Frequency						
+						shippingfrequency = merch_obj.getKitShippingFrequency(shipfreq, ppid, arr[1]);
 					}
 					else {
 						PPIDcolumn = 2;
-					}
+					}					
 				}
 				else {
 					PPIDcolumn = merch_obj.getPPIDColumn(merchData, ppid);
@@ -397,8 +416,8 @@ public class BuyflowValidation {
 				
 				// Collect current Offer related details from Merchandising Input file
 				if(!(brand.equalsIgnoreCase("JloBeauty"))) {
-					expectedofferdata_kit = merch_obj.generateExpectedOfferDataForKit(kit_offerdata, PPUSection, postpu, ppid, giftppid, brand, campaigncategory);
-//							System.out.println(expectedofferdata_kit);
+					expectedofferdata_kit = merch_obj.generateExpectedOfferDataForKit(kit_offerdata, shippingfrequency, PPUSection, postpu, ppid, giftppid, brand, campaigncategory);
+					System.out.println(expectedofferdata_kit);
 				}
 								
 				// Add Kit PPID to lineitem list
@@ -421,16 +440,21 @@ public class BuyflowValidation {
 				kit_lineitem.add(expectedofferdata_kit.get("Continuity Pricing"));
 				kit_lineitem.add(expectedofferdata_kit.get("Continuity Shipping"));				
 				
+				System.out.println(expectedofferdata_kit.get("Supplemental Cart Language"));
 				if(expectedofferdata_kit.get("Supplemental Cart Language") == null) {
+					System.out.println("if");
 					kit_lineitem.add("No expected Supplemental Cart Language");
 				}
 				else if(expectedofferdata_kit.get("Supplemental Cart Language").equalsIgnoreCase("-")) {
+					System.out.println("if else");
 					kit_lineitem.add("No Supplemental Cart Language");
 				}
 				else {
+					System.out.println("else");
 					kit_lineitem.add(expectedofferdata_kit.get("Supplemental Cart Language"));
 				}		
-				expected_lineitems.add(kit_lineitem);		
+				expected_lineitems.add(kit_lineitem);	
+				
 				
 				// Add Gift PPIDs to lineitem list				
 				String[] giftppidarr = expectedofferdata_kit.get("Gift PPID").split(",");
@@ -748,6 +772,11 @@ public class BuyflowValidation {
 				consoleerror = console_obj.analyzeLog(driver, "PostPurchaseUpsell", consoleerror, console);				
 				
 				bf_obj.upsell_confirmation(driver, brand, campaigncategory, offer_postpurchase, PostPUPage);
+				
+				if((brand.equalsIgnoreCase("Smileactives")) && (campaign.equalsIgnoreCase("specialoffer2")) && (giftppid.contains("entrykit"))) {
+					Select sel_element = new Select(driver.findElement(By.xpath("//select[@id='shippingFrequencySelector']")));
+					sel_element.selectByVisibleText(SAexpectedShipFreq);
+				}
 			}
 			else {
 				email = bf_obj.fill_out_form(driver, brand, campaigncategory, cc, shipbill, "30", address);
@@ -795,9 +824,19 @@ public class BuyflowValidation {
 								EntryPriceResult = "FAIL";
 								remarks = remarks + "Checkout Cart - " + expected_item.get(0) + " - " + expected_item.get(1) + " Price Mismatch. Expected - " + expected_item.get(2) + " , Actual - " + actual_price + " ; ";
 							}
-						}					
+						}	
+						
+						if(expected_item.get(3).equalsIgnoreCase("No Cart Language")) {
 							
-						if(!(expected_item.get(3).equalsIgnoreCase("No Cart Language"))) {
+							if((!(expected_item.get(0).equalsIgnoreCase("Gift"))) && (!(expected_item.get(0).equalsIgnoreCase("PrePU"))) && (!(expected_item.get(0).equalsIgnoreCase("Product"))) && (!(expected_item.get(0).equalsIgnoreCase("PostPU")))) {
+								CartLanguageResult = lang_obj.ChecknoCartLanguage(driver);
+								if(CartLanguageResult.equalsIgnoreCase("FAIL")) {
+									remarks = remarks + "Expected - No Cart Language ; Actual - Cart Language is present ;";
+								}
+							}
+														
+						}							
+						else {
 							//Remove whitespace
 							String expcartlang = expected_item.get(3).replaceAll("\\s+", "");
 							String actcartlang = actual_cart_language.replaceAll(" ", "");
@@ -888,9 +927,18 @@ public class BuyflowValidation {
 //					if(!((cc.equalsIgnoreCase("Paypal")) && (supplysize.equalsIgnoreCase("90")) && (offer_postpurchase.equalsIgnoreCase("Yes")))){
 							
 				for(List<String> expected_item : expected_lineitems) {
-					String exp_suppl_cart_lang = expected_item.get(6);
 					
+					String exp_suppl_cart_lang = expected_item.get(6);
+					System.out.println("In suppl" + exp_suppl_cart_lang);
 					if(exp_suppl_cart_lang.equalsIgnoreCase("No Supplemental Cart Language")) {
+						
+						if((!(expected_item.get(0).equalsIgnoreCase("Gift"))) && (!(expected_item.get(0).equalsIgnoreCase("PrePU"))) && (!(expected_item.get(0).equalsIgnoreCase("PostPU")))) {
+							SuppCartLanguageResult = lang_obj.ChecknoSupplCartLanguage(driver);
+							if(SuppCartLanguageResult.equalsIgnoreCase("FAIL")) {
+								remarks = remarks + "Expected - No Supplemental Cart Language ; Actual - Supplemental Cart Language is present ;";
+							}
+						}
+												
 						continue;
 					}
 					
@@ -1463,14 +1511,15 @@ public class BuyflowValidation {
 		output_row.add(browser);	
 		output_row.add(remarks);
 		output.add(output_row);
-		
+				
 		driver.quit();
-		proxy.stop();
+//		t.stop();
+		proxy.stop();		
 	
 		if(!(pixelStr.equalsIgnoreCase("-"))) {
 			HashMap<Integer, HashMap> overallOutput = pixel_obj.validatePixels(pixelStr, pattern, brand, campaign, env, campaignpages);
 			attachmentList = pixel_obj.writePixelOutput(overallOutput, brand, campaign, attachmentList, Output_foldername);
-		}
+		}	
 		
 		if(console.equalsIgnoreCase("Yes")) {
 //					File consolefile = new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Console Errors\\" + brand + "\\" + kitppid + ".txt");
@@ -1483,7 +1532,7 @@ public class BuyflowValidation {
 	
 	@AfterSuite
 	public void populateExcel() throws Exception {
-		
+//		t.stop();
 //		l.stop();
 //		driver.quit();
 		

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,13 +31,19 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.sns.gr_optimization.testbase.CommonUtilities;
 
+import de.sstoehr.harreader.HarReader;
+import de.sstoehr.harreader.HarReaderException;
 import net.lightbody.bmp.BrowserMobProxy;
 import net.lightbody.bmp.core.har.Har;
+import net.lightbody.bmp.core.har.HarEntry;
 
 public class PixelUtilities {
 	
@@ -152,19 +159,140 @@ public class PixelUtilities {
 	    return pattern;
 	}
 	
-	public HashMap<Integer, HashMap> validatePixels(String pixelStr, String pattern, String brand, String campaign, String env, List<String> campaignpages) throws ClassNotFoundException, SQLException, InterruptedException {
+//	public HashMap<Integer, HashMap> validatePixels(String pixelStr, String pattern, String brand, String campaign, String env, List<String> campaignpages, String URL) throws ClassNotFoundException, SQLException, InterruptedException, MalformedURLException {
+//		HashMap<Integer, HashMap> overallOutput = new LinkedHashMap<Integer, HashMap>();
+//		
+//		ChromeOptions options = new ChromeOptions();
+//		options.setAcceptInsecureCerts(true);	   
+//		options.addArguments("--ignore-certificate-errors");
+//		options.addArguments("--disable-backgrounding-occluded-windows");
+//			    
+//		DesiredCapabilities capabilities = new DesiredCapabilities();
+//		capabilities.setCapability(ChromeOptions.CAPABILITY, options);	
+//		
+//		capabilities.setCapability("build", "pixel");		
+//		capabilities.setCapability("platform", "Windows 10");
+//		capabilities.setCapability("browserName", "Chrome");
+//		capabilities.setCapability("version","89.0");
+//		capabilities.setCapability("resolution","1920x1200");
+//		
+////		WebDriver driver = new ChromeDriver();
+//		WebDriver driver = new RemoteWebDriver(new java.net.URL(URL), capabilities);
+//	    driver.manage().window().maximize();
+//	    driver.get("https://ericduran.github.io/chromeHAR/");
+//	    WebDriverWait wait = new WebDriverWait(driver,50);
+////	    driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+//	    
+//	    if(driver.findElements(By.xpath("//button[@id='details-button']")).size() != 0) {
+//			driver.findElement(By.xpath("//button[@id='details-button']")).click();
+//			driver.findElement(By.xpath("//a[@id='proceed-link']")).click();
+//		}
+//	        
+//	    String[] pixelArr = pixelStr.split(",");		    
+//	    					
+//		int j=1;
+//		for(String pixel : pixelArr) {	
+//				
+//			HashMap<String, HashMap> envMap = new LinkedHashMap<String, HashMap>();
+//			HashMap<String, HashMap> brandMap = new LinkedHashMap<String, HashMap>();
+//			HashMap<String, HashMap> campaignMap = new LinkedHashMap<String, HashMap>();
+//			HashMap<String, List<HashMap>> pixelMap = new LinkedHashMap<String, List<HashMap>>();
+//								
+//			List<String> events = db_obj.getAllEvents(pixel);		
+//				
+//			List<HashMap> eventmapList = new ArrayList<HashMap>();
+//			for(String event : events) {					
+//				HashMap<String, List<HashMap>> eventMap = new LinkedHashMap<String, List<HashMap>>();
+//				System.out.println();
+//				System.out.println(event);
+//									
+//				int compatible = db_obj.checkBrandPixelCompatibility(brand, event);	
+//				if(compatible == 1) {
+//					
+//					List<String> pages = db_obj.getFiringPages(brand, campaign, "CCFlow", pixel, event, campaignpages);
+//					String searchpattern = db_obj.getSearchPattern(brand, event);
+//					String pixelbrandid = db_obj.getPixelBrandId(brand, event);
+//						
+//					String[] pixelIdArr = pixelbrandid.split(",");						
+//						
+//					List<HashMap> pagemapList = new ArrayList<HashMap>();
+//					for(String page : pages) {													
+//						HashMap<String, List<List<String>>> pageMap = new LinkedHashMap<String, List<List<String>>>();	
+//				        System.out.println(page);
+//						driver.findElement(By.name("har")).sendKeys(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_" + page + "_" + pattern + ".har");
+//						
+//						WebElement searchElmt = driver.findElement(By.id("search"));
+//						wait.until(ExpectedConditions.visibilityOf(searchElmt));
+////						Thread.sleep(2000);
+//				        driver.findElement(By.id("search")).clear();
+//				        driver.findElement(By.id("search")).sendKeys(searchpattern);
+//				        Thread.sleep(2000);
+//				            
+//				        int noOfRows = driver.findElements(By.xpath("//tr[contains(@class, 'revealed network-item')]")).size();
+//				            
+//				        List<List<String>> outputList = new ArrayList<List<String>>();
+//				        for(int i=1; i<=noOfRows; i++) {			            	
+//					            	
+//					        String dataurl = driver.findElement(By.xpath("(//tr[contains(@class, 'revealed network-item')]//td[@class='name-column'])[" + i + "]")).getAttribute("title").toLowerCase();
+//					        String statuscode = driver.findElement(By.xpath("(//tr[contains(@class, 'revealed network-item')]//td[@class='status-column'])[" + i + "]")).getAttribute("title").toLowerCase();
+//					            
+//					        for(String id : pixelIdArr) {
+//					        	if(!(id.equalsIgnoreCase(" "))) {
+//					            	if(searchpattern.equalsIgnoreCase("-")) {
+//					            		if(dataurl.contains(id.toLowerCase())) {
+//					            			List<String> outputData = new ArrayList<String>();
+//											outputData.add(statuscode);
+//											outputData.add(dataurl);
+//											outputList.add(outputData);
+//											System.out.println(i + " " + statuscode + " " + dataurl);
+//					            		}
+//					            	}
+//					            	else {
+//					            		if((dataurl.contains(searchpattern.toLowerCase())) && (dataurl.contains(id.toLowerCase()))) {
+//											List<String> outputData = new ArrayList<String>();
+//											outputData.add(statuscode);
+//											outputData.add(dataurl);
+//											outputList.add(outputData);
+//											System.out.println(i + " " + statuscode + " " + dataurl);
+//					            		}					            			
+//									}
+//								}
+//								else {
+//									if(dataurl.contains(searchpattern.toLowerCase())) {
+//										List<String> outputData = new ArrayList<String>();
+//										outputData.add(statuscode);
+//										outputData.add(dataurl);
+//										outputList.add(outputData);
+//										System.out.println(i + " " + statuscode + " " + dataurl);
+//									}
+//								}		
+//					        }										            		
+//					    } // end of rows
+//				        if(outputList.size() == 0) {
+//				            List<String> outputData = new ArrayList<String>();
+//							outputData.add(" ");
+//							outputData.add(" ");
+//							outputList.add(outputData);
+//				        }		            				            
+//				        pageMap.put(page, outputList);
+//				        pagemapList.add(pageMap);
+//				    } // end of pages						
+//					eventMap.put(event, pagemapList);
+//				} // end of compatible if
+//				eventmapList.add(eventMap);					
+//			} // end of events
+//			pixelMap.put(pixel, eventmapList);
+//			campaignMap.put(campaign, pixelMap);
+//			brandMap.put(brand, campaignMap);
+//			envMap.put(env, brandMap);		
+//			overallOutput.put(j++, envMap);
+//		} // end of pixels
+//		driver.close();
+//		return overallOutput;
+//	}
+	
+	public HashMap<Integer, HashMap> validatePixels(String pixelStr, String pattern, String brand, String campaign, String env, List<String> campaignpages) throws ClassNotFoundException, SQLException, InterruptedException, MalformedURLException, HarReaderException {
 		HashMap<Integer, HashMap> overallOutput = new LinkedHashMap<Integer, HashMap>();
-		
-		WebDriver driver = new ChromeDriver();
-	    driver.manage().window().maximize();
-	    driver.get("https://ericduran.github.io/chromeHAR/");
-	    WebDriverWait wait = new WebDriverWait(driver,50);
-//	    driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-	    
-	    if(driver.findElements(By.xpath("//button[@id='details-button']")).size() != 0) {
-			driver.findElement(By.xpath("//button[@id='details-button']")).click();
-			driver.findElement(By.xpath("//a[@id='proceed-link']")).click();
-		}
 	        
 	    String[] pixelArr = pixelStr.split(",");		    
 	    					
@@ -190,62 +318,65 @@ public class PixelUtilities {
 					List<String> pages = db_obj.getFiringPages(brand, campaign, "CCFlow", pixel, event, campaignpages);
 					String searchpattern = db_obj.getSearchPattern(brand, event);
 					String pixelbrandid = db_obj.getPixelBrandId(brand, event);
+					System.out.println("searchpattern : " + searchpattern);
+					System.out.println("pixelbrandid : " + pixelbrandid);
 						
-					String[] pixelIdArr = pixelbrandid.split(",");						
+					String[] pixelIdArr = null;
+					int checkID = 1;
+					if((pixelbrandid == null) || (pixelbrandid.equalsIgnoreCase(" "))) {
+						checkID = 0;
+					}
+					else {
+						checkID=1;
+						pixelIdArr = pixelbrandid.split(",");	
+					}					
 						
 					List<HashMap> pagemapList = new ArrayList<HashMap>();
 					for(String page : pages) {													
 						HashMap<String, List<List<String>>> pageMap = new LinkedHashMap<String, List<List<String>>>();	
 				        System.out.println(page);
-						driver.findElement(By.name("har")).sendKeys(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_" + page + "_" + pattern + ".har");
-						
-						WebElement searchElmt = driver.findElement(By.id("search"));
-						wait.until(ExpectedConditions.visibilityOf(searchElmt));
-//						Thread.sleep(2000);
-				        driver.findElement(By.id("search")).clear();
-				        driver.findElement(By.id("search")).sendKeys(searchpattern);
-				        Thread.sleep(2000);
-				            
-				        int noOfRows = driver.findElements(By.xpath("//tr[contains(@class, 'revealed network-item')]")).size();
-				            
+				        
+				        HarReader harReader = new HarReader();
+				        de.sstoehr.harreader.model.Har harq = harReader.readFromFile(new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Harfiles\\" + brand + "\\" + brand + "_" + campaign + "_" + page + "_" + pattern + ".har"));
 				        List<List<String>> outputList = new ArrayList<List<String>>();
-				        for(int i=1; i<=noOfRows; i++) {			            	
-					            	
-					        String dataurl = driver.findElement(By.xpath("(//tr[contains(@class, 'revealed network-item')]//td[@class='name-column'])[" + i + "]")).getAttribute("title").toLowerCase();
-					        String statuscode = driver.findElement(By.xpath("(//tr[contains(@class, 'revealed network-item')]//td[@class='status-column'])[" + i + "]")).getAttribute("title").toLowerCase();
-					            
-					        for(String id : pixelIdArr) {
-					        	if(!(id.equalsIgnoreCase(" "))) {
-					            	if(searchpattern.equalsIgnoreCase("-")) {
-					            		if(dataurl.contains(id.toLowerCase())) {
+				        List<de.sstoehr.harreader.model.HarEntry> entries = harq.getLog().getEntries();
+				        for (de.sstoehr.harreader.model.HarEntry entry : entries) {
+				        	String dataurl = entry.getRequest().getUrl().toLowerCase();
+				        	String statuscode = entry.getResponse().getStatus() + " " + entry.getResponse().getStatusText().toLowerCase();
+//				        	System.out.println(statuscode + " " + dataurl);
+				        	
+				        	if(checkID == 1) {
+				        		for(String id : pixelIdArr) {
+				        			if(searchpattern.equalsIgnoreCase("-")) {
+				        				if(dataurl.contains(id.toLowerCase())) {
 					            			List<String> outputData = new ArrayList<String>();
 											outputData.add(statuscode);
 											outputData.add(dataurl);
 											outputList.add(outputData);
-											System.out.println(i + " " + statuscode + " " + dataurl);
+											System.out.println(statuscode + " " + dataurl);
 					            		}
-					            	}
-					            	else {
-					            		if((dataurl.contains(searchpattern.toLowerCase())) && (dataurl.contains(id.toLowerCase()))) {
+				        			}
+				        			else {
+				        				if((dataurl.contains(searchpattern.toLowerCase())) && (dataurl.contains(id.toLowerCase()))) {
 											List<String> outputData = new ArrayList<String>();
 											outputData.add(statuscode);
 											outputData.add(dataurl);
 											outputList.add(outputData);
-											System.out.println(i + " " + statuscode + " " + dataurl);
-					            		}					            			
-									}
-								}
-								else {
-									if(dataurl.contains(searchpattern.toLowerCase())) {
-										List<String> outputData = new ArrayList<String>();
-										outputData.add(statuscode);
-										outputData.add(dataurl);
-										outputList.add(outputData);
-										System.out.println(i + " " + statuscode + " " + dataurl);
-									}
-								}		
-					        }										            		
-					    } // end of rows
+											System.out.println(statuscode + " " + dataurl);
+					            		}
+				        			}
+				        		}
+				        	}
+				        	else {
+				        		if(dataurl.contains(searchpattern.toLowerCase())) {
+				        			List<String> outputData = new ArrayList<String>();
+									outputData.add(statuscode);
+									outputData.add(dataurl);
+									outputList.add(outputData);
+									System.out.println(statuscode + " " + dataurl);
+				        		}
+				        	}				        	
+				        }
 				        if(outputList.size() == 0) {
 				            List<String> outputData = new ArrayList<String>();
 							outputData.add(" ");
@@ -265,7 +396,6 @@ public class PixelUtilities {
 			envMap.put(env, brandMap);		
 			overallOutput.put(j++, envMap);
 		} // end of pixels
-		driver.close();
 		return overallOutput;
 	}
 	

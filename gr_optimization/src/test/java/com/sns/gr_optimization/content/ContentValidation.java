@@ -696,7 +696,7 @@ public class ContentValidation {
 
 			// Collect current Offer related details from Merchandising Input file
 			if (!(brand.equalsIgnoreCase("JloBeauty"))) {
-				expectedofferdata_kit = merch_obj.generateExpectedOfferDataForKit(kit_offerdata, PPUSection, postpu,
+				expectedofferdata_kit = merch_obj.generateExpectedOfferDataForKit(kit_offerdata, null, PPUSection, postpu,
 						ppid, giftppid, brand, campaigncategory);
 				// System.out.println("Expected Offerdata - Kit : " + expectedofferdata_kit);
 			}

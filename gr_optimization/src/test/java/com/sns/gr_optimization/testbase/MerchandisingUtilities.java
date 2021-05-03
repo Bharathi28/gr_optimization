@@ -30,7 +30,7 @@ public class MerchandisingUtilities {
 			String pattern = "";
 			int set = 0;
 			
-			if(type.equalsIgnoreCase("entrykit")) {
+			if(type.contains("entrykit")) {
 				pattern ="entry";
 			}
 			else if(type.equalsIgnoreCase("oneshot")) {
@@ -333,7 +333,7 @@ public class MerchandisingUtilities {
 		return value;
 	}
 	
-	public HashMap<String, String> generateExpectedOfferDataForKit(HashMap<String, String> offerdata, String PPUSection, String PostPU, String kitppid, String giftppid, String brand, String campaign) throws ClassNotFoundException, SQLException {
+	public HashMap<String, String> generateExpectedOfferDataForKit(HashMap<String, String> offerdata, HashMap<String, String> KitShipFreq, String PPUSection, String PostPU, String kitppid, String giftppid, String brand, String campaign) throws ClassNotFoundException, SQLException {
 		LinkedHashMap<String, String> expectedofferdata = new LinkedHashMap<String, String>();
 				
 		expectedofferdata.put("Brand", brand);
@@ -406,19 +406,16 @@ public class MerchandisingUtilities {
 		if(offerdata.get("PagePattern").trim().contains("giftshade")) {
 			expectedofferdata.put("GiftShade", offerdata.get("GiftShade").trim());
 		}
+			
 		
-		// 30 day PPID, Entry Pricing and Shipping
+		// 30 day PPID
 		String ppid30day = "";
 		
 		if(PPUSection.equalsIgnoreCase("Yes")) {
 			ppid30day = offerdata.get("Pre-Purchase Entry PPID").trim();
-//			expectedEntryPrice = offerdata.get("Pre-Purchase Entry Pricing").trim();
-//			expectedEntryShipping = offerdata.get("Pre-Purchase Entry Shipping").trim();		
 		}
 		else {
 			ppid30day = offerdata.get("Entry PPID").trim();
-//			expectedEntryPrice = offerdata.get("Entry Pricing").trim();
-//			expectedEntryShipping = offerdata.get("Entry Shipping").trim();
 		}					
 		expectedofferdata.put("30 day PPID", ppid30day);	
 		
@@ -438,6 +435,24 @@ public class MerchandisingUtilities {
 			expectedcampaigngifts = offerdata.get("Free Gift");
 		}
 		
+		// Shipping Frequency
+		String SASpecialoffer2sel = "";
+		String expShipFreq = "";
+		if((brand.equalsIgnoreCase("Smileactives")) && (campaign.equalsIgnoreCase("specialoffer2"))) {
+			String[] arr = giftppid.split("-");
+			SASpecialoffer2sel = arr[0];
+			
+			
+			if(SASpecialoffer2sel.equalsIgnoreCase("entrykit")) {
+				expShipFreq = arr[1];
+				expectedofferdata.put("Shipping Frequency", expShipFreq);
+				
+				expectedrenewalplanid = KitShipFreq.get("Renewal Plan");
+				expectedcartlanguage = KitShipFreq.get("Cart Language");
+				expectedsuppcartlanguage = KitShipFreq.get("Supplementary Cart Language");
+			}
+		}
+		
 		// Post-Purchase - No
 		if(supplysize.equalsIgnoreCase("30")) {
 			// Pre-Purchase - Yes
@@ -445,27 +460,22 @@ public class MerchandisingUtilities {
 				expectedEntryPrice = offerdata.get("Pre-Purchase Entry Pricing").trim();
 				expectedEntryShipping = offerdata.get("Pre-Purchase Entry Shipping").trim();
 				
-//				if(offerdata.get("Pre-Purchase Entry Promotion 1") != null) {
-//					expectedcampaigngifts = offerdata.get("Pre-Purchase Entry Promotion 1").trim();
-//				}					
-//				if(offerdata.get("Pre-Purchase Entry Promotion 2") != null) {
-//					expectedprepuproduct = offerdata.get("Pre-Purchase Entry Promotion 2").trim();
-//				}
-				
 				if(offerdata.containsKey("PrePU Product")) {
 					expectedprepuproduct = offerdata.get("PrePU Product");
 				}
 				
-				if(offerdata.get("Pre-Purchase Entry Renewal Plan") != null) {
-					expectedrenewalplanid = offerdata.get("Pre-Purchase Entry Renewal Plan");
-				}				
-				
-				if(offerdata.get("Pre Purchase Entry Cart Language") != null) {
-					expectedcartlanguage = offerdata.get("Pre Purchase Entry Cart Language");
-				}							
-				if(offerdata.get("Pre Purchase Entry Supplemental Cart Language") != null) {
-					expectedsuppcartlanguage = offerdata.get("Pre Purchase Entry Supplemental Cart Language");
-				}			
+				if(!(SASpecialoffer2sel.equalsIgnoreCase("entrykit"))) {
+					if(offerdata.get("Pre-Purchase Entry Renewal Plan") != null) {
+						expectedrenewalplanid = offerdata.get("Pre-Purchase Entry Renewal Plan");
+					}			
+					if(offerdata.get("Pre Purchase Entry Cart Language") != null) {
+						expectedcartlanguage = offerdata.get("Pre Purchase Entry Cart Language");
+					}							
+					if(offerdata.get("Pre Purchase Entry Supplemental Cart Language") != null) {
+						expectedsuppcartlanguage = offerdata.get("Pre Purchase Entry Supplemental Cart Language");
+					}
+				}
+											
 				
 				// Continuity Pricing and Shipping
 				if((brand.equalsIgnoreCase("Smileactives")) && ((campaign.equalsIgnoreCase("core2")) || (campaign.equalsIgnoreCase("specialoffer")))) {
@@ -515,18 +525,18 @@ public class MerchandisingUtilities {
 				expectedEntryPrice = offerdata.get("Entry Pricing").trim();
 				expectedEntryShipping = offerdata.get("Entry Shipping").trim();
 				
-//				if(offerdata.get("Entry Promotion 1") != null) {
-//					expectedcampaigngifts = offerdata.get("Entry Promotion 1").trim();
-//				}				
-				if(offerdata.get("Entry Cart Language") != null) {
-					expectedcartlanguage = offerdata.get("Entry Cart Language");
-				}				
-				if(offerdata.get("Entry Supplemental Cart Language") != null) {
-					expectedsuppcartlanguage = offerdata.get("Entry Supplemental Cart Language");
-				}								
-				if(offerdata.get("Entry Renewal Plan") != null) {
-					expectedrenewalplanid = offerdata.get("Entry Renewal Plan");
-				}												
+				if(!(SASpecialoffer2sel.equalsIgnoreCase("entrykit"))) {
+					if(offerdata.get("Entry Cart Language") != null) {
+						expectedcartlanguage = offerdata.get("Entry Cart Language");
+					}				
+					if(offerdata.get("Entry Supplemental Cart Language") != null) {
+						expectedsuppcartlanguage = offerdata.get("Entry Supplemental Cart Language");
+					}								
+					if(offerdata.get("Entry Renewal Plan") != null) {
+						expectedrenewalplanid = offerdata.get("Entry Renewal Plan");
+					}	
+				}
+															
 								
 				// Continuity Pricing and Shipping
 				if((brand.equalsIgnoreCase("Smileactives")) && (campaign.equalsIgnoreCase("core2"))) {
@@ -576,13 +586,8 @@ public class MerchandisingUtilities {
 		else {
 			expectedEntryPrice = offerdata.get("Post Purchase Upsell Pricing").trim();	
 			expectedEntryShipping = offerdata.get("Post Purchase Upsell Shipping").trim();	
-//			if(offerdata.get("Post Purchase Upsell Promotion 1") != null) {
-//				expectedcampaigngifts = offerdata.get("Post Purchase Upsell Promotion 1").trim();
-//			}			
+			
 			if(PPUSection.equalsIgnoreCase("Yes")) {
-//				if(offerdata.get("Post Purchase Upsell Promotion 2") != null) {
-//					expectedprepuproduct = offerdata.get("Post Purchase Upsell Promotion 2").trim();
-//				}
 				if(offerdata.containsKey("PrePU Product")) {
 					expectedprepuproduct = offerdata.get("PrePU Product");
 				}
@@ -591,20 +596,18 @@ public class MerchandisingUtilities {
 			if(offerdata.containsKey("PostPU Product")) {
 				expectedpostpuproduct = offerdata.get("PostPU Product");
 			}
-//			if(offerdata.get("Post Purchase Upsell Promotion 3") != null) {
-//				expectedpostpuproduct = offerdata.get("Post Purchase Upsell Promotion 3").trim();
-//			}
-			if(offerdata.get("Post Purchase Cart Language") != null) {
-				expectedcartlanguage = offerdata.get("Post Purchase Cart Language");
-			}
 			
-			if(offerdata.get("Post Purchase Supplemental Cart Language") != null) {
-				expectedsuppcartlanguage = offerdata.get("Post Purchase Supplemental Cart Language");
-			}			
-			
-			if(offerdata.get("Post Purchase Renewal Plan") != null) {
-				expectedrenewalplanid = offerdata.get("Post Purchase Renewal Plan");
-			}			
+			if(!(SASpecialoffer2sel.equalsIgnoreCase("entrykit"))) {
+				if(offerdata.get("Post Purchase Cart Language") != null) {
+					expectedcartlanguage = offerdata.get("Post Purchase Cart Language");
+				}				
+				if(offerdata.get("Post Purchase Supplemental Cart Language") != null) {
+					expectedsuppcartlanguage = offerdata.get("Post Purchase Supplemental Cart Language");
+				}							
+				if(offerdata.get("Post Purchase Renewal Plan") != null) {
+					expectedrenewalplanid = offerdata.get("Post Purchase Renewal Plan");
+				}	
+			}					
 			
 			if(offerdata.get("Post Purchase Upsell Payment Plan (Installment)") != null) {
 				expectedinstallmentplanid = offerdata.get("Post Purchase Upsell Payment Plan (Installment)").trim();
@@ -631,7 +634,7 @@ public class MerchandisingUtilities {
 		// Gift ppid
 		// No gift for MeaningfulBeauty - one-shot campaign
 		// And GiftPPID will carry Pre-Purchase value
-		if((!(campaign.equalsIgnoreCase("os"))) && (!(campaign.equalsIgnoreCase("advanced-one"))) && (!(campaign.equalsIgnoreCase("specialoffer2")))) {
+		if((!(campaign.equalsIgnoreCase("os"))) && (!(campaign.equalsIgnoreCase("Order30fsh2b"))) && (!(campaign.equalsIgnoreCase("advanced-one"))) && (!(campaign.equalsIgnoreCase("specialoffer2")))) {
 			// There is a gift choice - so giftppid will be mentioned in run_input
 			if(!(giftppid.equalsIgnoreCase("-"))) {
 				expectedofferdata.put("Gift PPID", giftppid);
@@ -1090,9 +1093,9 @@ public class MerchandisingUtilities {
 			if((colName != null) && (colName.equalsIgnoreCase("PPID"))) {
 				ppidcolumn = i;
 			}
-		}
-		for(int i=0; i<shipFreqData.length; i++) {	
-			String ppidinrow = shipFreqData[i][ppidcolumn].replaceAll("\\s+", "");
+		}		
+		for(int i=0; i<shipFreqData.length; i++) {			
+			String ppidinrow = shipFreqData[i][ppidcolumn].replaceAll("\\s+", "");			
 			if(ppidinrow.trim().equalsIgnoreCase(ppid.trim())){
 				for(int j=0; j<shipFreqData[0].length; j++) {
 					if(shipFreqData[0][j] != null) {
@@ -1101,6 +1104,41 @@ public class MerchandisingUtilities {
 				}
 			}
 		}		
+		System.out.println(shipfreqmap);
+		return shipfreqmap;		
+	}
+	
+	public HashMap<String, String> getKitShippingFrequency(String[][] shipFreqData, String ppid, String expShipFreq) {
+		LinkedHashMap<String, String> shipfreqmap = new LinkedHashMap<String, String>();
+		int ppidcolumn = 0;
+		int shipfreqcolumn = 0;
+					
+		for(int i=0; i<shipFreqData[0].length; i++) {
+			String colName = shipFreqData[0][i];
+			if((colName != null) && (colName.equalsIgnoreCase("Entry PPID"))) {
+				ppidcolumn = i;
+			}
+			if((colName != null) && (colName.equalsIgnoreCase("Shipping Frequency"))) {
+				shipfreqcolumn = i;
+			}
+		}
+		for(int i=0; i<shipFreqData.length-1; i++) {	
+			
+			String ppidinrow = shipFreqData[i][ppidcolumn].replaceAll("\\s+", "");
+			String shipfreqinrow = shipFreqData[i][shipfreqcolumn];
+			
+			System.out.println(ppidinrow + " " + ppid);
+			System.out.println(shipfreqinrow.toLowerCase() + " " + expShipFreq.toLowerCase());
+			if((ppidinrow.trim().equalsIgnoreCase(ppid.trim())) && (shipfreqinrow.toLowerCase().contains(expShipFreq.toLowerCase()))){					
+				for(int j=0; j<shipFreqData[0].length; j++) {
+					if(shipFreqData[0][j] != null) {
+						shipfreqmap.put(shipFreqData[0][j].trim(), shipFreqData[i][j]);
+					}					
+				}
+				break;
+			}
+		}		
+		System.out.println(shipfreqmap);
 		return shipfreqmap;		
 	}
 	

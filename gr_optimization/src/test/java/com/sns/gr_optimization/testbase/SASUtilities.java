@@ -489,7 +489,7 @@ public class SASUtilities {
 				sel_element.selectByIndex(2);
 			}
 		}
-		else if(brand.equalsIgnoreCase("WestmoreBeauty")) {
+		else if((brand.equalsIgnoreCase("WestmoreBeauty")) || ((brand.equalsIgnoreCase("Smileactives")) && (campaign.equalsIgnoreCase("specialoffer2")))) {
 			sel_element.selectByVisibleText(shipfreq);
 		}		
 		Thread.sleep(2000);

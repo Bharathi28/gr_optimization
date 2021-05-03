@@ -25,6 +25,17 @@ import org.openqa.selenium.WebElement;
 
 public class CommonUtilities {
 	
+	public void deleteDirectory(File file) {
+		File[] list = file.listFiles();
+	    if (list != null) {
+	        for (File temp : list) {
+	            //recursive delete
+	            deleteDirectory(temp);
+	        }
+	    }
+	    file.delete();
+	}
+	
 	public String[][] getExcelData(String fileName, String sheetName, int startrow) {
 		String[][] arrayExcelData = null;
 		try {			

@@ -45,6 +45,64 @@ public class CartLanguageUtilities {
 		return price_arr;
 	}
 	
+	public String ChecknoCartLanguage(WebDriver driver) throws InterruptedException {
+		String expectedCartLang = "There is no commitment and no minimum to buy. Please note exact shipment times may vary.";
+		
+		if(driver.findElements(By.xpath("//div[@class='no-commitment-message clearfix']")).size() != 0) {
+			comm_obj.waitUntilElementAppears(driver, "//div[@class='no-commitment-message clearfix']");
+			Thread.sleep(4000);
+			String actualCartlanguage = driver.findElement(By.xpath("//div[@class='no-commitment-message clearfix']")).getText();
+			
+			//Remove whitespace
+			expectedCartLang = expectedCartLang.replaceAll("\\s+", "");
+			actualCartlanguage = actualCartlanguage.replaceAll(" ", "");
+							
+			// Remove special characters
+			expectedCartLang = expectedCartLang.replaceAll("[^a-zA-Z0-9$]+", "");
+			actualCartlanguage = actualCartlanguage.replaceAll("[^a-zA-Z0-9$]+", "");
+			
+			String Result = "";
+			if(actualCartlanguage.contains(expectedCartLang)) {
+				Result = "PASS";
+			}
+			else {
+				Result = "FAIL";
+			}
+			
+			return Result;
+		}
+		return "FAIL";
+	}
+	
+	public String ChecknoSupplCartLanguage(WebDriver driver) throws InterruptedException {
+		String expectedSupplLang = "By checking this box, you are electronically signing your order, agreeing to the terms above and to our general ";
+		
+		if(driver.findElements(By.xpath("//div[@id='tncOneshotOrSingles']")).size() != 0) {
+			comm_obj.waitUntilElementAppears(driver, "//div[@id='tncOneshotOrSingles']");
+			Thread.sleep(4000);
+			String actualSuppllanguage = driver.findElement(By.xpath("//div[@id='tncOneshotOrSingles']")).getText();
+			
+			//Remove whitespace
+			expectedSupplLang = expectedSupplLang.replaceAll("\\s+", "");
+			actualSuppllanguage = actualSuppllanguage.replaceAll(" ", "");
+					
+			// Remove special characters
+			expectedSupplLang = expectedSupplLang.replaceAll("[^a-zA-Z0-9$]+", "");
+			actualSuppllanguage = actualSuppllanguage.replaceAll("[^a-zA-Z0-9$]+", "");
+			
+			String Result = "";
+			if(actualSuppllanguage.contains(expectedSupplLang)) {
+				Result = "PASS";
+			}
+			else {
+				Result = "FAIL";
+			}
+			
+			return Result;
+		}
+		return "FAIL";		
+	}
+	
 //	public String[] parse_installments_language(String language) {
 //		
 //		language = language.replace("1st Payment:", "");
