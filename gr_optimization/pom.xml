@@ -200,7 +200,6 @@
 			<version>27.0-jre</version>
 		</dependency>
 
-
 		<dependency>
 			<groupId>de.sstoehr</groupId>
 			<artifactId>har-reader</artifactId>
