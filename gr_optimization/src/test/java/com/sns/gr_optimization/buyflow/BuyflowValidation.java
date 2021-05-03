@@ -414,7 +414,7 @@ public class BuyflowValidation {
 				// Collect current Offer related details from Merchandising Input file
 				if(!(brand.equalsIgnoreCase("JloBeauty"))) {
 					expectedofferdata_kit = merch_obj.generateExpectedOfferDataForKit(kit_offerdata, shippingfrequency, PPUSection, postpu, ppid, giftppid, brand, campaigncategory);
-					System.out.println(expectedofferdata_kit);
+//					System.out.println(expectedofferdata_kit);
 				}
 								
 				// Add Kit PPID to lineitem list
@@ -437,17 +437,13 @@ public class BuyflowValidation {
 				kit_lineitem.add(expectedofferdata_kit.get("Continuity Pricing"));
 				kit_lineitem.add(expectedofferdata_kit.get("Continuity Shipping"));				
 				
-				System.out.println(expectedofferdata_kit.get("Supplemental Cart Language"));
 				if(expectedofferdata_kit.get("Supplemental Cart Language") == null) {
-					System.out.println("if");
 					kit_lineitem.add("No expected Supplemental Cart Language");
 				}
 				else if(expectedofferdata_kit.get("Supplemental Cart Language").equalsIgnoreCase("-")) {
-					System.out.println("if else");
 					kit_lineitem.add("No Supplemental Cart Language");
 				}
 				else {
-					System.out.println("else");
 					kit_lineitem.add(expectedofferdata_kit.get("Supplemental Cart Language"));
 				}		
 				expected_lineitems.add(kit_lineitem);	
@@ -926,7 +922,6 @@ public class BuyflowValidation {
 				for(List<String> expected_item : expected_lineitems) {
 					
 					String exp_suppl_cart_lang = expected_item.get(6);
-					System.out.println("In suppl" + exp_suppl_cart_lang);
 					if(exp_suppl_cart_lang.equalsIgnoreCase("No Supplemental Cart Language")) {
 						
 						if((!(expected_item.get(0).equalsIgnoreCase("Gift"))) && (!(expected_item.get(0).equalsIgnoreCase("PrePU"))) && (!(expected_item.get(0).equalsIgnoreCase("PostPU")))) {
