@@ -42,14 +42,14 @@ public class CDKValidation {
 	
 	CommonUtilities comm_obj = new CommonUtilities();
 	MailUtilities mailObj = new MailUtilities();
-	Authentication auth_obj = new Authentication();
+//	Authentication auth_obj = new Authentication();
 	
 	List<List<String>> output = new ArrayList<List<String>>();
 	
 	String sendReportTo = "manibharathi@searchnscore.com";
 	
 	// Sharepoint Authentication
-	String access_token = auth_obj.SharepointAuthentication();	
+//	String access_token = auth_obj.SharepointAuthentication();	
 	
 	@DataProvider(name="brands")
 	public Object[][] testData() throws Exception {		
@@ -75,8 +75,8 @@ public class CDKValidation {
 		String download_path = System.getProperty("user.dir") + "\\Input_Output\\CDKValidation\\CDK_Input\\";
 		
 		//Download CDK Data	
-		auth_obj.sharepointFileDownload(access_token, "CDK%20Data%20Repo/", "Customer Data_All Brands.xlsx", download_path);
-		auth_obj.sharepointFileDownload(access_token, "CDK%20Data%20Repo/", brand + "_CDK_Pricing.xlsx", download_path);
+//		auth_obj.sharepointFileDownload(access_token, "CDK%20Data%20Repo/", "Customer Data_All Brands.xlsx", download_path);
+//		auth_obj.sharepointFileDownload(access_token, "CDK%20Data%20Repo/", brand + "_CDK_Pricing.xlsx", download_path);
 		Thread.sleep(3000);
 		
 		String[][] CustomerData  = comm_obj.getExcelData(System.getProperty("user.dir") + "\\Input_Output\\CDKValidation\\CDK_Input\\Customer Data_All Brands.xlsx", brand, 0);

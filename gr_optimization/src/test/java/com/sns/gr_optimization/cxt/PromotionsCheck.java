@@ -30,7 +30,7 @@ public class PromotionsCheck {
 	CommonUtilities comm_obj = new CommonUtilities();
 	CXTUtilities cxt_obj = new CXTUtilities();
 	MailUtilities mailObj = new MailUtilities();
-	Authentication auth_obj = new Authentication();
+//	Authentication auth_obj = new Authentication();
 	
 	List<List<String>> output = new ArrayList<List<String>>();
 	String sendReportTo = "aaqil@searchnscore.com,manibharathi@searchnscore.com";
