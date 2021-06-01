@@ -3,7 +3,7 @@
 	<parameter name="environment" value="QA" />
 	<test name="buyflowTest">
 		<classes>
-			<class name="com.sns.gr_optimization.content.ContentVerfication" />
+			<class name="com.sns.gr_optimization.content.ContentVerification" />
 		</classes>
 	</test>
 </suite>
