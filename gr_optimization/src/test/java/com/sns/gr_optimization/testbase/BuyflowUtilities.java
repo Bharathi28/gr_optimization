@@ -146,10 +146,11 @@ public class BuyflowUtilities {
 			
 		String elementlocator = locator.get(0).get("ELEMENTLOCATOR").toString();
 		String elementvalue = locator.get(0).get("ELEMENTVALUE").toString();
-		jse.executeScript("window.scrollBy(0,400)", 0);
-		Thread.sleep(4000);
+		jse.executeScript("window.scrollBy(0,450)", 0);
+		Thread.sleep(5000);
 		
-		comm_obj.find_webelement(driver, elementlocator, elementvalue).click();
+//		comm_obj.find_webelement(driver, elementlocator, elementvalue).click();
+		jse.executeScript("arguments[0].click();", comm_obj.find_webelement(driver, elementlocator, elementvalue));	
 	}
 	
 	// To get all Gift PPIDs of a campaign
@@ -237,7 +238,17 @@ public class BuyflowUtilities {
 				}
 			}
 			else {
-				price = driver.findElement(By.xpath("(//div[contains(@class,'product-card')]//ul//li[contains(@class,'item-total')]//span[last()])[" + i + "]")).getText();
+				if(brand.equalsIgnoreCase("JloBeauty")) {
+					if(driver.findElements(By.xpath("(//ul[@class='product-list-item']//li[contains(@class,'first-payment-price')]//span[last()])[" + i + "]")).size() != 0) {
+						price = driver.findElement(By.xpath("(//ul[@class='product-list-item']//li[contains(@class,'first-payment-price')]//span[last()])[" + i + "]")).getText();
+					}
+					else {
+						price = driver.findElement(By.xpath("(//ul[@class='product-list-item']//li[contains(@class,'item-total')]//span[last()])[" + i + "]")).getText();
+					}					
+				}
+				else {
+					price = driver.findElement(By.xpath("(//div[contains(@class,'product-card')]//ul//li[contains(@class,'item-total')]//span[last()])[" + i + "]")).getText();
+				}
 			}
 			
 			item.add(ppid);
@@ -398,7 +409,7 @@ public class BuyflowUtilities {
 				comp_order_element = driver.findElement(By.id("submitButton"));
 			}
 			else {
-				System.out.println(driver.findElement(By.xpath("//button[@id='trigerPlaceOrder']")).isDisplayed());
+//				System.out.println(driver.findElement(By.xpath("//button[@id='trigerPlaceOrder']")).isDisplayed());
 				comp_order_element = driver.findElement(By.xpath("//button[@id='trigerPlaceOrder']"));
 			}			
 		}
@@ -455,7 +466,7 @@ public class BuyflowUtilities {
 				}
 				else {
 					driver.findElement(By.xpath("//div[@id='paypalSection']//div//div")).click();
-				}				
+				}					
 			}
 			else {
 				driver.findElement(By.xpath("//button[@class='PayPalExpressButton']")).click();
@@ -486,7 +497,7 @@ public class BuyflowUtilities {
 			else {
 				Thread.sleep(10000);
 				while(driver.findElements(By.xpath("//div[@id='loginSection']//div//div[2]//a")).size() == 0) {
-//				while(driver.findElements(By.xpath("//div[@id='login_emaildiv']//div//input")).size() == 0) {	
+					
 					if(driver.findElements(By.xpath("//section[@id='genericError']//div//div[2]")).size() != 0) {
 						driver.close();
 						driver.switchTo().window(winHandleBefore);
@@ -504,11 +515,11 @@ public class BuyflowUtilities {
 						Thread.sleep(2000);
 						email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
 					}
-//					else if(driver.findElements(By.xpath("//button[text()='Log In']")).size() != 0) {
-//						driver.findElement(By.xpath("//button[text()='Log In']")).click();
-//						Thread.sleep(2000);
-//						email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
-//					}
+					else if(driver.findElements(By.xpath("//button[text()='Log In']")).size() != 0) {
+						driver.findElement(By.xpath("//button[text()='Log In']")).click();
+						Thread.sleep(2000);
+						email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
+					}
 //					else if(driver.findElements(By.xpath("//div[@id='login_emaildiv']//div//input")).size() != 0) {
 //						Thread.sleep(2000);
 //						email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
@@ -527,12 +538,12 @@ public class BuyflowUtilities {
 					Thread.sleep(2000);
 					email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
 				}
-//				else if(driver.findElements(By.xpath("//button[text()='Log In']")).size() != 0) {
-//					Thread.sleep(2000);
-//					driver.findElement(By.xpath("//button[text()='Log In']")).click();
-//					Thread.sleep(2000);
-//					email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
-//				}
+				else if(driver.findElements(By.xpath("//button[text()='Log In']")).size() != 0) {
+					Thread.sleep(2000);
+					driver.findElement(By.xpath("//button[text()='Log In']")).click();
+					Thread.sleep(2000);
+					email = paypalPayment(driver, wait, jse, winHandleBefore, realm);
+				}
 			}							
 		}
 		else {

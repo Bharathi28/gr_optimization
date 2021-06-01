@@ -31,9 +31,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -43,7 +40,6 @@ import de.sstoehr.harreader.HarReader;
 import de.sstoehr.harreader.HarReaderException;
 import net.lightbody.bmp.BrowserMobProxy;
 import net.lightbody.bmp.core.har.Har;
-import net.lightbody.bmp.core.har.HarEntry;
 
 public class PixelUtilities {
 	
@@ -186,8 +182,8 @@ public class PixelUtilities {
 					List<String> pages = db_obj.getFiringPages(brand, campaign, "CCFlow", pixel, event, campaignpages);
 					String searchpattern = db_obj.getSearchPattern(brand, event);
 					String pixelbrandid = db_obj.getPixelBrandId(brand, event);
-					System.out.println("searchpattern : " + searchpattern);
-					System.out.println("pixelbrandid : " + pixelbrandid);
+//					System.out.println("searchpattern : " + searchpattern);
+//					System.out.println("pixelbrandid : " + pixelbrandid);
 						
 					String[] pixelIdArr = null;
 					int checkID = 1;
@@ -448,7 +444,7 @@ public class PixelUtilities {
 			        				pixelTotalSize = pixelTotalSize + eventTotalSize;
 			        			}
 			        		}
-			        		System.out.println(((row_num-1)-(pixelTotalSize-1)) + "," + (row_num-1) + ",2,2");
+//			        		System.out.println(((row_num-1)-(pixelTotalSize-1)) + "," + (row_num-1) + ",2,2");
 			        		mergeAndSetBorder(((row_num-1)-(pixelTotalSize-1)), row_num, 3, resultSheet);
 			        		mergeAndSetBorder(((row_num-1)-(pixelTotalSize-1)), row_num, 2, resultSheet);
 			        		mergeAndSetBorder(((row_num-1)-(pixelTotalSize-1)), row_num, 1, resultSheet);			

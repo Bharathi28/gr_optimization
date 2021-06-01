@@ -24,7 +24,7 @@ public class MerchandisingUtilities {
 		expectedsourcecodedata.put("Creative ID", sourcecodedata.get("Creative ID"));
 		expectedsourcecodedata.put("Venue ID", sourcecodedata.get("Venue ID"));
 		
-		if((brand.equalsIgnoreCase("Smileactives")) && (campaign.equalsIgnoreCase("specialoffer2"))) {
+		if((brand.equalsIgnoreCase("Smileactives")) && ((campaign.equalsIgnoreCase("specialoffer2")) || (campaign.equalsIgnoreCase("specialoffer3")))) {
 			String pricebook = sourcecodedata.get("Price Book ID");
 			String[] arr = pricebook.split("\n");
 			String pattern = "";
@@ -59,11 +59,12 @@ public class MerchandisingUtilities {
 		return expectedsourcecodedata;
 	}
 	
-	public HashMap<String, String> generateExpectedOfferDataForProduct(HashMap<String, String> offerdata, HashMap<String, String> ProductShipFreq, String kitppid, String Expshipfreq, String PostPU, String brand, String campaign, String category, LinkedHashMap<String, String> CatalogPriceBookIDs) throws ClassNotFoundException, SQLException {
+	public HashMap<String, String> generateExpectedOfferDataForProduct(HashMap<String, String> offerdata, HashMap<String, String> ProductShipFreq, String paymenttype, String kitppid, String Expshipfreq, String PostPU, String brand, String campaign, String category, LinkedHashMap<String, String> CatalogPriceBookIDs) throws ClassNotFoundException, SQLException {
 		LinkedHashMap<String, String> expectedofferdata = new LinkedHashMap<String, String>();
 		
 		expectedofferdata.put("Brand", brand);
 		expectedofferdata.put("Campaign", campaign);
+		expectedofferdata.put("Category", category);
 		
 		if(offerdata.get("Master Product") != null) {
 			expectedofferdata.put("Master PPID", offerdata.get("Master Product").trim());
@@ -109,7 +110,16 @@ public class MerchandisingUtilities {
 			}
 		}		
 		
-		String pagepattern = generatePagePattern(category, shade, brand, onetime_subscribe_option, size_option, freq_option);
+		String payment_option = "No";		
+		if(offerdata.get("Product Name").trim().contains("Star Power Duo")) {
+			payment_option = "Yes";
+			if(paymenttype.equalsIgnoreCase("")) {				
+				paymenttype = "OnePay";
+			}
+			expectedofferdata.put("PaymentType", paymenttype);
+		}				
+		
+		String pagepattern = generatePagePattern(category, shade, brand, onetime_subscribe_option, size_option, freq_option, payment_option);
 		expectedofferdata.put("PagePattern", pagepattern);
 		
 		if((offerdata.get("Post Purchase PPID") != null) && (kitppid.equalsIgnoreCase(offerdata.get("Post Purchase PPID").trim()))) {
@@ -131,7 +141,7 @@ public class MerchandisingUtilities {
 			}
 			else if(category.equalsIgnoreCase("SubscribeandSave")) {
 				if(offerdata.get("Subscribe and Save price") != null) {
-					Price = offerdata.get("Subscribe and Save price").trim();
+					Price = offerdata.get("Subscribe and Save price").trim();					
 				}	
 			}
 			else if(category.equalsIgnoreCase("ShopKit")) {
@@ -142,13 +152,22 @@ public class MerchandisingUtilities {
 				RenewalPlanID = offerdata.get("Renewal Plan ID").trim();
 			}					
 			
-			if(offerdata.get("Cart Language") != null) {
-				CartLanguage = offerdata.get("Cart Language").trim();
-			}
-			
-			if(offerdata.get("Supplementary Cart Language") != null) {
-				SupplementalCartLanguage = offerdata.get("Supplementary Cart Language").trim();
-			}			
+			if(paymenttype.equalsIgnoreCase("TwoPay")) {
+				if(offerdata.get("Cart Language") != null) {
+					CartLanguage = offerdata.get("Cart Language-TwoPay").trim();
+				}				
+				if(offerdata.get("Supplementary Cart Language") != null) {
+					SupplementalCartLanguage = offerdata.get("Supplementary Cart Language-TwoPay").trim();
+				}
+			}	
+			else {
+				if(offerdata.get("Cart Language") != null) {
+					CartLanguage = offerdata.get("Cart Language").trim();
+				}				
+				if(offerdata.get("Supplementary Cart Language") != null) {
+					SupplementalCartLanguage = offerdata.get("Supplementary Cart Language").trim();
+				}
+			}								
 			
 			expectedofferdata.put("Offer Post-Purchase", "No");
 			expectedofferdata.put("SupplySize", "30");
@@ -176,9 +195,13 @@ public class MerchandisingUtilities {
 		}
 		else if(category.equalsIgnoreCase("SubscribeandSave")) {			
 			
-//			if(offerdata.get("Subscribe and Save price") != null) {
-				expectedofferdata.put("Price", Price);
-//			}			
+			if(paymenttype.equalsIgnoreCase("TwoPay")) {
+				Price = Price.replace("$", "");
+				double priceValue = (Double.parseDouble(Price))/2;
+				double roundOff_price = Math.floor(priceValue * 100.0) / 100.0;
+				Price = String.valueOf(roundOff_price);
+			}
+			expectedofferdata.put("Price", Price);		
 						
 			if(brand.equalsIgnoreCase("JLoBeauty")) {
 				if(offerdata.get("Product Name").trim().equalsIgnoreCase("THAT INNER LOVE™")) {
@@ -190,8 +213,14 @@ public class MerchandisingUtilities {
 					}
 					expectedofferdata.put("Shipping Frequency", Expshipfreq);
 					
-					String ShipFreqCol = Expshipfreq + " RP";
-					expectedofferdata.put("Renewal Plan Id", ProductShipFreq.get(ShipFreqCol).trim());				
+					if(paymenttype.equalsIgnoreCase("TwoPay")) {
+						String ShipFreqCol = Expshipfreq + " RP-TwoPay";
+						expectedofferdata.put("Renewal Plan Id", ProductShipFreq.get(ShipFreqCol).trim());
+					}
+					else {
+						String ShipFreqCol = Expshipfreq + " RP";
+						expectedofferdata.put("Renewal Plan Id", ProductShipFreq.get(ShipFreqCol).trim());
+					}								
 					
 					if(Expshipfreq.contains("30")) {
 						CartLanguage = CartLanguage.replace("90 days", "30 days");
@@ -203,7 +232,7 @@ public class MerchandisingUtilities {
 					}		
 					
 					// Pre-Purchase Upsell for Star Power Duo
-					if(offerdata.get("Product Name").trim().equalsIgnoreCase("Star Power Duo")) {
+					if(offerdata.get("Product Name").trim().contains("Star Power Duo")) {
 						expectedofferdata.put("Offer Pre-Purchase", offerdata.get("Pre-Purchase").trim());
 					}
 				}				
@@ -220,10 +249,10 @@ public class MerchandisingUtilities {
 				if(Expshipfreq.contains("1 Month")) {
 					CartLanguage = CartLanguage.replace("two months", "one month");
 					CartLanguage = CartLanguage.replace("Two months", "One month");
-//					CartLanguage = CartLanguage.replace("every one month", "every month");
+					CartLanguage = CartLanguage.replace("every one month", "every month");
 					SupplementalCartLanguage = SupplementalCartLanguage.replace("two months", "one month");
 					SupplementalCartLanguage = SupplementalCartLanguage.replace("Two months", "One month");
-//					SupplementalCartLanguage = SupplementalCartLanguage.replace("every one month", "every month");
+					SupplementalCartLanguage = SupplementalCartLanguage.replace("every one month", "every month");
 				}
 				else if(Expshipfreq.contains("3 Months")) {
 					CartLanguage = CartLanguage.replace("two", "three");
@@ -281,7 +310,7 @@ public class MerchandisingUtilities {
 		return expectedofferdata;
 	}
 	
-	public String generatePagePattern(String category, String shade, String brand, String subscribe_option, String size_option, String freq_option) {
+	public String generatePagePattern(String category, String shade, String brand, String subscribe_option, String size_option, String freq_option, String payment_option) {
 		String pagepattern = "product-";
 		
 		if(!(shade.equalsIgnoreCase("No Shade"))) {
@@ -296,22 +325,26 @@ public class MerchandisingUtilities {
 		
 		if(subscribe_option.equalsIgnoreCase("Yes")) {
 			if(category.equalsIgnoreCase("Product")) {
-				pagepattern = pagepattern + "onetime";
+				pagepattern = pagepattern + "onetime-";
 			}
 			else if(category.equalsIgnoreCase("SubscribeandSave")) {
-				pagepattern = pagepattern + "subscribe";
-				
-//				if(brand.equalsIgnoreCase("JLoBeauty")) {
-					if(freq_option.equalsIgnoreCase("Yes")) {
-						pagepattern = pagepattern + "-frequency";
-					}
-//				}
+				pagepattern = pagepattern + "subscribe-";				
+
+				if(freq_option.equalsIgnoreCase("Yes")) {
+					pagepattern = pagepattern + "frequency-";
+				}
+					
+				if(payment_option.equalsIgnoreCase("Yes")) {
+					pagepattern = pagepattern + "paymenttype-";
+				}
 			}
 		}					
 		else {
-//			if(brand.equalsIgnoreCase("JLoBeauty")) {
 			if(freq_option.equalsIgnoreCase("Yes")) {
-				pagepattern = pagepattern + "-frequency";
+				pagepattern = pagepattern + "frequency-";
+			}
+			if(payment_option.equalsIgnoreCase("Yes")) {
+				pagepattern = pagepattern + "paymenttype-";
 			}
 		}
 		
@@ -333,12 +366,19 @@ public class MerchandisingUtilities {
 		return value;
 	}
 	
-	public HashMap<String, String> generateExpectedOfferDataForKit(HashMap<String, String> offerdata, HashMap<String, String> KitShipFreq, String PPUSection, String PostPU, String kitppid, String giftppid, String brand, String campaign) throws ClassNotFoundException, SQLException {
+	public HashMap<String, String> generateExpectedOfferDataForKit(HashMap<String, String> offerdata, HashMap<String, String> KitShipFreq, String PPUSection, String PostPU, String kitppid, String giftppid, String brand, String campaign, String category) throws ClassNotFoundException, SQLException {
 		LinkedHashMap<String, String> expectedofferdata = new LinkedHashMap<String, String>();
 				
 		expectedofferdata.put("Brand", brand);
 		expectedofferdata.put("Campaign", campaign);
+		expectedofferdata.put("Category", category);
 		expectedofferdata.put("PagePattern", offerdata.get("PagePattern").trim());		
+		
+		String Expshipfreq = "";
+		if((category.equalsIgnoreCase("FCP")) || (category.equalsIgnoreCase("BCP")) || (category.equalsIgnoreCase("Browgel"))) {
+			Expshipfreq = giftppid;
+		}
+//		System.out.println("shipfreq:" + Expshipfreq);
 		
 		// Check PrePU for current offercode
 		// No gift for MeaningfulBeauty - one-shot campaign
@@ -363,8 +403,9 @@ public class MerchandisingUtilities {
 		expectedofferdata.put("Offer Pre-Purchase", offerprepu);
 		
 		// Check PostPU for current offercode
+		String offerpostpu = "";
 		if(PostPU.equalsIgnoreCase("Yes")) {
-			String offerpostpu = offerdata.get("Post Purchase Upsell to").trim();
+			offerpostpu = offerdata.get("Post Purchase Upsell to").trim();
 			offerpostpu = offerpostpu.replaceAll("\\s+", "");
 			if(offerpostpu.contains(kitppid)) {
 				offerpostpu="Yes";
@@ -384,6 +425,12 @@ public class MerchandisingUtilities {
 		// Kit name
 		String kitname = offerdata.get("Actual Kit Name (as in site)").trim();
 		expectedofferdata.put("Kit Name", kitname);
+		
+		if(!(category.equalsIgnoreCase("Kit"))) {
+			expectedofferdata.put("Product Name", kitname);			
+			String masterPPID = offerdata.get("Product Group").trim();		
+			expectedofferdata.put("Master PPID", masterPPID);
+		}		
 		
 		// Check Supplysize of PPID
 		String supplysize = checkSupplySize(kitppid, offerdata);
@@ -405,8 +452,7 @@ public class MerchandisingUtilities {
 		//GiftShade
 		if(offerdata.get("PagePattern").trim().contains("giftshade")) {
 			expectedofferdata.put("GiftShade", offerdata.get("GiftShade").trim());
-		}
-			
+		}			
 		
 		// 30 day PPID
 		String ppid30day = "";
@@ -417,7 +463,7 @@ public class MerchandisingUtilities {
 		else {
 			ppid30day = offerdata.get("Entry PPID").trim();
 		}					
-		expectedofferdata.put("30 day PPID", ppid30day);	
+		expectedofferdata.put("30 Day PPID", ppid30day);	
 		
 		String expectedEntryPrice = "";
 		String expectedEntryShipping = "";
@@ -438,10 +484,9 @@ public class MerchandisingUtilities {
 		// Shipping Frequency
 		String SASpecialoffer2sel = "";
 		String expShipFreq = "";
-		if((brand.equalsIgnoreCase("Smileactives")) && (campaign.equalsIgnoreCase("specialoffer2"))) {
+		if((brand.equalsIgnoreCase("Smileactives")) && ((campaign.equalsIgnoreCase("specialoffer2")) || (campaign.equalsIgnoreCase("specialoffer3")))) {
 			String[] arr = giftppid.split("-");
-			SASpecialoffer2sel = arr[0];
-			
+			SASpecialoffer2sel = arr[0];			
 			
 			if(SASpecialoffer2sel.equalsIgnoreCase("entrykit")) {
 				expShipFreq = arr[1];
@@ -457,7 +502,14 @@ public class MerchandisingUtilities {
 		if(supplysize.equalsIgnoreCase("30")) {
 			// Pre-Purchase - Yes
 			if(PPUSection.equalsIgnoreCase("Yes")) {	
-				expectedEntryPrice = offerdata.get("Pre-Purchase Entry Pricing").trim();
+				
+				if(((category.equalsIgnoreCase("FCP")) || (category.equalsIgnoreCase("BCP")) || (category.equalsIgnoreCase("Browgel"))) && (Expshipfreq.equalsIgnoreCase("Onetime"))){
+					expectedEntryPrice = offerdata.get("Pre-Purchase One-time Entry Pricing").trim();
+				}
+				else {
+					expectedEntryPrice = offerdata.get("Pre-Purchase Entry Pricing").trim();
+				}
+				
 				expectedEntryShipping = offerdata.get("Pre-Purchase Entry Shipping").trim();
 				
 				if(offerdata.containsKey("PrePU Product")) {
@@ -474,8 +526,7 @@ public class MerchandisingUtilities {
 					if(offerdata.get("Pre Purchase Entry Supplemental Cart Language") != null) {
 						expectedsuppcartlanguage = offerdata.get("Pre Purchase Entry Supplemental Cart Language");
 					}
-				}
-											
+				}											
 				
 				// Continuity Pricing and Shipping
 				if((brand.equalsIgnoreCase("Smileactives")) && ((campaign.equalsIgnoreCase("core2")) || (campaign.equalsIgnoreCase("specialoffer")))) {
@@ -522,7 +573,13 @@ public class MerchandisingUtilities {
 			}
 			// Pre-Purchase - No
 			else {
-				expectedEntryPrice = offerdata.get("Entry Pricing").trim();
+				if(((category.equalsIgnoreCase("FCP")) || (category.equalsIgnoreCase("BCP")) || (category.equalsIgnoreCase("Browgel"))) && (Expshipfreq.equalsIgnoreCase("Onetime"))){
+					expectedEntryPrice = offerdata.get("Entry One-time Pricing").trim();
+				}
+				else {
+					expectedEntryPrice = offerdata.get("Entry Pricing").trim();
+				}
+				
 				expectedEntryShipping = offerdata.get("Entry Shipping").trim();
 				
 				if(!(SASpecialoffer2sel.equalsIgnoreCase("entrykit"))) {
@@ -535,8 +592,7 @@ public class MerchandisingUtilities {
 					if(offerdata.get("Entry Renewal Plan") != null) {
 						expectedrenewalplanid = offerdata.get("Entry Renewal Plan");
 					}	
-				}
-															
+				}															
 								
 				// Continuity Pricing and Shipping
 				if((brand.equalsIgnoreCase("Smileactives")) && (campaign.equalsIgnoreCase("core2"))) {
@@ -584,7 +640,13 @@ public class MerchandisingUtilities {
 		}
 		// Post-Purchase - Yes
 		else {
-			expectedEntryPrice = offerdata.get("Post Purchase Upsell Pricing").trim();	
+			if(((category.equalsIgnoreCase("FCP")) || (category.equalsIgnoreCase("BCP")) || (category.equalsIgnoreCase("Browgel"))) && (Expshipfreq.equalsIgnoreCase("Onetime"))){
+				expectedEntryPrice = offerdata.get("Post Purchase One-time Upsell Pricing").trim();
+			}
+			else {
+				expectedEntryPrice = offerdata.get("Post Purchase Upsell Pricing").trim();	
+			}
+			
 			expectedEntryShipping = offerdata.get("Post Purchase Upsell Shipping").trim();	
 			
 			if(PPUSection.equalsIgnoreCase("Yes")) {
@@ -634,7 +696,7 @@ public class MerchandisingUtilities {
 		// Gift ppid
 		// No gift for MeaningfulBeauty - one-shot campaign
 		// And GiftPPID will carry Pre-Purchase value
-		if((!(campaign.equalsIgnoreCase("os"))) && (!(campaign.equalsIgnoreCase("Order30fsh2b"))) && (!(campaign.equalsIgnoreCase("advanced-one"))) && (!(campaign.equalsIgnoreCase("specialoffer2")))) {
+		if((!(campaign.equalsIgnoreCase("os"))) && (!(campaign.equalsIgnoreCase("Order30fsh2b"))) && (!(campaign.equalsIgnoreCase("advanced-one"))) && (!(campaign.equalsIgnoreCase("specialoffer2"))) && (!(campaign.equalsIgnoreCase("specialoffer3"))) && (!(category.equalsIgnoreCase("FCP"))) && (!(category.equalsIgnoreCase("BCP"))) && (!(category.equalsIgnoreCase("Browgel")))) {
 			// There is a gift choice - so giftppid will be mentioned in run_input
 			if(!(giftppid.equalsIgnoreCase("-"))) {
 				expectedofferdata.put("Gift PPID", giftppid);
@@ -669,6 +731,63 @@ public class MerchandisingUtilities {
 			}
 			else {
 				expectedofferdata.put("Gift PPID", "No Gift");
+			}
+		}
+		
+		//
+		if((category.equalsIgnoreCase("FCP")) || (category.equalsIgnoreCase("BCP")) || (category.equalsIgnoreCase("Browgel"))) {			
+			expectedofferdata.put("Shipping Frequency", Expshipfreq);
+			
+			if(category.equalsIgnoreCase("FCP")) {
+				if((offerprepu.equalsIgnoreCase("No")) && (offerpostpu.equalsIgnoreCase("No"))) {
+					expectedcampaigngifts = "";
+					expectedofferdata.put("Gift PPID", "No Gift");
+				}
+			}
+			if(category.equalsIgnoreCase("BCP")) {
+				if(offerprepu.equalsIgnoreCase("No")) {
+					expectedcampaigngifts = "";
+					expectedofferdata.put("Gift PPID", "No Gift");
+					expectedpostpuproduct = "No PostPU Product";
+				}
+			}			
+			if(Expshipfreq.equalsIgnoreCase("Onetime")) {
+				expectedrenewalplanid = "No Renewal Plan";
+				expectedinstallmentplanid = "No Installment Plan";
+				expectedcartlanguage = "No Cart Language";
+				expectedsuppcartlanguage = "No Supplemental Cart Language";										
+			}
+			else {
+				if(Expshipfreq.equalsIgnoreCase("-")) {
+					Expshipfreq = "1 month";
+				}			
+				
+				String ShipFreqCol = Expshipfreq + " RP";
+				expectedrenewalplanid = KitShipFreq.get(ShipFreqCol);	
+				
+				if(Expshipfreq.contains("1 Month")) {
+					expectedcartlanguage = expectedcartlanguage.replace("two months", "one month");
+					expectedcartlanguage = expectedcartlanguage.replace("Two months", "One month");					
+//					expectedcartlanguage = expectedcartlanguage.replace("every one month", "every month");
+						
+					
+					expectedsuppcartlanguage = expectedsuppcartlanguage.replace("two months", "one month");
+					expectedsuppcartlanguage = expectedsuppcartlanguage.replace("Two months", "One month");
+//					expectedsuppcartlanguage = expectedsuppcartlanguage.replace("every one month", "every month");
+					
+					if((category.equalsIgnoreCase("FCP")) || (category.equalsIgnoreCase("Browgel"))) {
+						if((offerprepu.equalsIgnoreCase("No")) && (offerpostpu.equalsIgnoreCase("No"))) {
+							expectedcartlanguage = expectedcartlanguage.replace("every one month", "every month");
+							expectedsuppcartlanguage = expectedsuppcartlanguage.replace("every one month", "every month");
+						}
+					}					
+				}
+				else if(Expshipfreq.contains("3 Months")) {
+					expectedcartlanguage = expectedcartlanguage.replace("two", "three");
+					expectedcartlanguage = expectedcartlanguage.replace("Two", "Three");
+					expectedsuppcartlanguage = expectedsuppcartlanguage.replace("two", "three");
+					expectedsuppcartlanguage = expectedsuppcartlanguage.replace("Two", "Three");
+				}
 			}
 		}
 		
@@ -765,7 +884,7 @@ public class MerchandisingUtilities {
 		
 		for(int i=0; i<merchData.length; i++) {			
 			String currentrowname = merchData[i][0];
-			for(String name : expectedrowNames) {
+			for(String name : expectedrowNames) {				
 				if((currentrowname != null) && (currentrowname.contains(name))) {
 					for(int j=1; j<merchData[i].length; j++) {
 						String rowPPID = merchData[i][j];
@@ -1104,7 +1223,6 @@ public class MerchandisingUtilities {
 				}
 			}
 		}		
-		System.out.println(shipfreqmap);
 		return shipfreqmap;		
 	}
 	
@@ -1127,8 +1245,6 @@ public class MerchandisingUtilities {
 			String ppidinrow = shipFreqData[i][ppidcolumn].replaceAll("\\s+", "");
 			String shipfreqinrow = shipFreqData[i][shipfreqcolumn];
 			
-			System.out.println(ppidinrow + " " + ppid);
-			System.out.println(shipfreqinrow.toLowerCase() + " " + expShipFreq.toLowerCase());
 			if((ppidinrow.trim().equalsIgnoreCase(ppid.trim())) && (shipfreqinrow.toLowerCase().contains(expShipFreq.toLowerCase()))){					
 				for(int j=0; j<shipFreqData[0].length; j++) {
 					if(shipFreqData[0][j] != null) {
@@ -1137,8 +1253,7 @@ public class MerchandisingUtilities {
 				}
 				break;
 			}
-		}		
-		System.out.println(shipfreqmap);
+		}	
 		return shipfreqmap;		
 	}
 	
@@ -1204,42 +1319,17 @@ public class MerchandisingUtilities {
 				}
 			}
 		}
-
 		Random rand = new Random();
 		String random_ppid = all_ppid.get(rand.nextInt(all_ppid.size()));
 
 		return random_ppid;
 	}
-	
-	public List<String> fetch_random_ppid(String[][] catalogData, int count) {
-
-		int ppidcolumn = 0;
-		for (int i = 0; i < catalogData[0].length; i++) {
-			String colName = catalogData[0][i];
-			if (colName.equalsIgnoreCase("PPID")) {
-				ppidcolumn = i;
-			}
-		}
-
-		List<String> ppidlist = new ArrayList<String>();
-		for (int i = 1; i < catalogData.length - 1; i++) {
-			ppidlist.add(catalogData[i][ppidcolumn]);
-		}
-
-		List<String> randsingles = new ArrayList<String>();
-		Random rand = new Random();
-		for (int i = 0; i < count; i++) {
-			randsingles.add(ppidlist.get(rand.nextInt(ppidlist.size())));
-		}
-
-		return randsingles;
-	}
-	
+		
 	public String calculateShippingforProduct(String brand, List<String> subtotal_list, String jloShippingSelect, String currentCategory, List<String> category_list) {
 		String shipping_calc = "";
 		
 		String subtotal_str = bf_obj.CalculateTotalPrice(subtotal_list);
-		double subtotal_calc = Double.parseDouble(subtotal_str); 
+		double subtotal_calc = Double.parseDouble(subtotal_str); 		
 		
 		if(brand.equalsIgnoreCase("JLoBeauty")) {
 						
@@ -1266,12 +1356,18 @@ public class MerchandisingUtilities {
 					shipping_calc = "FREE";
 				}
 				else if(jloShippingSelect.equals("Two Day Shipping")) {
-					if(subtotal_calc > 50) {
+					
+					if((subtotal_calc == 49.50) || (subtotal_calc == 69.90)) {
 						shipping_calc = "$5.99";
 					}
 					else {
-						shipping_calc = "$9.99";
-					}
+						if(subtotal_calc > 50) {
+							shipping_calc = "$5.99";
+						}
+						else {
+							shipping_calc = "$9.99";
+						}
+					}					
 				}
 			}					
 		}
@@ -1342,7 +1438,7 @@ public class MerchandisingUtilities {
 			}			
 		}				
 		
-		if((postPUCategory.equalsIgnoreCase("Kit")) || (postPUCategory.equalsIgnoreCase("ShopKit"))) {
+		if((postPUCategory.equalsIgnoreCase("Kit")) || (postPUCategory.equalsIgnoreCase("ShopKit")) || (postPUCategory.equalsIgnoreCase("FCP")) || (postPUCategory.equalsIgnoreCase("BCP")) || (postPUCategory.equalsIgnoreCase("Browgel"))) {
 			postPUCategory = "PostPU";
 		}
 		else if((postPUCategory.equalsIgnoreCase("Product")) || (postPUCategory.equalsIgnoreCase("SubscribeandSave"))) {

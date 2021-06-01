@@ -46,7 +46,8 @@ public class CartLanguageUtilities {
 	}
 	
 	public String ChecknoCartLanguage(WebDriver driver) throws InterruptedException {
-		String expectedCartLang = "There is no commitment and no minimum to buy. Please note exact shipment times may vary.";
+		String expectedCartLang1 = "There is no commitment and no minimum to buy. Please note exact shipment times may vary.";
+		String expectedCartLang2 = "Please note exact shipment times may vary.";
 		
 		if(driver.findElements(By.xpath("//div[@class='no-commitment-message clearfix']")).size() != 0) {
 			comm_obj.waitUntilElementAppears(driver, "//div[@class='no-commitment-message clearfix']");
@@ -54,21 +55,22 @@ public class CartLanguageUtilities {
 			String actualCartlanguage = driver.findElement(By.xpath("//div[@class='no-commitment-message clearfix']")).getText();
 			
 			//Remove whitespace
-			expectedCartLang = expectedCartLang.replaceAll("\\s+", "");
+			expectedCartLang1 = expectedCartLang1.replaceAll("\\s+", "");
+			expectedCartLang2 = expectedCartLang2.replaceAll("\\s+", "");
 			actualCartlanguage = actualCartlanguage.replaceAll(" ", "");
 							
 			// Remove special characters
-			expectedCartLang = expectedCartLang.replaceAll("[^a-zA-Z0-9$]+", "");
+			expectedCartLang1 = expectedCartLang1.replaceAll("[^a-zA-Z0-9$]+", "");
+			expectedCartLang2 = expectedCartLang2.replaceAll("[^a-zA-Z0-9$]+", "");
 			actualCartlanguage = actualCartlanguage.replaceAll("[^a-zA-Z0-9$]+", "");
 			
 			String Result = "";
-			if(actualCartlanguage.contains(expectedCartLang)) {
+			if((actualCartlanguage.contains(expectedCartLang1)) || (actualCartlanguage.contains(expectedCartLang2))){
 				Result = "PASS";
 			}
 			else {
 				Result = "FAIL";
-			}
-			
+			}			
 			return Result;
 		}
 		return "FAIL";

@@ -5,16 +5,20 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -25,6 +29,12 @@ import org.openqa.selenium.WebElement;
 
 public class CommonUtilities {
 	
+	public String readTextFile(String filename) throws IOException {
+		
+	    String data = new String(Files.readAllBytes(Paths.get(filename)));
+	    return data;
+	}
+	
 	public void deleteDirectory(File file) {
 		File[] list = file.listFiles();
 	    if (list != null) {
@@ -34,6 +44,27 @@ public class CommonUtilities {
 	        }
 	    }
 	    file.delete();
+	}
+	
+	public Cell getMergedValue(Sheet dataSheet, Cell c) {
+		  
+		   for (CellRangeAddress mergedRegion : dataSheet.getMergedRegions()) {
+		      if (mergedRegion.isInRange(c.getRowIndex(), c.getColumnIndex())) {
+		    	  
+		    	  int colIndex = mergedRegion.getFirstColumn();
+		    	  int rowNum = mergedRegion.getFirstRow();
+//		    	  System.out.println(rowNum + "," + colIndex);
+		    	  
+		    	  Cell firstcell_mergedregion = dataSheet.getRow(rowNum).getCell(colIndex); 		    	  
+		    	 
+		    	  
+//		    	  System.out.println(firstcell_mergedregion.getStringCellValue());
+		         // This region contains the cell in question
+		         return firstcell_mergedregion;
+		      }
+		   }
+		   // Not in any
+		   return c;
 	}
 	
 	public String[][] getExcelData(String fileName, String sheetName, int startrow) {
@@ -49,8 +80,8 @@ public class CommonUtilities {
 			int end = 0;		
 			
 			//////////////////////////////////////
-			int k = startrow;			
-			String rowdata = dataSheet.getRow(k).getCell(0).getStringCellValue();
+			int k = startrow;
+			String rowdata = dataSheet.getRow(k).getCell(0).getStringCellValue();				
 			while(!(rowdata.equalsIgnoreCase("End"))) {
 				k++;
 				if(dataSheet.getRow(k) == null) {
@@ -106,12 +137,14 @@ public class CommonUtilities {
 						if(dataSheet.getRow(i).getCell(j) == null) {
 							continue;
 						}
-					}
-					String cellType = dataSheet.getRow(i).getCell(j).getCellTypeEnum().toString();
-//					System.out.println(cellType);
+					}					
 					Cell currentcell = dataSheet.getRow(i).getCell(j);
+					currentcell = getMergedValue(dataSheet, currentcell);
+					
+					String cellType = currentcell.getCellTypeEnum().toString();
+//					System.out.println(cellType);
 					if(cellType.equalsIgnoreCase("STRING")) {
-						arrayExcelData[startarray][j] = currentcell.toString();
+						arrayExcelData[startarray][j] = currentcell.getStringCellValue();
 						if(arrayExcelData[startarray][j].equalsIgnoreCase("End")) {
 							end = 1;
 							break;
@@ -244,7 +277,33 @@ public class CommonUtilities {
 			header_list.add("Browser");
 			header_list.add("Remarks");
 		}	
-		else if (header.toLowerCase().contains("contentvalidation")) {
+		else if (header.toLowerCase().contains("content")) {
+			header_list.add("Environment");
+			header_list.add("Brand");
+			header_list.add("Campaign");
+			header_list.add("Testcase");
+			header_list.add("Result");
+			header_list.add("Remarks");
+		}
+		else if (header.toLowerCase().contains("cdk")) {
+			header_list.add("Environment");
+			header_list.add("Brand");
+			header_list.add("CustomerNumber");
+			header_list.add("CDK");
+			header_list.add("Result");				
+			header_list.add("Remarks");
+			header_list.add("Additional Products in Expected Datasheet");
+			header_list.add("Additional Products in CDK Response");		
+		}
+		else if(header.toLowerCase().contains("promotion")){
+			header_list.add("Environment");
+			header_list.add("Brand");
+			header_list.add("Campaign");
+			header_list.add("Promotion");
+			header_list.add("Result");
+			header_list.add("Remarks");
+		}
+		else if(header.toLowerCase().contains("cxt")){
 			header_list.add("Environment");
 			header_list.add("Brand");
 			header_list.add("Campaign");

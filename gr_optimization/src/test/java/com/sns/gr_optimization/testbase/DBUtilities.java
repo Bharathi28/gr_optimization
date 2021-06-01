@@ -50,7 +50,7 @@ public class DBUtilities {
 	
 	public static String checkcampaigncategory(String brand, String campaign) throws ClassNotFoundException, SQLException {
 		String query = "select * from campaign_urls where brand ='" + brand + "' and campaign='" + campaign + "'";
-		System.out.println(query);
+//		System.out.println(query);
 		List<Map<String, Object>> result = DBLibrary.dbAction("fetch", query);
 		String category = result.get(0).get("DWCAMPAIGNCATEGORY").toString();
 		return category;
@@ -185,8 +185,19 @@ public class DBUtilities {
 				id = joinlist.get(0).get("PIXELBRANDID").toString();
 			}		
 			return id;		
-			
-//			String id = joinlist.get(0).get("PIXELBRANDID").toString();
-//			return id;
+		}
+		
+		public String getPageUrl(String brand, String campaign, String page, String env) throws ClassNotFoundException, SQLException {
+			String query = "select * from page_urls where brand='" + brand + "' and campaign='" + campaign + "' and page='" + page + "'";
+			List<Map<String, Object>> pagedata = DBLibrary.dbAction("fetch", query);		
+			String url = "";
+			if(env.toLowerCase().contains("dev")) {
+				url = pagedata.get(0).get("STGURL").toString();
+				url = url.replace(".stg.", "."+ env.toLowerCase() +".");
+			}
+			else {
+				url = pagedata.get(0).get(env.toUpperCase() + "URL").toString();
+			}		
+			return url;
 		}
 }
