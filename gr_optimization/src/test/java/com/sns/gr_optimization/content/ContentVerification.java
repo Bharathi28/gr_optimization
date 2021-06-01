@@ -33,7 +33,7 @@ import org.testng.annotations.AfterSuite;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.sns.gr_optimization.setup.Authentication;
+//import com.sns.gr_optimization.setup.Authentication;
 import com.sns.gr_optimization.testbase.BuyflowUtilities;
 import com.sns.gr_optimization.testbase.CommonUtilities;
 import com.sns.gr_optimization.testbase.ContentVerfUtilities;
@@ -59,14 +59,14 @@ public class ContentVerification {
 	MerchandisingUtilities merch_obj = new MerchandisingUtilities();
 	BuyflowUtilities bf_obj = new BuyflowUtilities();
 	SASUtilities sas_obj = new SASUtilities();
-	Authentication auth_obj = new Authentication();
+//	Authentication auth_obj = new Authentication();
 	
 	List<List<String>> output = new ArrayList<List<String>>();
 	
 	String sendReportTo = "manibharathi@searchnscore.com";
 	
 	// Sharepoint Authentication
-	String access_token = auth_obj.SharepointAuthentication();	
+//	String access_token = auth_obj.SharepointAuthentication();	
 	
 	@DataProvider(name="contentInput", parallel=true)
 	public Object[][] testData() throws Exception {		
@@ -95,30 +95,30 @@ public class ContentVerification {
 		
 		String brandcode = db_obj.get_sourceproductlinecode(brand);
 		
-		// Download Merchandising data from Sharepoint
-		String download_foldername = "Merchandising%20Data%20Repo/" + brand;
-		String download_filename = "";
-		String download_path = System.getProperty("user.dir") + "\\Input_Output\\ContentValidation\\Merchandising Input\\" + brand + "\\";
+//		// Download Merchandising data from Sharepoint
+//		String download_foldername = "Merchandising%20Data%20Repo/" + brand;
+//		String download_filename = "";
+//		String download_path = System.getProperty("user.dir") + "\\Input_Output\\ContentValidation\\Merchandising Input\\" + brand + "\\";
 		
-		//Download Merchandising Data
-		if(brand.equalsIgnoreCase("JLoBeauty")) {
-			download_filename =  brandcode + " Web Catalog.xlsx";
-			auth_obj.sharepointFileDownload(access_token, download_foldername, download_filename, download_path);
-		}		
-		download_filename =  campaign + ".xlsx";
-		auth_obj.sharepointFileDownload(access_token, download_foldername, download_filename, download_path);
-		
-		// Download SEO data from Sharepoint
-		download_foldername = "SEO%20Templates/" + brand;
-		download_path = System.getProperty("user.dir") + "\\Input_Output\\ContentValidation\\SEO Templates\\" + brand + "\\";
-		
-		auth_obj.sharepointFileDownload(access_token, download_foldername, "Robots.txt", download_path);
-		auth_obj.sharepointFileDownload(access_token, download_foldername, "Sitemap.xml", download_path);
-		auth_obj.sharepointFileDownload(access_token, download_foldername, "SEO Data.xlsx", download_path);
-		auth_obj.sharepointFileDownload(access_token, download_foldername, "Privacy Policy English.txt", download_path);
-		auth_obj.sharepointFileDownload(access_token, download_foldername, "Privacy Policy Spanish.txt", download_path);
-		auth_obj.sharepointFileDownload(access_token, download_foldername, "Terms and Conditions English.txt", download_path);
-		auth_obj.sharepointFileDownload(access_token, download_foldername, "Terms and Conditions Spanish.txt", download_path);
+//		//Download Merchandising Data
+//		if(brand.equalsIgnoreCase("JLoBeauty")) {
+//			download_filename =  brandcode + " Web Catalog.xlsx";
+//			auth_obj.sharepointFileDownload(access_token, download_foldername, download_filename, download_path);
+//		}		
+//		download_filename =  campaign + ".xlsx";
+//		auth_obj.sharepointFileDownload(access_token, download_foldername, download_filename, download_path);
+//		
+//		// Download SEO data from Sharepoint
+//		download_foldername = "SEO%20Templates/" + brand;
+//		download_path = System.getProperty("user.dir") + "\\Input_Output\\ContentValidation\\SEO Templates\\" + brand + "\\";
+//		
+//		auth_obj.sharepointFileDownload(access_token, download_foldername, "Robots.txt", download_path);
+//		auth_obj.sharepointFileDownload(access_token, download_foldername, "Sitemap.xml", download_path);
+//		auth_obj.sharepointFileDownload(access_token, download_foldername, "SEO Data.xlsx", download_path);
+//		auth_obj.sharepointFileDownload(access_token, download_foldername, "Privacy Policy English.txt", download_path);
+//		auth_obj.sharepointFileDownload(access_token, download_foldername, "Privacy Policy Spanish.txt", download_path);
+//		auth_obj.sharepointFileDownload(access_token, download_foldername, "Terms and Conditions English.txt", download_path);
+//		auth_obj.sharepointFileDownload(access_token, download_foldername, "Terms and Conditions Spanish.txt", download_path);
 		
 		// start the proxy
 		BrowserMobProxy proxy = new BrowserMobProxyServer();
