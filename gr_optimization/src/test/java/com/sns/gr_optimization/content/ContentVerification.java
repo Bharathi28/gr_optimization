@@ -30,6 +30,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -67,6 +68,16 @@ public class ContentVerification {
 	
 	// Sharepoint Authentication
 //	String access_token = auth_obj.SharepointAuthentication();	
+	
+	@BeforeSuite
+	public void getEmailId() {
+//		System.setProperty("email", "aaqil@searchnscore.com,manibharathi@searchnscore.com");
+	
+		sendReportTo = System.getProperty("email");
+		
+//		System.out.println("Enter Email id : ");
+//		sendReportTo = in.next();
+	}
 	
 	@DataProvider(name="contentInput", parallel=true)
 	public Object[][] testData() throws Exception {		
