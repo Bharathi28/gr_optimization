@@ -249,10 +249,10 @@ public class MerchandisingUtilities {
 				if(Expshipfreq.contains("1 Month")) {
 					CartLanguage = CartLanguage.replace("two months", "one month");
 					CartLanguage = CartLanguage.replace("Two months", "One month");
-					CartLanguage = CartLanguage.replace("every one month", "every month");
+//					CartLanguage = CartLanguage.replace("every one month", "every month");
 					SupplementalCartLanguage = SupplementalCartLanguage.replace("two months", "one month");
 					SupplementalCartLanguage = SupplementalCartLanguage.replace("Two months", "One month");
-					SupplementalCartLanguage = SupplementalCartLanguage.replace("every one month", "every month");
+//					SupplementalCartLanguage = SupplementalCartLanguage.replace("every one month", "every month");
 				}
 				else if(Expshipfreq.contains("3 Months")) {
 					CartLanguage = CartLanguage.replace("two", "three");
@@ -759,17 +759,17 @@ public class MerchandisingUtilities {
 			}
 			else {
 				if(Expshipfreq.equalsIgnoreCase("-")) {
-					Expshipfreq = "1 month";
+					Expshipfreq = "1 Month";
 				}			
 				
 				String ShipFreqCol = Expshipfreq + " RP";
 				expectedrenewalplanid = KitShipFreq.get(ShipFreqCol);	
 				
 				if(Expshipfreq.contains("1 Month")) {
+										
 					expectedcartlanguage = expectedcartlanguage.replace("two months", "one month");
 					expectedcartlanguage = expectedcartlanguage.replace("Two months", "One month");					
-//					expectedcartlanguage = expectedcartlanguage.replace("every one month", "every month");
-						
+//					expectedcartlanguage = expectedcartlanguage.replace("every one month", "every month");						
 					
 					expectedsuppcartlanguage = expectedsuppcartlanguage.replace("two months", "one month");
 					expectedsuppcartlanguage = expectedsuppcartlanguage.replace("Two months", "One month");
@@ -1033,6 +1033,24 @@ public class MerchandisingUtilities {
 		return offerdata;
 	}
 	
+	public String getOneShotPriceBookID(String[][] catalogData){
+		String pricebookid = "";
+		
+		for(int i=0; i<catalogData[0].length; i++) {
+			String colName = catalogData[0][i];
+			if(colName == null) {
+				break;
+			}
+			if(colName.contains("Acq One Time Pricebook")) {
+				colName = colName.replaceAll("Acq One Time Pricebook", "");
+				colName = colName.replaceAll("\\s+", "");				
+				colName = colName.replaceAll("[^a-zA-Z0-9$]+", "");
+
+				pricebookid = colName;
+			}
+		}		
+		return pricebookid;
+	}
 	public LinkedHashMap<String, String> getCatalogPriceBookIDs(String[][] catalogData, String ppid, String category) {
 		
 		LinkedHashMap<String, String> CatalogPriceBookIDs = new LinkedHashMap<String, String>();

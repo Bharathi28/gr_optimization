@@ -876,8 +876,8 @@ public class ContentVerification {
 	@AfterSuite
 	public void populateExcel() throws IOException {
 		
-		comm_obj.deleteDirectory(new File(System.getProperty("user.dir") + "\\Input_Output\\ContentValidation\\Merchandising Input"));
-		comm_obj.deleteDirectory(new File(System.getProperty("user.dir") + "\\Input_Output\\ContentValidation\\SEO Templates"));
+//		comm_obj.deleteDirectory(new File(System.getProperty("user.dir") + "\\Input_Output\\ContentValidation\\Merchandising Input"));
+//		comm_obj.deleteDirectory(new File(System.getProperty("user.dir") + "\\Input_Output\\ContentValidation\\SEO Templates"));
 		
 		String file = comm_obj.populateOutputExcel(output, "ContentVerificationResults", System.getProperty("user.dir") + "\\Input_Output\\ContentValidation\\Run_Output\\");
 		
