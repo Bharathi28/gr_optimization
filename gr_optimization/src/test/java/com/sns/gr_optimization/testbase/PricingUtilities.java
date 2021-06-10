@@ -95,15 +95,16 @@ public class PricingUtilities {
 		locator = get_pricing_locator(realm, brand, campaign, pricing, null);
 		
 		if(locator.size() == 0) {
+			locator = get_pricing_locator(realm, brand, null, pricing, null);
+		}
+		
+		if(locator.size() == 0) {
 			if(pricing.contains("Checkout")){
 				locator = get_pricing_locator(realm, null, null, pricing, null);		
 			}
 			else if((pricing.contains("Confirmation")) || (pricing.contains("Paypal"))){
 				if(realm.equalsIgnoreCase("R4")) {
 					locator = get_pricing_locator(realm, null, null, pricing, null);
-				}
-				else if(realm.equalsIgnoreCase("R2")) {
-					locator = get_pricing_locator(realm, brand, null, pricing, null);
 				}
 			}
 		}

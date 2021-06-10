@@ -1052,34 +1052,26 @@ public class BuyflowValidation {
 			
 			String realm = DBUtilities.get_realm(brand);
 			
-			if((cc.equalsIgnoreCase("Paypal")) && (realm.equalsIgnoreCase("R2"))) {
-				checkout_subtotal = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Paypal Review Subtotal");
-				checkout_shipping = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Paypal Review Shipping");
-				checkout_salestax = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Paypal Review Salestax");
-				checkout_total = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Paypal Review Total");
+			if((cc.equalsIgnoreCase("Paypal")) && (brand.equalsIgnoreCase("JLoBeauty"))) {
+//						checkout_subtotal = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Subtotal");
+				checkout_shipping = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Paypal Shipping");
+				checkout_salestax = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Salestax");
+				checkout_total = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Total");
 			}
 			else {
-				if((cc.equalsIgnoreCase("Paypal")) && (brand.equalsIgnoreCase("JLoBeauty"))) {
-//						checkout_subtotal = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Subtotal");
-					checkout_shipping = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Paypal Shipping");
-					checkout_salestax = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Salestax");
-					checkout_total = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Total");
+				if(!(brand.equalsIgnoreCase("JLoBeauty"))) {
+					checkout_subtotal = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Subtotal");
+				}				
+				if((brand.equalsIgnoreCase("JLoBeauty")) && (campaign.equalsIgnoreCase("Core"))) {
+					Select sel_element = new Select(driver.findElement(By.xpath("//select[@id='dwfrm_singleshipping_shippingAddress_shippingMethodID']")));
+					checkout_shipping = sel_element.getFirstSelectedOption().getText();
 				}
-				else {
-					if(!(brand.equalsIgnoreCase("JLoBeauty"))) {
-						checkout_subtotal = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Subtotal");
-					}				
-					if((brand.equalsIgnoreCase("JLoBeauty")) && (campaign.equalsIgnoreCase("Core"))) {
-						Select sel_element = new Select(driver.findElement(By.xpath("//select[@id='dwfrm_singleshipping_shippingAddress_shippingMethodID']")));
-						checkout_shipping = sel_element.getFirstSelectedOption().getText();
-					}
-					else{
-						checkout_shipping = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Shipping");
-					}				
-					checkout_salestax = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Salestax");
-					checkout_total = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Total");
-				}			
-			}			
+				else{
+					checkout_shipping = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Shipping");
+				}				
+				checkout_salestax = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Salestax");
+				checkout_total = pr_obj.fetch_pricing (driver, brand, campaigncategory, "Checkout Total");
+			}						
 			System.out.println("Checkout Pricing fetched : " + checkout_subtotal + "," + checkout_shipping + "," + checkout_salestax + "," + checkout_total);
 					
 			// Calculate Expected Checkout Price
