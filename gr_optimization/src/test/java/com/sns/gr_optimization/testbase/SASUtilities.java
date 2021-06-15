@@ -372,12 +372,12 @@ public class SASUtilities {
 					}
 				}	
 				else if(brand.equalsIgnoreCase("MeaningfulBeauty")){
-//					if((ppid.equalsIgnoreCase("MT2A3540")) || (ppid.equalsIgnoreCase("MT2A3533"))) {
-//						xpath = "//div[@data-itemid='MT2A3540']//div//div[4]//div[4]//div//a";
-//					}
-//					else {
+					if(masterPPID.equalsIgnoreCase("")) {
 						xpath = "//div[@data-itemid='" + ppid + "']//div//div//h3//a";
-//					}				
+					}
+					else {
+						xpath = "//div[@data-itemid='" + masterPPID + "']//div//div//h3//a";
+					}			
 				}
 				else if((brand.equalsIgnoreCase("WestmoreBeauty")) || (brand.equalsIgnoreCase("MallyBeauty")) || (brand.equalsIgnoreCase("Smileactives"))){
 					
@@ -566,7 +566,12 @@ public class SASUtilities {
 		String ppid = offerdata.get("30 Day PPID");
 		
 		Thread.sleep(1000);
-		driver.findElement(By.xpath("(//li[@data-variantid='" + ppid +"'])[3]")).click();
+		if(brand.equalsIgnoreCase("MeaningfulBeauty")) {
+			driver.findElement(By.xpath("//li[@data-variantid='" + ppid +"']")).click();
+		}
+		else {
+			driver.findElement(By.xpath("(//li[@data-variantid='" + ppid +"'])[3]")).click();
+		}		
 		Thread.sleep(1000);
 	}
 	

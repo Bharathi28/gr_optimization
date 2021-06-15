@@ -102,6 +102,9 @@ public class MerchandisingUtilities {
 		if(offerdata.get("Product Name").trim().equalsIgnoreCase("THAT INNER LOVE™")) {
 			size_option = "Yes";
 		}
+		if(offerdata.get("Product Name").trim().equalsIgnoreCase("Beauty Sleep Supplement")) {
+			size_option = "Yes";
+		}
 		
 		String freq_option = "No";
 		if(category.equalsIgnoreCase("SubscribeandSave")) {	
@@ -317,11 +320,11 @@ public class MerchandisingUtilities {
 			pagepattern = pagepattern + "shade-";
 		}
 		
-		if(brand.equalsIgnoreCase("JLoBeauty")) {
+//		if(brand.equalsIgnoreCase("JLoBeauty")) {
 			if(size_option.equalsIgnoreCase("Yes")) {
 				pagepattern = pagepattern + "size-";
 			}
-		}
+//		}
 		
 		if(subscribe_option.equalsIgnoreCase("Yes")) {
 			if(category.equalsIgnoreCase("Product")) {
