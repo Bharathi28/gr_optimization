@@ -1608,7 +1608,7 @@ public class BuyflowValidation {
 //		l.stop();
 //		driver.quit();
 		
-		comm_obj.deleteDirectory(new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Merchandising Input"));
+//		comm_obj.deleteDirectory(new File(System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Merchandising Input"));
 		
 		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", System.getProperty("user.dir") + "\\Input_Output\\BuyflowValidation\\Run Output\\");
 //		String file = comm_obj.populateOutputExcel(output, "BuyflowResults", "C:\\Automation\\Automation Input and Output\\Input_Output\\BuyflowValidation\\Run Output\\");
