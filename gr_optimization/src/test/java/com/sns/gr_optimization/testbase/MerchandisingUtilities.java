@@ -793,6 +793,7 @@ public class MerchandisingUtilities {
 				}
 			}
 		}
+		expectedofferdata.put("Shipping Frequency", Expshipfreq);
 		
 		expectedEntryPrice = expectedEntryPrice.replace("$", "");
 		expectedofferdata.put("Entry Pricing", expectedEntryPrice);

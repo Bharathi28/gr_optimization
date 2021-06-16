@@ -167,7 +167,11 @@ public class CommonUtilities {
 				            break;
 				        case NUMERIC:
 				        	Double value = currentcell.getNumericCellValue();
-							arrayExcelData[startarray][j] = Double.toString(value);
+				        	double roundOff = Math.floor(value * 100.0) / 100.0;
+				        	
+//				        	System.out.println(value);
+//				        	System.out.println(roundOff);
+							arrayExcelData[startarray][j] = Double.toString(roundOff);
 				            break;
 				        case STRING:
 				        	arrayExcelData[startarray][j] = currentcell.toString();
@@ -176,7 +180,8 @@ public class CommonUtilities {
 						
 						evaluator.evaluate(currentcell);
 						Double value = currentcell.getNumericCellValue();
-						arrayExcelData[startarray][j] = Double.toString(value);
+						double roundOff = Math.floor(value * 100.0) / 100.0;
+						arrayExcelData[startarray][j] = Double.toString(roundOff);
 					}
 //					System.out.println(arrayExcelData[startarray][j]);
 				}

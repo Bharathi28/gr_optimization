@@ -15,13 +15,13 @@ public class PromotionUtilities {
 	
 	BuyflowUtilities bf_obj = new BuyflowUtilities();
 	
-	public double addProductsAsPerLimit(WebDriver driver, double upperLimit, double lowerLimit, String check) throws InterruptedException {
+	public double addProductsAsPerLimit(WebDriver driver, String brand, double upperLimit, double lowerLimit, String check) throws InterruptedException {
 		double cartValue = 0;
 		double subtotalValue = 0;
 		
 		if(check.equalsIgnoreCase("above")) {
 			while(subtotalValue < upperLimit) {
-				String RandomProductprice = addRandomProductToCart(driver);
+				String RandomProductprice = addRandomProductToCart(driver, brand);
 				RandomProductprice = RandomProductprice.replace("$", "");
 				double currentProductPrice = Double.parseDouble(RandomProductprice);	
 				double price_roundOff = Math.floor(currentProductPrice * 100.0) / 100.0;
@@ -40,7 +40,7 @@ public class PromotionUtilities {
 		}
 		else if(check.equalsIgnoreCase("between")) {
 			while(subtotalValue < lowerLimit) {
-				String RandomProductprice = addRandomProductToCart(driver);
+				String RandomProductprice = addRandomProductToCart(driver, brand);
 				RandomProductprice = RandomProductprice.replace("$", "");
 				double currentProductPrice = Double.parseDouble(RandomProductprice);	
 				double price_roundOff = Math.floor(currentProductPrice * 100.0) / 100.0;
@@ -61,13 +61,13 @@ public class PromotionUtilities {
 			}
 			else {
 				removeAllProductsFromCart(driver);
-				addProductsAsPerLimit(driver, upperLimit, lowerLimit, check);
+				addProductsAsPerLimit(driver, brand, upperLimit, lowerLimit, check);
 			}
 		}		
 		return cartValue;
 	}
 	
-	public String addRandomProductToCart(WebDriver driver) throws InterruptedException {
+	public String addRandomProductToCart(WebDriver driver, String brand) throws InterruptedException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		
 		List<WebElement> allProducts = driver.findElements(By.xpath("//a[@class='name-link']"));
@@ -106,8 +106,28 @@ public class PromotionUtilities {
 	    
 	    Thread.sleep(2000);
 	    driver.findElement(By.xpath("//button[@id='add-to-cart']")).click();
+	    Thread.sleep(4000);
+	    
+//	    if(brand.equalsIgnoreCase("WestmoreBeauty")) {
+	    	driver.findElement(By.xpath("//i[@class='fa fa-shopping-bag']/..//span")).click();
+//	    }
+//	    else {
+//	    	driver.findElement(By.xpath("//a[@class='button mini-cart-link-checkout small-12']")).click();
+//	    }
+	    
+//	    if(!(driver.findElement(By.xpath("//a[@class='button mini-cart-link-checkout small-12']")).isDisplayed())) {
+//	    	driver.findElement(By.xpath("//a[@class='mini-cart-link']//span")).click();
+//	    }
+//	    else {
+//	    	driver.findElement(By.xpath("//a[@class='button mini-cart-link-checkout small-12']")).click();	
+//	    }
+	    
 	    Thread.sleep(2000);
-	    driver.findElement(By.xpath("//a[@class='button mini-cart-link-checkout small-12']")).click();	
+	    
+	    if(driver.findElements(By.xpath("//button[@class='button prepurchase-upsell-addtocart']")).size() != 0) {
+	    	driver.findElement(By.xpath("//button[@class='button prepurchase-upsell-addtocart']")).click();
+	    }
+	    Thread.sleep(2000);
 	    
 	    return randomProductPrice;
 	}
@@ -115,8 +135,11 @@ public class PromotionUtilities {
 	public void removeAllProductsFromCart(WebDriver driver) throws InterruptedException {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		List<WebElement> allProducts = driver.findElements(By.xpath("//a[@class='removeproduct']"));
-		System.out.println(allProducts.size());
 		for(int i=allProducts.size()-1 ; i>=0; i--) {
+			
+//			if(allProducts.get(i).getAttribute("href").equalsIgnoreCase("#")) {
+//				continue;
+//			}
 			allProducts.get(i).click();
 			
 			Thread.sleep(2000);
@@ -129,6 +152,10 @@ public class PromotionUtilities {
 			
 			allProducts = driver.findElements(By.xpath("//a[@class='removeproduct']"));
 			i = allProducts.size();
+			
+//			if(allProducts.get(i).getAttribute("href").equalsIgnoreCase("#")) {
+//				i--;
+//			}
 		}
 	}
 	
@@ -139,6 +166,9 @@ public class PromotionUtilities {
 	
 	public String getShipping(WebDriver driver) {
 		String productTotal = driver.findElement(By.xpath("//span[contains(@class,'discount')]")).getText();
+		if(productTotal.equalsIgnoreCase("FREE")) {
+			productTotal="$0.00";
+		}
 		return productTotal;
 	}
 	
@@ -155,76 +185,107 @@ public class PromotionUtilities {
 	public List<HashMap<String, String>> readPromotions(String brand, String promotions, String campaign) throws ClassNotFoundException, SQLException {
 		
 		List<HashMap<String, String>> promotionList = new ArrayList<HashMap<String, String>>();
-			
-		if(campaign.toLowerCase().contains("savemore")) {				
+		
+		if(brand.equalsIgnoreCase("Smileactives")) {
+			campaign = campaign.replace("_CXT", "");
+				
 			String[] promotionArr = promotions.split("\n");
-				
-			for(int itr = promotionArr.length-1 ; itr>=0 ; itr--) {
-//			for(String item : promotionArr) {
+			for(String arr : promotionArr) {
 				HashMap<String, String> promotionMap = new HashMap<String, String>();
+				String offer = campaign;
 				
-				String[] itemArr = promotionArr[itr].split(" - ");
-				String offer = itemArr[0];
-				String limit = itemArr[1];
-				
-				if(offer.contains("$")) {		
-					offer = offer.replace("$", "");
-					limit = limit.replace("$", "");
-					offer = offer.replace(" off", "");
-					if(limit.contains("or more")) {
-						limit = limit.replace(" or more", "");
-					}					
-					promotionMap.put("Calc", "$ off");
-					promotionMap.put("Value", offer);
-					promotionMap.put("Limit", limit);
+				if((offer.contains("POFF")) || (offer.contains("P"))) {
+					offer = offer.replace("POFF", "");
+					offer = offer.replace("P", "");
+								
+					promotionMap.put("Calc", "% off");
+					promotionMap.put("Value", offer);						
 				}
+				
+				String Offer_Product =  bf_obj.getPPIDfromString(brand, arr).get(0);
+					
+				promotionMap.put("Offer_Product", Offer_Product);
+				
 				promotionList.add(promotionMap);
-			}
+			}	
+			
+			HashMap<String, String> promotionMap = new HashMap<String, String>();
+			promotionMap.put("Calc", "% off");
+			promotionMap.put("Value", "0");
+			promotionMap.put("Offer_Product", "Any");			
+			promotionList.add(promotionMap);
 		}
 		else {
-			campaign = campaign.replace("_CXT", "");
-			HashMap<String, String> promotionMap = new HashMap<String, String>();
-			
-			String offer = "";
-			String limit = "";
-			if(campaign.contains("-")) {
-				String[] campaignArr = campaign.split("-");
-				offer = campaignArr[0];
-				limit = campaignArr[1];
-			}			
+			if(campaign.toLowerCase().contains("savemore")) {				
+				String[] promotionArr = promotions.split("\n");
+					
+				for(int itr = promotionArr.length-1 ; itr>=0 ; itr--) {
+					HashMap<String, String> promotionMap = new HashMap<String, String>();
+					
+					String[] itemArr = promotionArr[itr].split(" - ");
+					String offer = itemArr[0];
+					String limit = itemArr[1];
+					
+					if(offer.contains("$")) {		
+						offer = offer.replace("$", "");
+						limit = limit.replace("$", "");
+						offer = offer.replace(" off", "");
+						if(limit.contains("or more")) {
+							limit = limit.replace(" or more", "");
+						}					
+						promotionMap.put("Calc", "$ off");
+						promotionMap.put("Value", offer);
+						promotionMap.put("Limit", limit);
+					}
+					promotionList.add(promotionMap);
+				}
+			}
 			else {
-				offer = campaign;
-			}
-			
-			if((offer.contains("FSH")) || (limit.contains("FSH"))) {
-				promotionMap.put("FSH", "Yes");
-				offer = offer.replace("FSH", "");
-				limit = limit.replace("FSH", "");
-			}
-			if(((offer.contains("Poff")) || (offer.contains("P"))) && (!(offer.contains("Promo")))) {
-				offer = offer.replace("Poff", "");
-				offer = offer.replace("P", "");
-							
-				promotionMap.put("Calc", "% off");
-				promotionMap.put("Value", offer);				
-			}
-			if(offer.contains("off")) {
-				offer = offer.replace("off", "");
+				campaign = campaign.replace("_CXT", "");
+				HashMap<String, String> promotionMap = new HashMap<String, String>();
 				
-				promotionMap.put("Calc", "$ off");
-				promotionMap.put("Value", offer);
-			}
-			if(offer.contains("FG")) {
-				String FreeGiftPPID =  bf_obj.getPPIDfromString(brand, promotions).get(0);
+				String offer = "";
+				String limit = "";
+				if(campaign.contains("-")) {
+					String[] campaignArr = campaign.split("-");
+					offer = campaignArr[0];
+					limit = campaignArr[1];
+				}			
+				else {
+					offer = campaign;
+				}
 				
-				promotionMap.put("Free Gift PPID", FreeGiftPPID);
-			}			
-			if(limit.contains("over")) {
-				limit = limit.replace("over", "");
-				promotionMap.put("Limit", limit);
+				if((offer.contains("FSH")) || (limit.contains("FSH"))) {
+					promotionMap.put("FSH", "Yes");
+					offer = offer.replace("FSH", "");
+					limit = limit.replace("FSH", "");
+				}
+				if(((offer.contains("Poff")) || (offer.contains("P"))) && (!(offer.contains("Promo")))) {
+					offer = offer.replace("Poff", "");
+					offer = offer.replace("P", "");
+								
+					promotionMap.put("Calc", "% off");
+					promotionMap.put("Value", offer);						
+				}
+				if(offer.contains("off")) {
+					offer = offer.replace("off", "");
+					
+					promotionMap.put("Calc", "$ off");
+					promotionMap.put("Value", offer);
+				}
+				if(offer.contains("FG")) {
+					String FreeGiftPPID =  bf_obj.getPPIDfromString(brand, promotions).get(0);
+					
+					promotionMap.put("Free Gift PPID", FreeGiftPPID);
+				}			
+				if(limit.contains("over")) {
+					limit = limit.replace("over", "");
+					promotionMap.put("Limit", limit);
+				}
+				System.out.println(promotionMap);
+				promotionList.add(promotionMap);
 			}
-			promotionList.add(promotionMap);
-		}			
+		}					
 		return promotionList;
 	}
 }

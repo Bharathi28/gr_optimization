@@ -32,29 +32,31 @@ import org.testng.annotations.Test;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
 import com.google.common.collect.MapDifference.ValueDifference;
-//import com.sns.gr_optimization.setup.Authentication;
+import com.sns.gr_optimization.setup.Authentication;
 import com.sns.gr_optimization.testbase.CommonUtilities;
 import com.sns.gr_optimization.testbase.MailUtilities;
 
+import io.restassured.path.json.JsonPath;
 import io.restassured.path.xml.XmlPath;
 
 public class CDKValidation {
 	
 	CommonUtilities comm_obj = new CommonUtilities();
 	MailUtilities mailObj = new MailUtilities();
-//	Authentication auth_obj = new Authentication();
+	Authentication auth_obj = new Authentication();
 	
 	List<List<String>> output = new ArrayList<List<String>>();
 	
 	String sendReportTo = "manibharathi@searchnscore.com";
 	
 	// Sharepoint Authentication
-//	String access_token = auth_obj.SharepointAuthentication();	
+	String access_token = auth_obj.SharepointAuthentication();	
 	
 	@DataProvider(name="brands")
 	public Object[][] testData() throws Exception {		
 	
-		Object[][] arrayObject = {{"MeaningfulBeauty"}, {"CrepeErase"}};	
+//		Object[][] arrayObject = {{"MeaningfulBeauty"}, {"CrepeErase"}, {"WestmoreBeauty"}};	
+		Object[][] arrayObject = {{"MeaningfulBeauty"}};	
 		return arrayObject;
 	}	
 	
@@ -70,13 +72,16 @@ public class CDKValidation {
 		}
 		else if(brand.equalsIgnoreCase("CrepeErase")) {
 			brandcode = "CS";
-		}	
+		}
+		else if(brand.equalsIgnoreCase("WestmoreBeauty")) {
+			brandcode = "WY";
+		}
 		
 		String download_path = System.getProperty("user.dir") + "\\Input_Output\\CDKValidation\\CDK_Input\\";
 		
 		//Download CDK Data	
-//		auth_obj.sharepointFileDownload(access_token, "CDK%20Data%20Repo/", "Customer Data_All Brands.xlsx", download_path);
-//		auth_obj.sharepointFileDownload(access_token, "CDK%20Data%20Repo/", brand + "_CDK_Pricing.xlsx", download_path);
+		auth_obj.sharepointFileDownload(access_token, "CDK%20Data%20Repo/", "Customer Data_All Brands.xlsx", download_path);
+		auth_obj.sharepointFileDownload(access_token, "CDK%20Data%20Repo/", brand + "_CDK_Pricing.xlsx", download_path);
 		Thread.sleep(3000);
 		
 		String[][] CustomerData  = comm_obj.getExcelData(System.getProperty("user.dir") + "\\Input_Output\\CDKValidation\\CDK_Input\\Customer Data_All Brands.xlsx", brand, 0);
@@ -99,7 +104,9 @@ public class CDKValidation {
 			
 			customernumber = String.valueOf(roundOff_value_custnum);
 			System.out.println();
-			String requestURL = "https://api.oh.ocx-int.com/customer/info/account/" + customernumber + "/brand/" + brandcode + "/uid/dad23/trans/EWR23q/searchall/true/siteid/" + brandcode + "-US-LEN";
+//			String requestURL = "https://api.oh.ocx-int.com/customer/info/account/" + customernumber + "/brand/" + brandcode + "/uid/dad23/trans/EWR23q/searchall/true/siteid/" + brandcode + "-US-LEN";
+			
+			String requestURL = "https://api.oh.ocx-int.com/account/info/?siteid=" + brandcode + "-US-LEN&account=" + customernumber + "&brand=" + brandcode +"&uid=PXOkwE&trans=149e8469ce2219d8401b1610f6";
 			System.out.println(requestURL);
 			String response = given()
 					.when()
@@ -116,96 +123,114 @@ public class CDKValidation {
 			output_row.add(brand);
 			output_row.add(customernumber);
 				
-			XmlPath xp = new XmlPath(response);
+//			XmlPath xp = new XmlPath(response);
+			JsonPath xp = new JsonPath(response);
 				
-			String cdkname = xp.getString("customerResponse.responseData.customer.kitCustomization.offers.offer.customizationOfferCode");
+			String cdkname = xp.getString("responseData.kitCustomization.bundleCode");
 			output_row.add(cdkname);
 			System.out.println("CDK " + cdkname);
-			if(cdkname.equalsIgnoreCase("")) {
+			if((cdkname == null) || (cdkname.equalsIgnoreCase("")) || (cdkname.equalsIgnoreCase("null"))){
 				output.add(output_row);
 				continue;
 			}
 				
-			int size = xp.getInt("customerResponse.responseData.customer.kitCustomization.priceList.product.size()");
+			int size = xp.getInt("responseData.kitCustomization.products.size()");
 				
 			HashMap<String, Double> Actual_productMap = new HashMap<String, Double>();
 			for(int k=0; k<size; k++) {
 					
-				String ppid = xp.getString("customerResponse.responseData.customer.kitCustomization.priceList.product[" + k + "].ppid");
-				String price =  xp.getString("customerResponse.responseData.customer.kitCustomization.priceList.product[" + k + "].price");
+				String ppid = xp.getString("responseData.kitCustomization.products[" + k + "].ppid");
+				String price =  xp.getString("responseData.kitCustomization.products[" + k + "].price");
 					
 				Double actual_price = Double.valueOf(price);							
 				Actual_productMap.put(ppid, actual_price);			
 			}		
 				
-			String[][] CDKData  = comm_obj.getExcelData(System.getProperty("user.dir") + "\\Input_Output\\CDKValidation\\CDK_Input\\" + brand + "_CDK_Pricing.xlsx", cdkname, 0);
-			int first_row_iterator = 0;
-			int ppidcolumn = 0;
-			int pricecolumn = 0;
-			for(int j=0; j<CDKData[0].length; j++) {
-				if((CDKData[first_row_iterator][j].equalsIgnoreCase("ItemCode")) || (CDKData[first_row_iterator][j].equalsIgnoreCase("Product Code"))) {
-					ppidcolumn = j;
-				}
-				if(CDKData[first_row_iterator][j].equalsIgnoreCase("Price")) {
-					pricecolumn = j;
-				}
-			}
-				
-			HashMap<String, Double> Expected_productMap = new HashMap<String, Double>();
-			for(int k=1; k<CDKData.length-1; k++) {
-							
-				String ppid = CDKData[k][ppidcolumn];
-				String price = CDKData[k][pricecolumn];
-						
-				Double expected_price = Double.valueOf(price);							
-				Expected_productMap.put(ppid, expected_price);
-			}		
-
-			// Get extra elements in Expected - CDK Sheet
-			HashSet<String> unionKeys1 = new HashSet<>(Actual_productMap.keySet());
-			unionKeys1.addAll(Expected_productMap.keySet());		 
-			unionKeys1.removeAll(Actual_productMap.keySet());		
+			FileInputStream inputstream = new FileInputStream(System.getProperty("user.dir") + "\\Input_Output\\CDKValidation\\CDK_Input\\" + brand + "_CDK_Pricing.xlsx");
+			XSSFWorkbook ExpectedData = new XSSFWorkbook(inputstream);
 			
-			// Get extra elements in API
-			HashSet<String> unionKeys2 = new HashSet<>(Expected_productMap.keySet());
-			unionKeys2.addAll(Actual_productMap.keySet());				 
-			unionKeys2.removeAll(Expected_productMap.keySet());		
-			
-			HashMap<String, Double> Filtered_Actual_productsMap = new HashMap<String, Double>();
-			Filtered_Actual_productsMap = Actual_productMap;
-			Filtered_Actual_productsMap.keySet().removeAll(unionKeys2);
-					
-			HashMap<String, Double> Filtered_Expected_productsMap = new HashMap<String, Double>();
-			Filtered_Expected_productsMap = Expected_productMap;
-			Filtered_Expected_productsMap.keySet().removeAll(unionKeys1);			
-			
-			String remarks = "";
-				
-			MapDifference<String, Double> mapDifference = Maps.difference(Filtered_Actual_productsMap, Filtered_Expected_productsMap);
-			if((unionKeys1.size() == 0) && (unionKeys2.size() == 0) && (Filtered_Expected_productsMap.equals(Filtered_Actual_productsMap))) {
-				System.out.println(cdkname + " : PASS");
-				output_row.add("PASS");
+			String CDKSheetExists = comm_obj.checkSheetExists(ExpectedData, cdkname);
+			if(CDKSheetExists.equalsIgnoreCase("false")) {
+				output_row.add("Expected CDK Pricing Sheet for " + cdkname + " is not available");
+				output.add(output_row);
+				continue;
 			}
 			else {
-				System.out.println(cdkname + " : FAIL");
-				output_row.add("FAIL");
-				if(!(Filtered_Expected_productsMap.equals(Filtered_Actual_productsMap))) {						
-					Map<String, ValueDifference<Double>> Difference_Map = mapDifference.entriesDiffering();
-					
-					for(Entry<String, ValueDifference<Double>> entry : Difference_Map.entrySet()) {
-						remarks = remarks + "Price mismatch for " + entry.getKey() + ": Expected - " + entry.getValue().rightValue() + ", Actual -" + entry.getValue().leftValue() + " ; ";
+				String[][] CDKData  = comm_obj.getExcelData(System.getProperty("user.dir") + "\\Input_Output\\CDKValidation\\CDK_Input\\" + brand + "_CDK_Pricing.xlsx", cdkname, 0);
+				int first_row_iterator = 0;
+				int ppidcolumn = 0;
+				int pricecolumn = 0;
+				for(int j=0; j<CDKData[0].length; j++) {
+					if((CDKData[first_row_iterator][j].equalsIgnoreCase("ItemCode")) || (CDKData[first_row_iterator][j].equalsIgnoreCase("Product Code"))) {
+						ppidcolumn = j;
+					}
+					if(CDKData[first_row_iterator][j].equalsIgnoreCase("Price")) {
+						pricecolumn = j;
 					}
 				}
-				output_row.add(remarks);
+					
+				HashMap<String, Double> Expected_productMap = new HashMap<String, Double>();
+				for(int k=1; k<CDKData.length-1; k++) {
+								
+					String ppid = CDKData[k][ppidcolumn];
+					String price = CDKData[k][pricecolumn];
+							
+					if(price.equalsIgnoreCase("-")) {
+						continue;
+					}
+					else {
+						Double expected_price = Double.valueOf(price);							
+						Expected_productMap.put(ppid, expected_price);
+					}				
+				}		
+
+				// Get extra elements in Expected - CDK Sheet
+				HashSet<String> unionKeys1 = new HashSet<>(Actual_productMap.keySet());
+				unionKeys1.addAll(Expected_productMap.keySet());		 
+				unionKeys1.removeAll(Actual_productMap.keySet());		
 				
-				if(unionKeys1.size() != 0) {
-					output_row.add(unionKeys1.toString());
+				// Get extra elements in API
+				HashSet<String> unionKeys2 = new HashSet<>(Expected_productMap.keySet());
+				unionKeys2.addAll(Actual_productMap.keySet());				 
+				unionKeys2.removeAll(Expected_productMap.keySet());		
+				
+				HashMap<String, Double> Filtered_Actual_productsMap = new HashMap<String, Double>();
+				Filtered_Actual_productsMap = Actual_productMap;
+				Filtered_Actual_productsMap.keySet().removeAll(unionKeys2);
+						
+				HashMap<String, Double> Filtered_Expected_productsMap = new HashMap<String, Double>();
+				Filtered_Expected_productsMap = Expected_productMap;
+				Filtered_Expected_productsMap.keySet().removeAll(unionKeys1);			
+				
+				String remarks = "";
+					
+				MapDifference<String, Double> mapDifference = Maps.difference(Filtered_Actual_productsMap, Filtered_Expected_productsMap);
+				if((unionKeys1.size() == 0) && (unionKeys2.size() == 0) && (Filtered_Expected_productsMap.equals(Filtered_Actual_productsMap))) {
+					System.out.println(cdkname + " : PASS");
+					output_row.add("PASS");
 				}
-				if(unionKeys2.size() != 0) {
-					output_row.add(unionKeys2.toString());
-				}
-			}			
-			output.add(output_row);
+				else {
+					System.out.println(cdkname + " : FAIL");
+					output_row.add("FAIL");
+					if(!(Filtered_Expected_productsMap.equals(Filtered_Actual_productsMap))) {						
+						Map<String, ValueDifference<Double>> Difference_Map = mapDifference.entriesDiffering();
+						
+						for(Entry<String, ValueDifference<Double>> entry : Difference_Map.entrySet()) {
+							remarks = remarks + "Price mismatch for " + entry.getKey() + ": Expected - " + entry.getValue().rightValue() + ", Actual -" + entry.getValue().leftValue() + " ; ";
+						}
+					}
+					output_row.add(remarks);
+					
+					if(unionKeys1.size() != 0) {
+						output_row.add(unionKeys1.toString());
+					}
+					if(unionKeys2.size() != 0) {
+						output_row.add(unionKeys2.toString());
+					}
+				}			
+				output.add(output_row);
+			}
+			
 		}		
 	}
 	

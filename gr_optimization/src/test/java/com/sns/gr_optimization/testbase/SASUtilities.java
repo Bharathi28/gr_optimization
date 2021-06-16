@@ -372,12 +372,17 @@ public class SASUtilities {
 					}
 				}	
 				else if(brand.equalsIgnoreCase("MeaningfulBeauty")){
-					if(masterPPID.equalsIgnoreCase("")) {
+					if(category.equalsIgnoreCase("ShopKit")) {
 						xpath = "//div[@data-itemid='" + ppid + "']//div//div//h3//a";
 					}
 					else {
-						xpath = "//div[@data-itemid='" + masterPPID + "']//div//div//h3//a";
-					}			
+						if(masterPPID.equalsIgnoreCase("")) {
+							xpath = "//div[@data-itemid='" + ppid + "']//div//div//h3//a";
+						}
+						else {
+							xpath = "//div[@data-itemid='" + masterPPID + "']//div//div//h3//a";
+						}
+					}								
 				}
 				else if((brand.equalsIgnoreCase("WestmoreBeauty")) || (brand.equalsIgnoreCase("MallyBeauty")) || (brand.equalsIgnoreCase("Smileactives"))){
 					
@@ -525,6 +530,7 @@ public class SASUtilities {
 		String shipfreq = offerdata.get("Shipping Frequency");
 		String category = offerdata.get("Category");
 		
+		Thread.sleep(6000);
 		Select sel_element = new Select(driver.findElement(By.xpath("//select[@id='shippingFrequencySelector']")));
 		
 		if((category.equalsIgnoreCase("FCP")) || (category.equalsIgnoreCase("BCP")) || (category.equalsIgnoreCase("Browgel"))) {

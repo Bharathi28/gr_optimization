@@ -281,6 +281,8 @@ public class ContentVerification {
 		WebElement chat = driver.findElement(By.xpath(chat_xpath));
 		if(driver.findElements(By.xpath(chat_xpath)).size() != 0) {
 			Thread.sleep(2000);
+			jse.executeScript("window.scrollTo(0, -100)", 0);
+			Thread.sleep(2000);
 			chat.click();
 			if(driver.findElements(By.xpath("//iframe[@name='ada-embed-iframe']")).size() != 0) {
 				result = "PASS";				

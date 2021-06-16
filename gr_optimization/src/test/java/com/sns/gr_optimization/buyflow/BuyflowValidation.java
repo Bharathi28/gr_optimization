@@ -42,6 +42,7 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import com.lambdatest.tunnel.Tunnel;
 //import com.lambdatest.tunnel.Tunnel;
 import com.sns.gr_optimization.testbase.BuyflowUtilities;
 import com.sns.gr_optimization.testbase.CartLanguageUtilities;
@@ -129,7 +130,7 @@ public class BuyflowValidation {
 	}	
 	
 	@Test(dataProvider="buyflowInput")
-	public void buyflow(String env, String brand, String campaign, String category, String kitppid, String giftppid, String shipbill, String cc, String address, String browser, String pixelStr, String console) throws Exception {	
+	public void buyflow(String env, String brand, String campaign, String category, String kitppid, String giftppid, String shipbill, String cc, String address, String browser, String pixelStr, String console, String runenv) throws Exception {	
 		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver.exe");
 //		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver");
 //		System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver");
@@ -161,44 +162,70 @@ public class BuyflowValidation {
 		// start the proxy
 		BrowserMobProxy proxy = new BrowserMobProxyServer();
 		proxy.setTrustAllServers(true);
-		proxy.start(0);
+		proxy.start();
+		
+		String  portn = String.valueOf(proxy.getPort());
 		System.out.println("Started proxy server at: " + proxy.getPort());
 		
 		// get the Selenium proxy object
 		Proxy seleniumProxy = ClientUtil.createSeleniumProxy(proxy);	
+		String hostIp = Inet4Address.getLocalHost().getHostAddress();
+        seleniumProxy.setHttpProxy(hostIp + ":" + proxy.getPort());
+        seleniumProxy.setSslProxy(hostIp + ":" + proxy.getPort());
 		
 		ChromeOptions options = new ChromeOptions();
 		options.setProxy(seleniumProxy);
 		options.setAcceptInsecureCerts(true);	   
 		options.addArguments("--ignore-certificate-errors");
 		options.addArguments("--disable-backgrounding-occluded-windows");
+		
+		Tunnel t = null;
+
+//		if(!(pixelStr.equalsIgnoreCase("-"))) {
+//			 
+//		}       
 			    
 		DesiredCapabilities capabilities = new DesiredCapabilities();
-		capabilities.setCapability(ChromeOptions.CAPABILITY, options);	    
-		capabilities.setCapability("os", "Windows");
-		capabilities.setCapability("os_version", "10");
-		capabilities.setCapability("browser_version", "80");	    
-		capabilities.setCapability("browser", "Chrome");
-			    
-//		capabilities.setCapability("platformName", "windows");
+		capabilities.setCapability(ChromeOptions.CAPABILITY, options);	
+		if(runenv.equalsIgnoreCase("local")) {
+			capabilities.setCapability("os", "Windows");
+			capabilities.setCapability("os_version", "10");
+			capabilities.setCapability("browser_version", "80");	    
+			capabilities.setCapability("browser", "Chrome");
+		}
+		else {
+			capabilities.setCapability("build", "Buyflow");
+			capabilities.setCapability("name", env + "-" + brand + "-" + campaign + "-" + kitppid);
+			
+			capabilities.setCapability("console",true);
+			capabilities.setCapability("network",true);
+			capabilities.setCapability("network.har",true);
+			capabilities.setCapability("video", true);
+			capabilities.setCapability("visual", true);
+			
+			capabilities.setCapability("platform", "Windows 10");
+		    capabilities.setCapability("browserName", "Chrome");
+		    capabilities.setCapability("version", "latest"); // If this cap isn't specified, it will just get the any available one
+	        capabilities.setCapability("resolution","1920x1080");
+	        
+	        if(!(pixelStr.equalsIgnoreCase("-"))) {
+	        	
+	        	t = new Tunnel();
+		        HashMap<String, String> tunnelOptions = new HashMap<String, String>();
+		        tunnelOptions.put("user", username);
+		        tunnelOptions.put("key", accessKey);
+		        tunnelOptions.put("proxyHost",hostIp);
+		        tunnelOptions.put("proxyPort", portn);
+		        tunnelOptions.put("ingress-only", "--ingress-only");   //mandatory while using browserMob proxy
+		        tunnelOptions.put("tunnelName", env + "-" + brand + "-" + campaign + "-" + kitppid);
 
-
-		
-//		capabilities.setCapability("build", "Buyflow");
-//		capabilities.setCapability("name", env + "-" + brand + "-" + campaign + "-" + kitppid);
-//		
-//		capabilities.setCapability("console",true);
-//		capabilities.setCapability("network",true);
-//		capabilities.setCapability("network.har",true);
-//		capabilities.setCapability("video", true);
-//		capabilities.setCapability("visual", true);
-//		
-//		capabilities.setCapability("platform", "Windows 10");
-//	    capabilities.setCapability("browserName", "Chrome");
-////	     capabilities.setCapability("version", "87.0"); // If this cap isn't specified, it will just get the any available one
-//        capabilities.setCapability("resolution","1920x1080");
-
-
+		        //start tunnel
+		        t.start(tunnelOptions);
+		        
+	        	capabilities.setCapability("tunnel",true);
+		        capabilities.setCapability("tunnelName", env + "-" + brand + "-" + campaign + "-" + kitppid);
+	        }	        
+		}
 		
 		// Get Source Code Information - Campaign Category
 		String campaigncategory = db_obj.checkcampaigncategory(brand, campaign);
@@ -318,8 +345,13 @@ public class BuyflowValidation {
 		ListIterator<String> freqIterator = freqlist.listIterator();
 		
 		// Launch Browser
-//		WebDriver driver = new RemoteWebDriver(new java.net.URL(URL), capabilities);
-		WebDriver driver = new ChromeDriver(capabilities);
+		WebDriver driver;
+		if(runenv.equalsIgnoreCase("local")) {
+			driver = new ChromeDriver(capabilities);
+		}
+		else {
+			driver = new RemoteWebDriver(new java.net.URL(URL), capabilities);
+		}
 		driver.manage().window().maximize();
 		
 //		System.out.println(((RemoteWebDriver) driver).getSessionId());
@@ -570,10 +602,15 @@ public class BuyflowValidation {
 					pricebook_id_list.add("No expected PriceBookID");
 				}
 				else {
+					if(((currentCategory.equalsIgnoreCase("FCP")) || (currentCategory.equalsIgnoreCase("BCP")) || (currentCategory.equalsIgnoreCase("Browgel"))) && (expectedofferdata_kit.get("Shipping Frequency").equalsIgnoreCase("Onetime"))) {
+						pricebook_id_list = new ArrayList<String>();
+						pricebook_id_list.add(oneShotPriceBookID);
+					}						
+									
 					String[] pricebookArr = expectedsourcecodedata.get("Price Book ID").split(",");
 					for(String str: pricebookArr) {
 						pricebook_id_list.add(str);						
-					}					
+					}										
 				}				
 				
 				// Move to SAS/Shop
@@ -1586,6 +1623,9 @@ public class BuyflowValidation {
 		output.add(output_row);
 		
 		driver.quit();
+		if(t != null) {
+			t.stop();
+		}		
 		proxy.stop();
 	
 		if(!(pixelStr.equalsIgnoreCase("-"))) {

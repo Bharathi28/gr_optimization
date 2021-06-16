@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+<suite name="CXTPromotionsSuite" data-provider-thread-count="5">
+	<test name="CXTPromotionsTest">
+		<classes>
+			<class name="com.sns.gr_optimization.cxt.PromotionsCheck" />
+		</classes>
+	</test>
+</suite>

@@ -79,125 +79,125 @@ public class DBUtilities {
 	}
 	
 	// Pixel Validation
-		public List<String> getAllEvents(String pixel) throws ClassNotFoundException, SQLException {
-			String query = "select * from pixels where pixelname='" + pixel + "'";
-			List<Map<String, Object>> pixeldata = DBLibrary.dbAction("fetch",query);	
-			
-			List<String> events = new ArrayList<String>();
-			for(Map<String, Object> entry :pixeldata) {
-				String name = entry.get("EVENTNAME").toString();
-				events.add(name);
+	public List<String> getAllEvents(String pixel) throws ClassNotFoundException, SQLException {
+		String query = "select * from pixels where pixelname='" + pixel + "'";
+		List<Map<String, Object>> pixeldata = DBLibrary.dbAction("fetch",query);	
+		
+		List<String> events = new ArrayList<String>();
+		for(Map<String, Object> entry :pixeldata) {
+			String name = entry.get("EVENTNAME").toString();
+			events.add(name);
+		}
+		return events;
+	}
+	
+	public int checkBrandPixelCompatibility(String brand, String event) throws ClassNotFoundException, SQLException {
+				
+		String joinquery = "select * from brand_pixel where brand='" + brand + "' and event='" + event + "'";
+		List<Map<String, Object>> joinlist = DBLibrary.dbAction("fetch",joinquery);		
+		return joinlist.size();
+	}
+	
+	public List<String> getFiringPages(String brand, String campaign, String flow, String pixel, String event, List<String> campaignPageList) throws ClassNotFoundException, SQLException {
+								
+		String pixelQuery = "select * from pixels where pixelname='" + pixel + "' and eventname='" + event + "'";
+		List<Map<String, Object>> pixellist = DBLibrary.dbAction("fetch", pixelQuery);
+		String pages = pixellist.get(0).get("FIRINGPAGES").toString();
+		
+		String[] pageArr = pages.split(",");
+		List<String> pageList = new ArrayList<String>();
+		
+		for(String value : pageArr) {
+			if(value.equalsIgnoreCase("All")) {
+				pageList.addAll(campaignPageList);
+				pageList.remove("PrePurchaseUpsell");
+				if(flow.equalsIgnoreCase("ccflow")) {
+					pageList.remove("paypalreviewpage");
+				}
 			}
-			return events;
-		}
-		
-		public int checkBrandPixelCompatibility(String brand, String event) throws ClassNotFoundException, SQLException {
-					
-			String joinquery = "select * from brand_pixel where brand='" + brand + "' and event='" + event + "'";
-			List<Map<String, Object>> joinlist = DBLibrary.dbAction("fetch",joinquery);		
-			return joinlist.size();
-		}
-		
-		public List<String> getFiringPages(String brand, String campaign, String flow, String pixel, String event, List<String> campaignPageList) throws ClassNotFoundException, SQLException {
-									
-			String pixelQuery = "select * from pixels where pixelname='" + pixel + "' and eventname='" + event + "'";
-			List<Map<String, Object>> pixellist = DBLibrary.dbAction("fetch", pixelQuery);
-			String pages = pixellist.get(0).get("FIRINGPAGES").toString();
-			
-			String[] pageArr = pages.split(",");
-			List<String> pageList = new ArrayList<String>();
-			
-			for(String value : pageArr) {
-				if(value.equalsIgnoreCase("All")) {
-					pageList.addAll(campaignPageList);
-					pageList.remove("PrePurchaseUpsell");
-					if(flow.equalsIgnoreCase("ccflow")) {
-						pageList.remove("paypalreviewpage");
-					}
+			if(value.equalsIgnoreCase("Home")) {
+				if(campaignPageList.contains("HomePage")) {
+					pageList.add("HomePage");
 				}
-				if(value.equalsIgnoreCase("Home")) {
-					if(campaignPageList.contains("HomePage")) {
-						pageList.add("HomePage");
-					}
+			}
+			if(value.equalsIgnoreCase("SAS")) {
+				if(campaignPageList.contains("SASPage")) {
+					pageList.add("SASPage");
 				}
-				if(value.equalsIgnoreCase("SAS")) {
-					if(campaignPageList.contains("SASPage")) {
-						pageList.add("SASPage");
-					}
+			}
+			if(value.equalsIgnoreCase("Shop")) {
+				if(campaignPageList.contains("ShopPage")) {
+					pageList.add("ShopPage");
 				}
-				if(value.equalsIgnoreCase("Shop")) {
-					if(campaignPageList.contains("ShopPage")) {
-						pageList.add("ShopPage");
-					}
+			}
+			if(value.equalsIgnoreCase("PDP")) {
+				if(campaignPageList.contains("PDPage")) {
+					pageList.add("PDPage");
 				}
-				if(value.equalsIgnoreCase("PDP")) {
-					if(campaignPageList.contains("PDPage")) {
-						pageList.add("PDPage");
-					}
+			}
+			if(value.equalsIgnoreCase("Checkout")) {
+				if(campaignPageList.contains("CheckoutPage")) {
+					pageList.add("CheckoutPage");
 				}
-				if(value.equalsIgnoreCase("Checkout")) {
+			}		
+			if(value.equalsIgnoreCase("Checkout/PaypalReview")) {
+				if(flow.equalsIgnoreCase("paypalflow")) {
+					if(campaignPageList.contains("paypalreviewpage")) {
+						pageList.add("paypalreviewpage");
+					}
+				}	
+				else {
 					if(campaignPageList.contains("CheckoutPage")) {
 						pageList.add("CheckoutPage");
 					}
-				}		
-				if(value.equalsIgnoreCase("Checkout/PaypalReview")) {
-					if(flow.equalsIgnoreCase("paypalflow")) {
-						if(campaignPageList.contains("paypalreviewpage")) {
-							pageList.add("paypalreviewpage");
-						}
-					}	
-					else {
-						if(campaignPageList.contains("CheckoutPage")) {
-							pageList.add("CheckoutPage");
-						}
-					}
-				}					
-				if(value.equalsIgnoreCase("Confirmation")) {
-					if(campaignPageList.contains("ConfirmationPage")) {
-						pageList.add("ConfirmationPage");
-					}
-				}	
-				if(value.equalsIgnoreCase("Upsell/Confirmation")) {
-					if(campaignPageList.contains("PostPurchaseUpsell")) {
-						pageList.add("PostPurchaseUpsell");
-					}
-					else {
-						pageList.add("ConfirmationPage");
-					}
+				}
+			}					
+			if(value.equalsIgnoreCase("Confirmation")) {
+				if(campaignPageList.contains("ConfirmationPage")) {
+					pageList.add("ConfirmationPage");
+				}
+			}	
+			if(value.equalsIgnoreCase("Upsell/Confirmation")) {
+				if(campaignPageList.contains("PostPurchaseUpsell")) {
+					pageList.add("PostPurchaseUpsell");
+				}
+				else {
+					pageList.add("ConfirmationPage");
 				}
 			}
-			return pageList;
-		}	
-		
-		public String getSearchPattern(String brand, String event) throws ClassNotFoundException, SQLException {
-			String joinquery = "select * from brand_pixel where brand='" + brand + "' and event='" + event + "'";
-			List<Map<String, Object>> joinlist = DBLibrary.dbAction("fetch",joinquery);
-			String pattern = joinlist.get(0).get("SEARCHPATTERN").toString();
-			return pattern;
 		}
+		return pageList;
+	}	
+	
+	public String getSearchPattern(String brand, String event) throws ClassNotFoundException, SQLException {
+		String joinquery = "select * from brand_pixel where brand='" + brand + "' and event='" + event + "'";
+		List<Map<String, Object>> joinlist = DBLibrary.dbAction("fetch",joinquery);
+		String pattern = joinlist.get(0).get("SEARCHPATTERN").toString();
+		return pattern;
+	}
+	
+	public String getPixelBrandId(String brand, String event) throws ClassNotFoundException, SQLException {
+		String joinquery = "select * from brand_pixel where brand='" + brand + "' and event='" + event + "'";
+		List<Map<String, Object>> joinlist = DBLibrary.dbAction("fetch",joinquery);
 		
-		public String getPixelBrandId(String brand, String event) throws ClassNotFoundException, SQLException {
-			String joinquery = "select * from brand_pixel where brand='" + brand + "' and event='" + event + "'";
-			List<Map<String, Object>> joinlist = DBLibrary.dbAction("fetch",joinquery);
-			
-			String id = " ";
-			if((joinlist.get(0).get("PIXELBRANDID") != null) && (!(joinlist.get(0).get("PIXELBRANDID").toString().equalsIgnoreCase("\\N")))){
-				id = joinlist.get(0).get("PIXELBRANDID").toString();
-			}		
-			return id;		
+		String id = " ";
+		if((joinlist.get(0).get("PIXELBRANDID") != null) && (!(joinlist.get(0).get("PIXELBRANDID").toString().equalsIgnoreCase("\\N")))){
+			id = joinlist.get(0).get("PIXELBRANDID").toString();
+		}		
+		return id;		
+	}
+	
+	public String getPageUrl(String brand, String campaign, String page, String env) throws ClassNotFoundException, SQLException {
+		String query = "select * from page_urls where brand='" + brand + "' and campaign='" + campaign + "' and page='" + page + "'";
+		List<Map<String, Object>> pagedata = DBLibrary.dbAction("fetch", query);		
+		String url = "";
+		if(env.toLowerCase().contains("dev")) {
+			url = pagedata.get(0).get("STGURL").toString();
+			url = url.replace(".stg.", "."+ env.toLowerCase() +".");
 		}
-		
-		public String getPageUrl(String brand, String campaign, String page, String env) throws ClassNotFoundException, SQLException {
-			String query = "select * from page_urls where brand='" + brand + "' and campaign='" + campaign + "' and page='" + page + "'";
-			List<Map<String, Object>> pagedata = DBLibrary.dbAction("fetch", query);		
-			String url = "";
-			if(env.toLowerCase().contains("dev")) {
-				url = pagedata.get(0).get("STGURL").toString();
-				url = url.replace(".stg.", "."+ env.toLowerCase() +".");
-			}
-			else {
-				url = pagedata.get(0).get(env.toUpperCase() + "URL").toString();
-			}		
-			return url;
-		}
+		else {
+			url = pagedata.get(0).get(env.toUpperCase() + "URL").toString();
+		}		
+		return url;
+	}
 }
