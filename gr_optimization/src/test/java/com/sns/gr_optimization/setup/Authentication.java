@@ -11,12 +11,13 @@ import io.restassured.path.json.JsonPath;
 
 public class Authentication {
 	
-	public void SharepointAuthentication() {
-		
+	public String SharepointAuthentication() {
+		String s = null;
+		return s;
 	}
 	
 	public void sharepointFileDownload(String access_token, String sp_folder_name, String sp_file_name, String download_path) throws IOException {
 						
-			
+				
 	}
 }
