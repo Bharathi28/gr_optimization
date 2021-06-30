@@ -171,7 +171,12 @@ public class SASUtilities {
 			preputype = "MoveToShopPrePU";
 		}
 		else {
-			preputype = "MoveToPrePU";
+			if((brand.equalsIgnoreCase("MeaningfulBeauty")) && (category.equalsIgnoreCase("ShopKit"))){
+				preputype = "MoveToShopPrePU";
+			}
+			else {
+				preputype = "MoveToPrePU";
+			}			
 		}
 		
 		List<Map<String, Object>> locator = null;
@@ -202,7 +207,16 @@ public class SASUtilities {
 		}		
 		
 		String prepu = offerdata.get("Offer Pre-Purchase");
-		String category = offerdata.get("Category");		
+		String category = offerdata.get("Category");
+		
+		
+		if((brand.equalsIgnoreCase("MeaningfulBeauty")) && (category.equalsIgnoreCase("ShopKit"))){
+			String name = offerdata.get("Product Name").trim();
+			if(!(name.equalsIgnoreCase("3-Piece Age-Proof Hair Care System"))) {
+				driver.findElement(By.xpath("//a[@class='button mini-cart-link-checkout small-12']")).click();
+				Thread.sleep(2000);
+			}			
+		}		
 		
 		String preputype = "";
 		if((category.equalsIgnoreCase("FCP")) || (category.equalsIgnoreCase("BCP")) || (category.equalsIgnoreCase("Browgel"))) {
@@ -229,6 +243,18 @@ public class SASUtilities {
 			}
 		}
 		
+		if(category.equalsIgnoreCase("ShopKit")) {
+			String name = offerdata.get("Product Name").trim();
+			if((brand.equalsIgnoreCase("MeaningfulBeauty")) && (name.equalsIgnoreCase("3-Piece Age-Proof Hair Care System"))) {
+				if(prepu.equalsIgnoreCase("Yes")) {
+					elementvalue = "//button[@class='button prepurchase-upsell-addtocart']";
+				}
+				else {
+					elementvalue = "//button[@class='upsell-btn prepurchase-upsell-dontupgrade']";
+				}			
+			}
+		}
+				
 		WebElement prepu_elmt = comm_obj.find_webelement(driver, elementlocator, elementvalue);
 		comm_obj.waitUntilElementAppears(driver, elementvalue);
 		Thread.sleep(4000);
@@ -270,6 +296,12 @@ public class SASUtilities {
 		if (brand.equalsIgnoreCase("WestmoreBeauty")) {
 			jse.executeScript("window.scrollBy(0,500)", 0);
 		}
+		else if((brand.equalsIgnoreCase("MeaningfulBeauty")) && (campaign.equalsIgnoreCase("age-proof-hair"))) {
+			jse.executeScript("window.scrollBy(0,500)", 0);
+			Thread.sleep(2000);
+			driver.findElement(By.xpath("//button[@class='button checkout']")).click();
+			Thread.sleep(2000);
+		}
 		
 		Thread.sleep(2000);
 		String kitname = offerdata.get("Kit Name");
@@ -278,6 +310,11 @@ public class SASUtilities {
 		
 		if((category.equalsIgnoreCase("FCP")) || (category.equalsIgnoreCase("BCP")) || (category.equalsIgnoreCase("Browgel"))) {
 			driver.findElement(By.xpath("//img[@alt='" + kitshade + "']")).click();
+		}
+		else if(brand.equalsIgnoreCase("MeaningfulBeauty")) {
+			if(!(kitshade.equalsIgnoreCase("No"))) {
+				driver.findElement(By.xpath("//img[@alt='" + kitshade + "']")).click();
+			}			
 		}
 		else {
 			if(!(kitshade.equalsIgnoreCase("No"))) {
@@ -334,6 +371,10 @@ public class SASUtilities {
 		jse.executeScript("window.scrollBy(0,100)", 0);
 		
 		String category = offerdata.get("Category");
+		String ppid = offerdata.get("30 Day PPID");
+		String name = offerdata.get("Product Name").trim();
+		
+		
 		if(category.equalsIgnoreCase("BCP")) {
 			driver.get("https://storefront:eComweb123@westmorebeauty.grdev.com/body-coverage-perfector-3.5oz-WYPG045.html");
 		}
@@ -341,10 +382,7 @@ public class SASUtilities {
 			String masterPPID = "";
 			if((offerdata.get("Master PPID") != null) && (!(offerdata.get("Master PPID").equalsIgnoreCase("")))){
 				masterPPID = offerdata.get("Master PPID");
-			}
-			 
-			String ppid = offerdata.get("30 Day PPID");
-			String name = offerdata.get("Product Name").trim();
+			}			
 
 			if(name.toLowerCase().contains("star power duo")) {
 				driver.findElement(By.xpath("//div[@data-itemid='JL2A0196']//div[4]//div[5]//a")).click();
@@ -373,15 +411,29 @@ public class SASUtilities {
 				}	
 				else if(brand.equalsIgnoreCase("MeaningfulBeauty")){
 					if(category.equalsIgnoreCase("ShopKit")) {
-						xpath = "//div[@data-itemid='" + ppid + "']//div//div//h3//a";
+//						if(name.equalsIgnoreCase("5-Piece Age-Proof Hair Care System")) {
+//							xpath = "(//div[@data-itemid='MTPG048']//div//div//h3//a)[1]";
+//						}
+//						else if(name.equalsIgnoreCase("3-Piece Age-Proof Hair Care System")) {
+//							xpath = "(//div[@data-itemid='MT2A3836']//div//div//h3//a)[1]";
+//						}
+//						else {
+//							xpath = "//div[@data-itemid='" + ppid + "']//div//div//h3//a";
+//						}		
+						xpath = "//h3[contains(@class,'product-name')]//a[contains(text(),'" + name + "')]";
 					}
 					else {
-						if(masterPPID.equalsIgnoreCase("")) {
+						if(name.contains("Beauty Sleep Supplement (90 count)")) {
 							xpath = "//div[@data-itemid='" + ppid + "']//div//div//h3//a";
 						}
 						else {
-							xpath = "//div[@data-itemid='" + masterPPID + "']//div//div//h3//a";
-						}
+							if(masterPPID.equalsIgnoreCase("")) {
+								xpath = "//div[@data-itemid='" + ppid + "']//div//div//h3//a";
+							}
+							else {
+								xpath = "//div[@data-itemid='" + masterPPID + "']//div//div//h3//a";
+							}
+						}						
 					}								
 				}
 				else if((brand.equalsIgnoreCase("WestmoreBeauty")) || (brand.equalsIgnoreCase("MallyBeauty")) || (brand.equalsIgnoreCase("Smileactives"))){
@@ -423,16 +475,23 @@ public class SASUtilities {
 			Thread.sleep(2000);
 			driver.findElement(By.xpath("(//button[@class='button primary next-section'])[1]")).click();
 			
-//			if(offerdata.get("Product Name").contains("Kit")){
-				if(offerdata.get("PagePattern").equalsIgnoreCase("product")) {
-					Thread.sleep(4000);
-					driver.findElement(By.xpath("//a[@id='no-upgrade']")).click();
-				}
-//			}
-			
-			
+			if(offerdata.get("PagePattern").equalsIgnoreCase("product")) {
+				Thread.sleep(4000);
+				driver.findElement(By.xpath("//a[@id='no-upgrade']")).click();
+			}			
 		}
 		Thread.sleep(1000);
+		
+		if((brand.equalsIgnoreCase("MeaningfulBeauty")) && (category.equalsIgnoreCase("ShopKit"))) {
+			if((!(name.equalsIgnoreCase("5-Piece Age-Proof Hair Care System"))) && (!(name.equalsIgnoreCase("Ultra 5-Piece Skincare System")))){
+				driver.findElement(By.xpath("//button[@id='add-to-cart']")).click();
+				Thread.sleep(2000);
+			}			
+			if(name.equalsIgnoreCase("3-Piece Age-Proof Hair Care System")) {
+				driver.findElement(By.xpath("//a[@class='button mini-cart-link-checkout small-12']")).click();
+				Thread.sleep(2000);
+			}
+		}
 	}
 	
 	public void select_shade(WebDriver driver, String brand, String campaign, HashMap<String, String> offerdata) throws ClassNotFoundException, SQLException, InterruptedException {
@@ -440,6 +499,12 @@ public class SASUtilities {
 //		jse.executeScript("window.scrollBy(0,300)", 0);
 		Thread.sleep(2000);
 		String ppid = offerdata.get("30 Day PPID");
+		String category = offerdata.get("Category");
+		
+//		if((brand.equalsIgnoreCase("MeaningfulBeauty")) && (category.equalsIgnoreCase("ShopKit"))){
+//			driver.findElement(By.xpath("//a[@class='button mini-cart-link-checkout small-12']")).click();
+//			Thread.sleep(2000);
+//		}
 		
 		if(brand.equalsIgnoreCase("CrepeErase")) {
 			Select sel_element = new Select(driver.findElement(By.xpath("//ul[@class='variations-section clearfix']//li//div[3]//select")));
@@ -458,7 +523,7 @@ public class SASUtilities {
 					xpath = "//li[@data-variantid='" + ppid + "']";
 				}		
 			}
-			else if((brand.equalsIgnoreCase("Smileactives")) || (brand.equalsIgnoreCase("WestmoreBeauty"))){
+			else if((brand.equalsIgnoreCase("Smileactives")) || (brand.equalsIgnoreCase("MeaningfulBeauty")) || (brand.equalsIgnoreCase("WestmoreBeauty"))){
 				xpath = "//li[@data-variantid='" + ppid + "']";
 			}
 			else {
@@ -561,7 +626,7 @@ public class SASUtilities {
 			}
 			else if((brand.equalsIgnoreCase("WestmoreBeauty")) || ((brand.equalsIgnoreCase("Smileactives")) && (campaign.equalsIgnoreCase("specialoffer2")))) {
 				sel_element.selectByVisibleText(shipfreq);
-			}	
+			}						
 		}				
 			
 		Thread.sleep(2000);

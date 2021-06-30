@@ -28,7 +28,7 @@ public class PromotionUtilities {
 				
 				cartValue = cartValue + price_roundOff;
 				
-				String subtotal = getProductSubTotal(driver);
+				String subtotal = getProductSubTotal(driver, brand);
 				subtotal = subtotal.replace("$", "");			
 				subtotalValue = Double.parseDouble(subtotal);
 				
@@ -47,7 +47,7 @@ public class PromotionUtilities {
 				
 				cartValue = cartValue + price_roundOff;
 				
-				String subtotal = getProductSubTotal(driver);
+				String subtotal = getProductSubTotal(driver, brand);
 				subtotal = subtotal.replace("$", "");			
 				subtotalValue = Double.parseDouble(subtotal);
 				
@@ -100,7 +100,7 @@ public class PromotionUtilities {
 	    if(driver.findElements(By.xpath("//strong[@class='single-price current-price ']")).size() != 0) {
 	    	randomProductPrice = driver.findElement(By.xpath("//strong[@class='single-price current-price ']")).getText();
 	    }
-	    else {
+	    else if(driver.findElements(By.xpath("//strong[@class='pdp-price current-price oneShotSingle-price']")).size() != 0) {
 	    	randomProductPrice = driver.findElement(By.xpath("//strong[@class='pdp-price current-price oneShotSingle-price']")).getText();
 	    }	    		
 	    
@@ -108,12 +108,12 @@ public class PromotionUtilities {
 	    driver.findElement(By.xpath("//button[@id='add-to-cart']")).click();
 	    Thread.sleep(4000);
 	    
-//	    if(brand.equalsIgnoreCase("WestmoreBeauty")) {
+	    if(brand.equalsIgnoreCase("MeaningfulBeauty")) {
+	    	driver.findElement(By.xpath("//a[@class='button mini-cart-link-checkout small-12']")).click();
+	    }
+	    else {
 	    	driver.findElement(By.xpath("//i[@class='fa fa-shopping-bag']/..//span")).click();
-//	    }
-//	    else {
-//	    	driver.findElement(By.xpath("//a[@class='button mini-cart-link-checkout small-12']")).click();
-//	    }
+	    }
 	    
 //	    if(!(driver.findElement(By.xpath("//a[@class='button mini-cart-link-checkout small-12']")).isDisplayed())) {
 //	    	driver.findElement(By.xpath("//a[@class='mini-cart-link']//span")).click();
@@ -159,26 +159,49 @@ public class PromotionUtilities {
 		}
 	}
 	
-	public String getProductSubTotal(WebDriver driver) {
-		String productTotal = driver.findElement(By.xpath("//div[@class='order-subtotal clearfix']//span[3]")).getText();
+	public String getProductSubTotal(WebDriver driver, String brand) {
+		String xpath = "//div[@class='order-subtotal clearfix']//span[3]";
+		if(brand.equalsIgnoreCase("MeaningfulBeauty")) {
+			xpath = "(" + xpath + ")[2]";
+		}
+		
+		String productTotal = driver.findElement(By.xpath(xpath)).getText();
 		return productTotal;
 	}
 	
-	public String getShipping(WebDriver driver) {
-		String productTotal = driver.findElement(By.xpath("//span[contains(@class,'discount')]")).getText();
+	public String getShipping(WebDriver driver, String brand) {
+		
+		String xpath = "//span[contains(@class,'discount')]";
+		if(brand.equalsIgnoreCase("MeaningfulBeauty")) {
+			xpath = "(" + xpath + ")[2]";
+		}
+		
+		String productTotal = driver.findElement(By.xpath(xpath)).getText();
 		if(productTotal.equalsIgnoreCase("FREE")) {
 			productTotal="$0.00";
 		}
 		return productTotal;
 	}
 	
-	public String getSalesTax(WebDriver driver) {
-		String productTotal = driver.findElement(By.xpath("//div[@class='order-sales-tax clearfix']//span[3]")).getText();
+	public String getSalesTax(WebDriver driver, String brand) {
+		
+		String xpath = "//div[@class='order-sales-tax clearfix']//span[3]";
+		if(brand.equalsIgnoreCase("MeaningfulBeauty")) {
+			xpath = "(" + xpath + ")[2]";
+		}
+		
+		String productTotal = driver.findElement(By.xpath(xpath)).getText();
 		return productTotal;
 	}
 	
-	public String getTotal(WebDriver driver) {
-		String productTotal = driver.findElement(By.xpath("//div[@class='order-total clearfix']//span[3]")).getText();
+	public String getTotal(WebDriver driver, String brand) {
+		
+		String xpath = "//div[@class='order-total clearfix']//span[3]";
+		if(brand.equalsIgnoreCase("MeaningfulBeauty")) {
+			xpath = "(" + xpath + ")[2]";
+		}
+		
+		String productTotal = driver.findElement(By.xpath(xpath)).getText();
 		return productTotal;
 	}
 	

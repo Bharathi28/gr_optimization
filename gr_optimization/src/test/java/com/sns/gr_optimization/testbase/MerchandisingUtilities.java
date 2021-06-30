@@ -82,6 +82,20 @@ public class MerchandisingUtilities {
 			expectedofferdata.put("Size", offerdata.get("Size").trim());
 		}
 		
+		String prepu_option = "No";
+		String offerprepu = "";
+		if(offerdata.get("PrePU") != null) {
+			if(offerdata.get("PrePU").equalsIgnoreCase("Yes")) {
+				prepu_option = "Yes";
+				offerprepu = "Yes";
+			}
+			else if (offerdata.get("PrePU").equalsIgnoreCase("No")) {
+				prepu_option = "Yes";
+				offerprepu = "No";
+			}
+		}
+		expectedofferdata.put("Offer Pre-Purchase", offerprepu);
+		
 		String ProductPPID = "";
 		String PPID30Day = "";
 		String Price = "";
@@ -122,7 +136,7 @@ public class MerchandisingUtilities {
 			expectedofferdata.put("PaymentType", paymenttype);
 		}				
 		
-		String pagepattern = generatePagePattern(category, shade, brand, onetime_subscribe_option, size_option, freq_option, payment_option);
+		String pagepattern = generatePagePattern(category, shade, brand, onetime_subscribe_option, size_option, freq_option, payment_option, prepu_option);
 		expectedofferdata.put("PagePattern", pagepattern);
 		
 		if((offerdata.get("Post Purchase PPID") != null) && (kitppid.equalsIgnoreCase(offerdata.get("Post Purchase PPID").trim()))) {
@@ -313,8 +327,10 @@ public class MerchandisingUtilities {
 		return expectedofferdata;
 	}
 	
-	public String generatePagePattern(String category, String shade, String brand, String subscribe_option, String size_option, String freq_option, String payment_option) {
+	public String generatePagePattern(String category, String shade, String brand, String subscribe_option, String size_option, String freq_option, String payment_option, String prepu_option) {
 		String pagepattern = "product-";
+		
+		
 		
 		if(!(shade.equalsIgnoreCase("No Shade"))) {
 			pagepattern = pagepattern + "shade-";
@@ -325,6 +341,12 @@ public class MerchandisingUtilities {
 				pagepattern = pagepattern + "size-";
 			}
 //		}
+			if(category.equalsIgnoreCase("ShopKit")) {
+				if(prepu_option.equalsIgnoreCase("Yes")) {
+					pagepattern = pagepattern + "prepu-";
+				}
+			}
+		
 		
 		if(subscribe_option.equalsIgnoreCase("Yes")) {
 			if(category.equalsIgnoreCase("Product")) {
@@ -793,7 +815,7 @@ public class MerchandisingUtilities {
 				}
 			}
 		}
-		expectedofferdata.put("Shipping Frequency", Expshipfreq);
+//		expectedofferdata.put("Shipping Frequency", Expshipfreq);
 		
 		expectedEntryPrice = expectedEntryPrice.replace("$", "");
 		expectedofferdata.put("Entry Pricing", expectedEntryPrice);

@@ -52,19 +52,31 @@ public class PromotionsCheck {
 //		
 //		
 //		System.out.println(result);
-		Object[][] arrayObject = {{"MeaningfulBeauty"}, {"Smileactives"}, {"WestmoreBeauty"}};	
+//		Object[][] arrayObject = {{"MeaningfulBeauty"}, {"Smileactives"}, {"WestmoreBeauty"}};	
+//		Object[][] arrayObject = {{"MeaningfulBeauty","Birthday"}};
+//		Object[][] arrayObject = {{"CrepeErase","Birthday"}};
+//		Object[][] arrayObject = {{"WestmoreBeauty","Birthday"}};
 //		Object[][] arrayObject = {{"Smileactives"}};	
-//		Object[][] arrayObject = {{"WestmoreBeauty"}};
+		Object[][] arrayObject = {{"WestmoreBeauty","Catalog"}};
 		return arrayObject;
 //		return result;
 	}
 	
 	@Test(dataProvider="brands")
-	public void PromotionsValidation(String brand) throws IOException, InterruptedException, ClassNotFoundException, SQLException {	
+	public void PromotionsValidation(String brand, String promotionName) throws IOException, InterruptedException, ClassNotFoundException, SQLException {	
 //	public void PromotionsValidation(String click_url_structure, String promotion, String associated_campaign, String associated_coupon, String associated_promotion, String old_keycode, String coupon_code_in_url, String vanity_url, String active_dates, String experience_requirements, String requester, String testing_notes) throws IOException, InterruptedException, ClassNotFoundException, SQLException {	
 		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/Drivers/chromedriver.exe");
 		
-		String[][] promoData  = comm_obj.getExcelData(System.getProperty("user.dir") + "\\Input_Output\\CXTPromotionsValidation\\Promotions Data\\" + brand + "_Catalog_Promotions.xlsx", "Sheet1", 0);
+		String[][] promoData = null;
+		
+		if(promotionName.equalsIgnoreCase("Catalog")) {
+			promoData  = comm_obj.getExcelData(System.getProperty("user.dir") + "\\Input_Output\\CXTPromotionsValidation\\Promotions Data\\" + brand + "_Catalog_Promotions.xlsx", "Sheet1", 0);
+			
+		}
+		else if(promotionName.equalsIgnoreCase("Birthday")) {
+			promoData  = comm_obj.getExcelData(System.getProperty("user.dir") + "\\Input_Output\\CXTPromotionsValidation\\Promotions Data\\" + brand + "_Birthday_Promotions.xlsx", "Sheet1", 0);
+		}
+		
 		
 		int urlcolumn = 0;
 		int promotioncolumn = 0;
@@ -220,8 +232,7 @@ public class PromotionsCheck {
 							double price_roundOff = Math.floor(currentProductPrice * 100.0) / 100.0;
 							
 							cartValue = cartValue + price_roundOff;
-						}
-						
+						}						
 						System.out.println("Cart Value : " + cartValue);
 					}
 				}				
@@ -259,18 +270,18 @@ public class PromotionsCheck {
 					double offerAppliedPrice = cartValue - discount;
 					System.out.println("Offer applied Price " + offerAppliedPrice);
 					
-					String subtotal = promo_obj.getProductSubTotal(driver);
+					String subtotal = promo_obj.getProductSubTotal(driver, brand);
 					subtotal = subtotal.replace("$", "");				
 					subtotalValue = Double.parseDouble(subtotal);				
 					System.out.println("subtotalValue " + subtotalValue);
 					
 					if(PromotionMap.get("Calc").equalsIgnoreCase("$ off")) {
-						String shipping = promo_obj.getShipping(driver);
+						String shipping = promo_obj.getShipping(driver, brand);
 						shipping = shipping.replace("$", "");
 						double shippingValue = Double.parseDouble(shipping);
 						System.out.println("shippingValue " + shippingValue);
 						
-						String salestax = promo_obj.getSalesTax(driver);
+						String salestax = promo_obj.getSalesTax(driver, brand);
 						salestax = salestax.replace("$", "");
 						double salestaxValue = Double.parseDouble(salestax);
 						System.out.println("salestaxValue " + salestaxValue);
@@ -279,7 +290,7 @@ public class PromotionsCheck {
 						expectedTotal = Math.ceil(expectedTotal * 100.0) / 100.0;	
 						System.out.println("expectedTotal " + expectedTotal);
 						
-						String total = promo_obj.getTotal(driver);
+						String total = promo_obj.getTotal(driver, brand);
 						total = total.replace("$", "");
 						double actualTotal = Double.parseDouble(total);
 						System.out.println("actualTotal " + actualTotal);					
