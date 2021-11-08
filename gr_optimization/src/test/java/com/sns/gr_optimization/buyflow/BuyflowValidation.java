@@ -91,11 +91,6 @@ public class BuyflowValidation {
 	
 	static String Output_foldername = monthStr + dayStr + yearStr;
 	
-	// LambdaTest
-	String username = "manibharathisearchnscore";
-	String accessKey = "kVAvkFtrOLrMUgNXgnhmoKiKWRcBvQiywvTlY4KVqCw2coOBbG";
-	final String URL = "https://" + username + ":" + accessKey + "@hub.lambdatest.com/wd/hub";
-	
 	@BeforeSuite
 	public void getEmailId() {
 //		System.setProperty("email", "aaqil@searchnscore.com,manibharathi@searchnscore.com");
